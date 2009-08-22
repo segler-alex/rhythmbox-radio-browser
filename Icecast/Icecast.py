@@ -11,19 +11,19 @@ class MySource(rb.BrowserSource):
     def do_set_property(self, property, value):
         print "not implemented"
     def do_impl_get_browser_key (self):
-        print "not implemented"
+        return "/apps/rhythmbox/plugins/magnatune/show_browser"
     def do_impl_get_paned_key (self):
-        print "not implemented"
+        return "/apps/rhythmbox/plugins/magnatune/paned_position"
     def do_impl_pack_paned (self, paned):
         print "not implemented"
     def do_impl_show_entry_popup(self):
         print "not implemented"
     def do_impl_get_ui_actions(self):
-        print "not implemented"
+        return []
     def do_impl_get_status(self):
-        print "not implemented"
+        return (_("this is the icecast directory plugin"),None,0.0)
     def do_impl_activate(self):
-        print "not implemented"
+        rb.BrowserSource.do_impl_activate (self)
     def do_impl_delete_thyself(self):
         print "not implemented"
 
@@ -33,9 +33,11 @@ class IcecastPlugin (rb.Plugin):
     def activate(self, shell):
         db = shell.props.db
         entry_type = db.entry_register_type("IcecastEntryType")
-        mysource = gobject.new (MySource, shell=shell, name=_("Icecast Source"), entry_type=entry_type)
-        shell.append_source(mysource, None)
-        shell.register_entry_type_for_source(mysource, entry_type)
+        group = rb.rb_source_group_get_by_name ("library")
+        self.source = gobject.new (MySource, shell=shell, name=_("icecast directory"), entry_type=entry_type,source_group=group)
+        shell.append_source(self.source, None)
+        shell.register_entry_type_for_source(self.source, entry_type)
         gobject.type_register(MySource)
     def deactivate(self, shell):
-        del self.string
+        self.source.delete_thyself()
+        self.source = None
