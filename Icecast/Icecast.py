@@ -1,7 +1,7 @@
 import rb
 import gobject
 
-class MySource(rb.BrowserSource):
+class IcecastSource(rb.BrowserSource):
     __gproperties__ = {
         'plugin': (rb.Plugin, 'plugin', 'plugin', gobject.PARAM_WRITABLE|gobject.PARAM_CONSTRUCT_ONLY),
     }
@@ -34,10 +34,10 @@ class IcecastPlugin (rb.Plugin):
         db = shell.props.db
         entry_type = db.entry_register_type("IcecastEntryType")
         group = rb.rb_source_group_get_by_name ("library")
-        self.source = gobject.new (MySource, shell=shell, name=_("icecast directory"), entry_type=entry_type,source_group=group)
+        self.source = gobject.new (IcecastSource, shell=shell, name=_("icecast directory"), entry_type=entry_type,source_group=group)
         shell.append_source(self.source, None)
         shell.register_entry_type_for_source(self.source, entry_type)
-        gobject.type_register(MySource)
+        gobject.type_register(IcecastSource)
     def deactivate(self, shell):
         self.source.delete_thyself()
         self.source = None
