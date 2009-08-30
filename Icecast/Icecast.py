@@ -10,7 +10,6 @@ class IcecastHandler(xml.sax.handler.ContentHandler):
     self.genre_mapping = {}
  
   def startElement(self, name, attributes):
-    #print "element:"+name
     self.currentEntry = name;
     if name == "entry":
       self.server_name = ""
@@ -18,7 +17,6 @@ class IcecastHandler(xml.sax.handler.ContentHandler):
       self.genre = ""
  
   def characters(self, data):
-    #print "data:"+data
     if self.currentEntry == "server_name":
       self.server_name += data  
     elif self.currentEntry == "listen_url":
@@ -27,7 +25,6 @@ class IcecastHandler(xml.sax.handler.ContentHandler):
       self.genre += data
  
   def endElement(self, name):
-    #print "endelement:"+name
     if name == "entry":
       self.mapping[self.server_name] = self.listen_url
       self.genre_mapping[self.server_name] = self.genre
@@ -46,7 +43,14 @@ class IcecastSource(rb.BrowserSource):
         print "not implemented"
 
     def do_impl_get_status(self):
-        return (_("this is the icecast directory plugin "),None,0.0)
+        if self.updating:
+           if self.load_total_size > 0:
+              progress = min (float(self.load_current_size) / self.load_total_size, 1.0)
+           else:
+              progress = -1.0
+           return (_("Loading catalog"), None, progress)
+        else:
+           return (_("this is the icecast directory plugin "),None,0.0)
 
     def do_impl_activate(self):
         if not self.hasActivated:
@@ -93,8 +97,9 @@ class IcecastSource(rb.BrowserSource):
            self.notify_status_changed()
 
     def download_catalogue(self):
-       self.updating = True
        self.load_current_size = 0
+       self.load_total_size = 0
+       self.updating = True
        self.catalogue_file = open(self.catalogue_file_name,"w")
        self.catalogue_loader = rb.ChunkLoader()
        self.catalogue_loader.get_url_chunks("http://dir.xiph.org/yp.xml", 4*1024, True, self.download_catalogue_chunk_cb, self.catalogue_file)
