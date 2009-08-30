@@ -7,6 +7,7 @@ import httplib
 class IcecastHandler(xml.sax.handler.ContentHandler):
   def __init__(self):
     self.mapping = {}
+    self.genre_mapping = {}
  
   def startElement(self, name, attributes):
     #print "element:"+name
@@ -14,19 +15,22 @@ class IcecastHandler(xml.sax.handler.ContentHandler):
     if name == "entry":
       self.server_name = ""
       self.listen_url = ""
+      self.genre = ""
  
   def characters(self, data):
     #print "data:"+data
     if self.currentEntry == "server_name":
-      self.server_name += data
-      
+      self.server_name += data  
     elif self.currentEntry == "listen_url":
       self.listen_url += data
+    elif self.currentEntry == "genre":
+      self.genre += data
  
   def endElement(self, name):
     #print "endelement:"+name
     if name == "entry":
       self.mapping[self.server_name] = self.listen_url
+      self.genre_mapping[self.server_name] = self.genre
     self.currentEntry = ""
 
 class IcecastSource(rb.BrowserSource):
@@ -75,7 +79,8 @@ class IcecastSource(rb.BrowserSource):
            for key,value in handler.mapping.iteritems():
               entry = db.entry_new(entry_type, value)
               db.set(entry, rhythmdb.PROP_TITLE, key)
-              print "'"+key+"':'"+value+"'"
+              if key in handler.genre_mapping:
+                 db.set(entry, rhythmdb.PROP_GENRE, handler.genre_mapping[key])
            db.commit();
         rb.BrowserSource.do_impl_activate (self)
     def do_impl_delete_thyself(self):
