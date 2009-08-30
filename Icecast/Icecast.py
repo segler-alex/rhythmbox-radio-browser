@@ -41,50 +41,63 @@ class IcecastSource(rb.BrowserSource):
     def __init__(self):
         self.hasActivated = False
         rb.BrowserSource.__init__(self,name="IcecastPlugin")
+
     def do_set_property(self, property, value):
         print "not implemented"
-#    def do_impl_get_browser_key (self):
-#        return "/apps/rhythmbox/plugins/magnatune/show_browser"
-#    def do_impl_get_paned_key (self):
-#        return "/apps/rhythmbox/plugins/magnatune/paned_position"
-#    def do_impl_pack_paned (self, paned):
-#        print "not implemented"
-#    def do_impl_show_entry_popup(self):
-#        print "not implemented"
-#    def do_impl_get_ui_actions(self):
-#        return []
+
     def do_impl_get_status(self):
         return (_("this is the icecast directory plugin "),None,0.0)
+
     def do_impl_activate(self):
         if not self.hasActivated:
            shell = self.get_property('shell')
-           db = shell.get_property('db')
-           entry_type = self.get_property('entry-type')
+           self.db = shell.get_property('db')
+           self.entry_type = self.get_property('entry-type')
            self.hasActivated = True
     
            self.catalogue_file_name = rb.find_user_cache_file("icecastdir.xml")
-           self.catalogue_file = open(self.catalogue_file_name,"w")
-           conn = httplib.HTTPConnection("dir.xiph.org")
-           conn.request("GET", "/yp.xml")
-           r1 = conn.getresponse()
-           data = r1.read()
-           self.catalogue_file.write(data)
-           self.catalogue_file.close()
+           self.updating = False
+
+           self.download_catalogue()
+        rb.BrowserSource.do_impl_activate (self)
+
+    def do_impl_delete_thyself(self):
+        print "not implemented"
+
+    def download_catalogue_chunk_cb (self, result, total, out):
+        if not result:
+           # download finished
+           self.updating = False
+           self.catalogue_loader = None
+           out.close()
 
            handler = IcecastHandler()
            self.catalogue_file = open(self.catalogue_file_name,"r")
            xml.sax.parse(self.catalogue_file,handler)
            self.catalogue_file.close()
-           self.__catalogue_loader = rb.ChunkLoader()
            for key,value in handler.mapping.iteritems():
-              entry = db.entry_new(entry_type, value)
-              db.set(entry, rhythmdb.PROP_TITLE, key)
+              entry = self.db.entry_new(self.entry_type, value)
+              self.db.set(entry, rhythmdb.PROP_TITLE, key)
               if key in handler.genre_mapping:
-                 db.set(entry, rhythmdb.PROP_GENRE, handler.genre_mapping[key])
-           db.commit();
-        rb.BrowserSource.do_impl_activate (self)
-    def do_impl_delete_thyself(self):
-        print "not implemented"
+                 self.db.set(entry, rhythmdb.PROP_GENRE, handler.genre_mapping[key])
+           self.db.commit();
+
+        elif isinstance(result, Exception):
+           # complain
+           pass
+        else:
+           # downloading...
+           out.write(result)
+           self.load_current_size += len(result)
+           self.load_total_size = total
+           self.notify_status_changed()
+
+    def download_catalogue(self):
+       self.updating = True
+       self.load_current_size = 0
+       self.catalogue_file = open(self.catalogue_file_name,"w")
+       self.catalogue_loader = rb.ChunkLoader()
+       self.catalogue_loader.get_url_chunks("http://dir.xiph.org/yp.xml", 4*1024, True, self.download_catalogue_chunk_cb, self.catalogue_file)
 
 class IcecastPlugin (rb.Plugin):
     def __init__(self):
