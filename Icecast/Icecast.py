@@ -97,30 +97,50 @@ class IcecastSource(rb.Source):
 
            column_title = gtk.TreeViewColumn("Title",gtk.CellRendererText(),text=0)
            column_title.set_resizable(True)
+           column_title.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+           column_title.set_fixed_width(100)
+           column_title.set_expand(True)
            self.tree_view.append_column(column_title)
 
            column_genre = gtk.TreeViewColumn("Genre",gtk.CellRendererText(),text=1)
            column_genre.set_resizable(True)
+           column_genre.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+           column_genre.set_fixed_width(100)
            self.tree_view.append_column(column_genre)
 
            column_bitrate = gtk.TreeViewColumn("Bitrate",gtk.CellRendererText(),text=2)
            column_bitrate.set_resizable(True)
+           column_bitrate.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+           column_bitrate.set_fixed_width(100)
            self.tree_view.append_column(column_bitrate)
 
            column_song = gtk.TreeViewColumn("Current Song",gtk.CellRendererText(),text=3)
            column_song.set_resizable(True)
+           column_song.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+           column_song.set_fixed_width(100)
            self.tree_view.append_column(column_song)
 
            self.tree_view.connect("row-activated",self.row_activated_handler)
 
            mywin = gtk.ScrolledWindow()
            mywin.add(self.tree_view)
-           mywin.set_property("visible", True)
            mywin.set_property("hscrollbar-policy", gtk.POLICY_AUTOMATIC)
-           self.pack_start(mywin)
+
+           update_button = gtk.Button("Update catalogue")
+           update_button.connect("clicked",self.update_button_clicked)
+
+           mybox = gtk.VBox()
+           mybox.pack_start(mywin)
+           mybox.pack_start(update_button,False)
+
+           self.pack_start(mybox)
+           mybox.show_all()
 
            self.download_catalogue()
         rb.BrowserSource.do_impl_activate (self)
+
+    def update_button_clicked(self,button):
+        self.download_catalogue()
 
     def play_uri(self,uri):
         shell = self.get_property('shell')
@@ -131,7 +151,6 @@ class IcecastSource(rb.Source):
         player.play_entry(self.entry)
         #shell.add_to_queue(uri)
         #shell.props.shell_player.play()
-
 
     def row_activated_handler(self,treeview,path,column):
         myiter = self.list_store.get_iter(path)
@@ -147,13 +166,7 @@ class IcecastSource(rb.Source):
            self.updating = False
            self.catalogue_loader = None
            out.close()
-
-           handler = IcecastHandler()
-           self.catalogue_file = open(self.catalogue_file_name,"r")
-           xml.sax.parse(self.catalogue_file,handler)
-           self.catalogue_file.close()
-           for station in handler.mapping:
-              self.list_store.append([station.server_name,station.genre,station.bitrate,station.current_song,station.listen_url])
+           self.refill_list()
 
         elif isinstance(result, Exception):
            # complain
@@ -164,6 +177,16 @@ class IcecastSource(rb.Source):
            self.load_current_size += len(result)
            self.load_total_size = total
            self.notify_status_changed()
+
+    def refill_list(self):
+       handler = IcecastHandler()
+       self.catalogue_file = open(self.catalogue_file_name,"r")
+       xml.sax.parse(self.catalogue_file,handler)
+       self.catalogue_file.close()
+       self.list_store.clear()
+       for station in handler.mapping:
+          self.list_store.append([station.server_name,station.genre,station.bitrate,station.current_song,station.listen_url])
+       #self.tree_view.columns_autosize()
 
     def download_catalogue(self):
        self.load_current_size = 0
