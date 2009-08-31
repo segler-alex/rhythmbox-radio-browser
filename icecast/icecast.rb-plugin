@@ -17,10 +17,11 @@
 
 [RB Plugin]
 Loader=python
-Module=Icecast
+Module=icecast
 IAge=1
 Name=Icecast Directory
 Description=Shows the Icecast radio directory
 Authors=segler_alex@web.de
 Copyright=Copyright © 2009 segler_alex
 Website=http://programmierecke.net
+Icon=xiph-logo.png
