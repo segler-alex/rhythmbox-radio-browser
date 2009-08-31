@@ -1,6 +1,6 @@
 #    This file is part of IcecastPlugin for Rhythmbox.
 #
-#    Copyright (C) 2006 <segler_alex@web.de>
+#    Copyright (C) 2009 <segler_alex@web.de>
 #
 #    IcecastPlugin is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -81,7 +81,6 @@ class IcecastSource(rb.Source):
 
     def do_impl_activate(self):
         if not self.hasActivated:
-           #self.__paned_box.set_property("visible", False)
            shell = self.get_property('shell')
            self.db = shell.get_property('db')
            self.entry_type = self.get_property('entry-type')
