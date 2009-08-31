@@ -92,7 +92,6 @@ class IcecastSource(rb.Source):
            self.list_store = gtk.ListStore(str,str,str,str,str)
            self.list_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
            self.tree_view = gtk.TreeView(self.list_store)
-           self.tree_view.set_property("visible", True)
 
            column_title = gtk.TreeViewColumn("Title",gtk.CellRendererText(),text=0)
            column_title.set_resizable(True)
@@ -117,6 +116,7 @@ class IcecastSource(rb.Source):
            column_song.set_resizable(True)
            column_song.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
            column_song.set_fixed_width(100)
+           column_song.set_expand(True)
            self.tree_view.append_column(column_song)
 
            self.tree_view.connect("row-activated",self.row_activated_handler)
@@ -202,10 +202,14 @@ class IcecastPlugin (rb.Plugin):
         db = shell.props.db
         entry_type = db.entry_register_type("IcecastEntryType")
         group = rb.rb_source_group_get_by_name ("library")
-        self.source = gobject.new (IcecastSource, shell=shell, name=_("icecast directory"), entry_type=entry_type,source_group=group)
+        self.source = gobject.new (IcecastSource, shell=shell, name=_("Icecast"), entry_type=entry_type,source_group=group)
         shell.append_source(self.source, None)
         shell.register_entry_type_for_source(self.source, entry_type)
         gobject.type_register(IcecastSource)
+
+        width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
+        icon = gtk.gdk.pixbuf_new_from_file_at_size(self.find_file("xiph-logo.png"), width, height)
+        self.source.set_property( "icon",  icon) 
        
     def deactivate(self, shell):
         self.source.delete_thyself()
