@@ -21,41 +21,50 @@ import rhythmdb
 import gobject
 import xml.sax.handler
 import httplib
- 
+import gtk
+
+class RadioStation:
+  def __init__(self):
+    self.listen_url = ""
+    self.server_name = ""
+    self.genre = ""
+    self.bitrate = ""
+    self.current_song = ""
+
 class IcecastHandler(xml.sax.handler.ContentHandler):
   def __init__(self):
-    self.mapping = {}
-    self.genre_mapping = {}
+    self.mapping = []
  
   def startElement(self, name, attributes):
     self.currentEntry = name;
     if name == "entry":
-      self.server_name = ""
-      self.listen_url = ""
-      self.genre = ""
+      self.entry = RadioStation()
  
   def characters(self, data):
     if self.currentEntry == "server_name":
-      self.server_name += data  
+      self.entry.server_name += data  
     elif self.currentEntry == "listen_url":
-      self.listen_url += data
+      self.entry.listen_url += data
     elif self.currentEntry == "genre":
-      self.genre += data
+      self.entry.genre += data
+    elif self.currentEntry == "current_song":
+      self.entry.current_song += data
+    elif self.currentEntry == "bitrate":
+      self.entry.bitrate += data
  
   def endElement(self, name):
     if name == "entry":
-      self.mapping[self.server_name] = self.listen_url
-      self.genre_mapping[self.server_name] = self.genre
+      self.mapping.append(self.entry)
     self.currentEntry = ""
 
-class IcecastSource(rb.BrowserSource):
+class IcecastSource(rb.Source):
     __gproperties__ = {
         'plugin': (rb.Plugin, 'plugin', 'plugin', gobject.PARAM_WRITABLE|gobject.PARAM_CONSTRUCT_ONLY),
     }
 
     def __init__(self):
         self.hasActivated = False
-        rb.BrowserSource.__init__(self,name="IcecastPlugin")
+        rb.Source.__init__(self,name="IcecastPlugin")
 
     def do_set_property(self, property, value):
         print "not implemented"
@@ -72,6 +81,7 @@ class IcecastSource(rb.BrowserSource):
 
     def do_impl_activate(self):
         if not self.hasActivated:
+           #self.__paned_box.set_property("visible", False)
            shell = self.get_property('shell')
            self.db = shell.get_property('db')
            self.entry_type = self.get_property('entry-type')
@@ -80,8 +90,53 @@ class IcecastSource(rb.BrowserSource):
            self.catalogue_file_name = rb.find_user_cache_file("icecastdir.xml")
            self.updating = False
 
+           self.list_store = gtk.ListStore(str,str,str,str,str)
+           self.list_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
+           self.tree_view = gtk.TreeView(self.list_store)
+           self.tree_view.set_property("visible", True)
+
+           column_title = gtk.TreeViewColumn("Title",gtk.CellRendererText(),text=0)
+           column_title.set_resizable(True)
+           self.tree_view.append_column(column_title)
+
+           column_genre = gtk.TreeViewColumn("Genre",gtk.CellRendererText(),text=1)
+           column_genre.set_resizable(True)
+           self.tree_view.append_column(column_genre)
+
+           column_bitrate = gtk.TreeViewColumn("Bitrate",gtk.CellRendererText(),text=2)
+           column_bitrate.set_resizable(True)
+           self.tree_view.append_column(column_bitrate)
+
+           column_song = gtk.TreeViewColumn("Current Song",gtk.CellRendererText(),text=3)
+           column_song.set_resizable(True)
+           self.tree_view.append_column(column_song)
+
+           self.tree_view.connect("row-activated",self.row_activated_handler)
+
+           mywin = gtk.ScrolledWindow()
+           mywin.add(self.tree_view)
+           mywin.set_property("visible", True)
+           mywin.set_property("hscrollbar-policy", gtk.POLICY_AUTOMATIC)
+           self.pack_start(mywin)
+
            self.download_catalogue()
         rb.BrowserSource.do_impl_activate (self)
+
+    def play_uri(self,uri):
+        shell = self.get_property('shell')
+        player = shell.get_player()
+        #player.props.player.open(uri)
+        shell.load_uri(uri,False)
+        self.entry = shell.props.db.entry_lookup_by_location(uri)
+        player.play_entry(self.entry)
+        #shell.add_to_queue(uri)
+        #shell.props.shell_player.play()
+
+
+    def row_activated_handler(self,treeview,path,column):
+        myiter = self.list_store.get_iter(path)
+        uri = self.list_store.get_value(myiter,4)
+        self.play_uri(uri)
 
     def do_impl_delete_thyself(self):
         print "not implemented"
@@ -97,12 +152,8 @@ class IcecastSource(rb.BrowserSource):
            self.catalogue_file = open(self.catalogue_file_name,"r")
            xml.sax.parse(self.catalogue_file,handler)
            self.catalogue_file.close()
-           for key,value in handler.mapping.iteritems():
-              entry = self.db.entry_new(self.entry_type, value)
-              self.db.set(entry, rhythmdb.PROP_TITLE, key)
-              if key in handler.genre_mapping:
-                 self.db.set(entry, rhythmdb.PROP_GENRE, handler.genre_mapping[key])
-           self.db.commit();
+           for station in handler.mapping:
+              self.list_store.append([station.server_name,station.genre,station.bitrate,station.current_song,station.listen_url])
 
         elif isinstance(result, Exception):
            # complain
