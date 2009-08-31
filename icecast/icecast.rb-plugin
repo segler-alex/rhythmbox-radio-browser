@@ -19,8 +19,10 @@
 Loader=python
 Module=icecast
 IAge=1
-Name=Icecast Directory
-Description=Shows the Icecast radio directory
+Name=Icecast radio stations directory
+Name[de]=Icecast Radiostations-Verzeichnis
+Description=Shows the icecast radio stations of dir.xiph.org on a separate tab.
+Description[de]=Zeigt die Icecast Radiostationen von dir.xiph.org auf einem separaten Tab an.
 Authors=segler_alex@web.de
 Copyright=Copyright © 2009 segler_alex
 Website=http://programmierecke.net
