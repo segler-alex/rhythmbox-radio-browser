@@ -32,8 +32,8 @@ class RadioStation:
     self.current_song = ""
 
 class IcecastHandler(xml.sax.handler.ContentHandler):
-  def __init__(self):
-    self.mapping = []
+  def __init__(self,model):
+    self.model = model
  
   def startElement(self, name, attributes):
     self.currentEntry = name;
@@ -54,7 +54,8 @@ class IcecastHandler(xml.sax.handler.ContentHandler):
  
   def endElement(self, name):
     if name == "entry":
-      self.mapping.append(self.entry)
+      self.model.append([self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,self.entry.listen_url])
+#      self.mapping.append(self.entry)
     self.currentEntry = ""
 
 class IcecastSource(rb.Source):
@@ -207,13 +208,14 @@ class IcecastSource(rb.Source):
            self.notify_status_changed()
 
     def refill_list(self):
-       handler = IcecastHandler()
+       self.list_store.clear()
+       handler = IcecastHandler(self.list_store)
        self.catalogue_file = open(self.catalogue_file_name,"r")
        xml.sax.parse(self.catalogue_file,handler)
        self.catalogue_file.close()
-       self.list_store.clear()
-       for station in handler.mapping:
-          self.list_store.append([station.server_name,station.genre,station.bitrate,station.current_song,station.listen_url])
+       
+       #for station in handler.mapping:
+       #   self.list_store.append([station.server_name,station.genre,station.bitrate,station.current_song,station.listen_url])
        #self.tree_view.columns_autosize()
        self.notify_status_changed()
 
