@@ -57,14 +57,14 @@ class IcecastHandler(xml.sax.handler.ContentHandler):
       self.model.append([self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,self.entry.listen_url])
     self.currentEntry = ""
 
-class IcecastSource(rb.Source):
+class IcecastSource(rb.StreamingSource):
     __gproperties__ = {
         'plugin': (rb.Plugin, 'plugin', 'plugin', gobject.PARAM_WRITABLE|gobject.PARAM_CONSTRUCT_ONLY),
     }
 
     def __init__(self):
         self.hasActivated = False
-        rb.Source.__init__(self,name="IcecastPlugin")
+        rb.StreamingSource.__init__(self,name="IcecastPlugin")
 
     def do_set_property(self, property, value):
         print "not implemented"
