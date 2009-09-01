@@ -177,6 +177,7 @@ class IcecastSource(rb.Source):
         #self.entry = shell.props.db.entry_lookup_by_location(uri)
 
         player = shell.get_player()
+        player.stop()
         player.play_entry(self.entry)
 
     def row_activated_handler(self,treeview,path,column):
