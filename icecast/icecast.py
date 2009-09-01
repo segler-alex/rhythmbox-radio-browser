@@ -170,11 +170,15 @@ class IcecastSource(rb.Source):
     def play_uri(self,uri,title):
         shell = self.get_property('shell')
 
+        self.entry = shell.props.db.entry_lookup_by_location(uri)
+        if not self.entry == None:
+           shell.props.db.entry_delete(self.entry)
+
         entry_type = shell.props.db.entry_register_type("IcecastEntryType")
         self.entry = shell.props.db.entry_new(entry_type, uri)
         shell.props.db.set(self.entry, rhythmdb.PROP_TITLE, title+" ("+uri+")")
+        shell.props.db.commit()
         #shell.load_uri(uri,False)
-        #self.entry = shell.props.db.entry_lookup_by_location(uri)
 
         player = shell.get_player()
         player.stop()
