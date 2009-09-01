@@ -75,9 +75,9 @@ class IcecastSource(rb.Source):
               progress = min (float(self.load_current_size) / self.load_total_size, 1.0)
            else:
               progress = -1.0
-           return (_("Loading catalog"), None, progress)
+           return (_("Loading catalog.."), None, progress)
         else:
-           return (_("this is the icecast directory plugin "),None,0.0)
+           return (_(str(len(self.filtered_list_store))+" entries"),None,0.0)
 
     def do_impl_activate(self):
         if not self.hasActivated:
@@ -150,6 +150,7 @@ class IcecastSource(rb.Source):
 
     def filter_entry_changed(self,gtk_entry):
         self.filtered_list_store.refilter()
+        self.notify_status_changed()
 
     def list_store_visible_func(self,model,iter):
         # returns true if the row should be visible
@@ -214,6 +215,7 @@ class IcecastSource(rb.Source):
        for station in handler.mapping:
           self.list_store.append([station.server_name,station.genre,station.bitrate,station.current_song,station.listen_url])
        #self.tree_view.columns_autosize()
+       self.notify_status_changed()
 
     def download_catalogue(self):
        self.load_current_size = 0
