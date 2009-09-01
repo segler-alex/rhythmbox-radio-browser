@@ -155,12 +155,12 @@ class IcecastSource(rb.Source):
 
     def list_store_visible_func(self,model,iter):
         # returns true if the row should be visible
-        filter_string = self.filter_entry.get_text()
+        filter_string = self.filter_entry.get_text().lower()
         if filter_string == "":
            return True
-        elif model.get_value(iter,0).find(filter_string) >= 0:
+        elif model.get_value(iter,0).lower().find(filter_string) >= 0:
            return True
-        elif model.get_value(iter,1).find(filter_string) >= 0:
+        elif model.get_value(iter,1).lower().find(filter_string) >= 0:
            return True
         else:
            return False
