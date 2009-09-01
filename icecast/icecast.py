@@ -127,8 +127,9 @@ class IcecastSource(rb.Source):
            mywin.add(self.tree_view)
            mywin.set_property("hscrollbar-policy", gtk.POLICY_AUTOMATIC)
 
-           update_button = gtk.Button("Update catalogue")
-           update_button.connect("clicked",self.update_button_clicked)
+           self.update_button = gtk.Button("Update catalogue")
+           self.update_button.set_sensitive(False)
+           self.update_button.connect("clicked",self.update_button_clicked)
 
            self.filter_entry = gtk.Entry()
            self.filter_entry.connect("changed",self.filter_entry_changed)
@@ -140,7 +141,7 @@ class IcecastSource(rb.Source):
            mybox = gtk.VBox()
            mybox.pack_start(filterbox,False)
            mybox.pack_start(mywin)
-           mybox.pack_start(update_button,False)
+           mybox.pack_start(self.update_button,False)
 
            self.pack_start(mybox)
            mybox.show_all()
@@ -165,6 +166,7 @@ class IcecastSource(rb.Source):
            return False
 
     def update_button_clicked(self,button):
+        self.update_button.set_sensitive(False)
         self.download_catalogue()
 
     def play_uri(self,uri,title):
@@ -200,6 +202,7 @@ class IcecastSource(rb.Source):
            self.catalogue_loader = None
            out.close()
            self.refill_list()
+           self.update_button.set_sensitive(True)
 
         elif isinstance(result, Exception):
            # complain
