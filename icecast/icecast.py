@@ -77,7 +77,7 @@ class IcecastSource(rb.Source):
               progress = -1.0
            return (_("Loading catalog.."), None, progress)
         else:
-           return (_(str(len(self.filtered_list_store))+" entries"),None,0.0)
+           return (str(len(self.filtered_list_store))+_(" entries"),None,0.0)
 
     def do_impl_activate(self):
         if not self.hasActivated:
