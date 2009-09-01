@@ -91,7 +91,9 @@ class IcecastSource(rb.Source):
 
            self.list_store = gtk.ListStore(str,str,str,str,str)
            self.list_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
-           self.tree_view = gtk.TreeView(self.list_store)
+           self.filtered_list_store = self.list_store.filter_new()
+           self.filtered_list_store.set_visible_func(self.list_store_visible_func)
+           self.tree_view = gtk.TreeView(self.filtered_list_store)
 
            column_title = gtk.TreeViewColumn("Title",gtk.CellRendererText(),text=0)
            column_title.set_resizable(True)
@@ -128,7 +130,15 @@ class IcecastSource(rb.Source):
            update_button = gtk.Button("Update catalogue")
            update_button.connect("clicked",self.update_button_clicked)
 
+           self.filter_entry = gtk.Entry()
+           self.filter_entry.connect("changed",self.filter_entry_changed)
+
+           filterbox = gtk.HBox()
+           filterbox.pack_start(gtk.Label("Filter:"),False)
+           filterbox.pack_start(self.filter_entry)
+
            mybox = gtk.VBox()
+           mybox.pack_start(filterbox,False)
            mybox.pack_start(mywin)
            mybox.pack_start(update_button,False)
 
@@ -137,6 +147,21 @@ class IcecastSource(rb.Source):
 
            self.download_catalogue()
         rb.BrowserSource.do_impl_activate (self)
+
+    def filter_entry_changed(self,gtk_entry):
+        self.filtered_list_store.refilter()
+
+    def list_store_visible_func(self,model,iter):
+        # returns true if the row should be visible
+        filter_string = self.filter_entry.get_text()
+        if filter_string == "":
+           return True
+        elif model.get_value(iter,0).find(filter_string) >= 0:
+           return True
+        elif model.get_value(iter,1).find(filter_string) >= 0:
+           return True
+        else:
+           return False
 
     def update_button_clicked(self,button):
         self.download_catalogue()
@@ -154,7 +179,7 @@ class IcecastSource(rb.Source):
         player.play_entry(self.entry)
 
     def row_activated_handler(self,treeview,path,column):
-        myiter = self.list_store.get_iter(path)
+        myiter = self.list_store.get_iter(self.filtered_list_store.convert_path_to_child_path(path))
         uri = self.list_store.get_value(myiter,4)
         title = self.list_store.get_value(myiter,0)
         self.play_uri(uri,title)
