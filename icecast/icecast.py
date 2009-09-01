@@ -141,20 +141,23 @@ class IcecastSource(rb.Source):
     def update_button_clicked(self,button):
         self.download_catalogue()
 
-    def play_uri(self,uri):
+    def play_uri(self,uri,title):
         shell = self.get_property('shell')
+
+        entry_type = shell.props.db.entry_register_type("IcecastEntryType")
+        self.entry = shell.props.db.entry_new(entry_type, uri)
+        shell.props.db.set(self.entry, rhythmdb.PROP_TITLE, title+" ("+uri+")")
+        #shell.load_uri(uri,False)
+        #self.entry = shell.props.db.entry_lookup_by_location(uri)
+
         player = shell.get_player()
-        #player.props.player.open(uri)
-        shell.load_uri(uri,False)
-        self.entry = shell.props.db.entry_lookup_by_location(uri)
         player.play_entry(self.entry)
-        #shell.add_to_queue(uri)
-        #shell.props.shell_player.play()
 
     def row_activated_handler(self,treeview,path,column):
         myiter = self.list_store.get_iter(path)
         uri = self.list_store.get_value(myiter,4)
-        self.play_uri(uri)
+        title = self.list_store.get_value(myiter,0)
+        self.play_uri(uri,title)
 
     def do_impl_delete_thyself(self):
         print "not implemented"
