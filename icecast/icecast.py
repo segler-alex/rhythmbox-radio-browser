@@ -209,17 +209,18 @@ class IcecastSource(rb.StreamingSource):
         self.download_catalogue()
 
     def play_uri(self,uri,title):
-        self.entry = self.shell.props.db.entry_lookup_by_location(uri)
-        if not self.entry == None:
-           self.shell.props.db.entry_delete(self.entry)
-        
-        self.entry = self.shell.props.db.entry_new(self.entry_type, uri)
-        self.shell.props.db.set(self.entry, rhythmdb.PROP_TITLE, title+" ("+uri+")")
-        self.shell.props.db.commit()
-        #shell.load_uri(uri,False)
-
         player = self.shell.get_player()
         player.stop()
+
+        self.entry = self.shell.props.db.entry_lookup_by_location(uri)
+        if self.entry == None:
+           #self.shell.props.db.entry_delete(self.entry)
+        
+           self.entry = self.shell.props.db.entry_new(self.entry_type, uri)
+           self.shell.props.db.set(self.entry, rhythmdb.PROP_TITLE, title+" ("+uri+")")
+           self.shell.props.db.commit()
+        #shell.load_uri(uri,False)
+
         player.play_entry(self.entry)
 
     def row_activated_handler(self,treeview,path,column):
