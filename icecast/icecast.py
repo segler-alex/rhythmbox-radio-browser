@@ -23,6 +23,11 @@ import xml.sax.handler
 import httplib
 import gtk
 
+#TODO: should not be defined here, but I don't know where to get it from. HELP: much apreciated
+RB_METADATA_FIELD_TITLE = 0
+RB_METADATA_FIELD_GENRE = 4
+RB_METADATA_FIELD_BITRATE = 20
+
 class RadioStation:
   def __init__(self):
     self.listen_url = ""
@@ -67,7 +72,7 @@ class IcecastSource(rb.StreamingSource):
         rb.StreamingSource.__init__(self,name="IcecastPlugin")
 
     def do_set_property(self, property, value):
-        print "not implemented"
+        print "try to set property("+str(property)+") to value: "+str(value)
 
     def do_impl_get_status(self):
         if self.updating:
@@ -81,11 +86,17 @@ class IcecastSource(rb.StreamingSource):
 
     def do_impl_activate(self):
         if not self.hasActivated:
-           shell = self.get_property('shell')
-           self.db = shell.get_property('db')
+           self.shell = self.get_property('shell')
+           self.db = self.shell.get_property('db')
            self.entry_type = self.get_property('entry-type')
            self.hasActivated = True
-    
+
+           sp = self.shell.get_player ()
+           #sp.connect ('playing-song-changed',self.playing_entry_changed)
+           #sp.connect ('playing-changed',self.playing_changed)
+           #sp.connect ('playing-song-property-changed',self.playing_song_property_changed)
+           sp.props.player.connect("info",self.info_available)
+
            self.catalogue_file_name = rb.find_user_cache_file("icecastdir.xml")
            self.updating = False
 
@@ -149,6 +160,34 @@ class IcecastSource(rb.StreamingSource):
            self.download_catalogue()
         rb.BrowserSource.do_impl_activate (self)
 
+    def info_available(self,player,uri,field,value):
+        if field == RB_METADATA_FIELD_TITLE:
+           self.title = value
+           self.set_streaming_title(self.title)
+           print "setting title to:"+value
+           
+        elif field == RB_METADATA_FIELD_GENRE:
+           self.genre = value
+           ## causes warning: RhythmDB-WARNING **: trying to sync properties of non-editable file
+           #self.shell.props.db.set(self.entry, rhythmdb.PROP_GENRE, value)
+           #self.shell.props.db.commit()
+           print "setting genre to:"+value
+
+        elif field == RB_METADATA_FIELD_BITRATE:
+           ## causes warning: RhythmDB-WARNING **: trying to sync properties of non-editable file
+           #self.shell.props.db.set(self.entry, rhythmdb.PROP_BITRATE, value/1000)
+           #self.shell.props.db.commit()
+           print "setting bitrate to:"+str(value/1000)
+
+    #def playing_changed (self, sp, playing):
+    #    print "playing changed"
+
+    #def playing_entry_changed (self, sp, entry):
+    #    print "playing entry changed"
+
+    #def playing_song_property_changed (self, sp, uri, property, old, new):
+    #    print "property changed "+str(new)
+
     def filter_entry_changed(self,gtk_entry):
         self.filtered_list_store.refilter()
         self.notify_status_changed()
@@ -170,19 +209,16 @@ class IcecastSource(rb.StreamingSource):
         self.download_catalogue()
 
     def play_uri(self,uri,title):
-        shell = self.get_property('shell')
-
-        self.entry = shell.props.db.entry_lookup_by_location(uri)
+        self.entry = self.shell.props.db.entry_lookup_by_location(uri)
         if not self.entry == None:
-           shell.props.db.entry_delete(self.entry)
-
-        entry_type = shell.props.db.entry_register_type("IcecastEntryType")
-        self.entry = shell.props.db.entry_new(entry_type, uri)
-        shell.props.db.set(self.entry, rhythmdb.PROP_TITLE, title+" ("+uri+")")
-        shell.props.db.commit()
+           self.shell.props.db.entry_delete(self.entry)
+        
+        self.entry = self.shell.props.db.entry_new(self.entry_type, uri)
+        self.shell.props.db.set(self.entry, rhythmdb.PROP_TITLE, title+" ("+uri+")")
+        self.shell.props.db.commit()
         #shell.load_uri(uri,False)
 
-        player = shell.get_player()
+        player = self.shell.get_player()
         player.stop()
         player.play_entry(self.entry)
 
@@ -238,6 +274,7 @@ class IcecastPlugin (rb.Plugin):
     def activate(self, shell):
         db = shell.props.db
         entry_type = db.entry_register_type("IcecastEntryType")
+        entry_type.category = rhythmdb.ENTRY_STREAM
         group = rb.rb_source_group_get_by_name ("library")
         self.source = gobject.new (IcecastSource, shell=shell, name=_("Icecast"), entry_type=entry_type,source_group=group)
         shell.append_source(self.source, None)
