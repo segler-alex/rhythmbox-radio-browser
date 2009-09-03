@@ -264,7 +264,7 @@ class IcecastSource(rb.StreamingSource):
           self.tree_view.set_model(self.filtered_list_store)
           self.sorted_list_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
        except IOError:
-          download_catalogue()
+          self.download_catalogue()
 
        #self.tree_view.columns_autosize()
        self.notify_status_changed()
