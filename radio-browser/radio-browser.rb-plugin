@@ -17,12 +17,12 @@
 
 [RB Plugin]
 Loader=python
-Module=icecast
+Module=radio-browser
 IAge=1
-Name=Icecast radio stations directory
-Name[de]=Icecast Radiostations-Verzeichnis
-Description=Shows the icecast radio stations of dir.xiph.org on a separate tab.
-Description[de]=Zeigt die Icecast Radiostationen von dir.xiph.org auf einem separaten Tab an.
+Name=Internet radio station browser
+Name[de]=Internetradio-Verzeichnis
+Description=Shows icecast and shoutcast radio stations on a tab.
+Description[de]=Zeigt Icecast und Shoutcast Radiostationen auf einem Tab an.
 Authors=segler_alex@web.de
 Copyright=Copyright © 2009 segler_alex
 Website=http://programmierecke.net
