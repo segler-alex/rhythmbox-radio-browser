@@ -22,6 +22,7 @@ import gobject
 import xml.sax.handler
 import httplib
 import gtk
+import os
 
 #TODO: should not be defined here, but I don't know where to get it from. HELP: much apreciated
 RB_METADATA_FIELD_TITLE = 0
@@ -35,15 +36,18 @@ class RadioStation:
     self.genre = ""
     self.bitrate = ""
     self.current_song = ""
+    self.type = ""
 
 class IcecastHandler(xml.sax.handler.ContentHandler):
-  def __init__(self,model):
+  def __init__(self,model,parent):
     self.model = model
+    self.parent = parent
  
   def startElement(self, name, attributes):
     self.currentEntry = name;
     if name == "entry":
       self.entry = RadioStation()
+      self.type = "Icecast"
  
   def characters(self, data):
     if self.currentEntry == "server_name":
@@ -59,8 +63,30 @@ class IcecastHandler(xml.sax.handler.ContentHandler):
  
   def endElement(self, name):
     if name == "entry":
-      self.model.append([self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,self.entry.listen_url])
+      self.model.append(self.parent,(self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,self.entry.listen_url))
     self.currentEntry = ""
+
+class ShoutcastHandler(xml.sax.handler.ContentHandler):
+  def __init__(self,model,parent):
+    self.model = model
+    self.parent = parent
+    self.genres = []
+ 
+  def startElement(self, name, attributes):
+    if name == "genre":
+      self.genres.append(attributes.get("name"))
+    if name == "tunein":
+      self.tunein = attributes.get("base")
+    if name == "station":
+      self.entry = RadioStation()
+      self.entry.type = "Shoutcast"
+      self.entry.server_name = attributes.get("name")
+      self.entry.genre = attributes.get("genre")
+      self.entry.current_song = attributes.get("ct")
+      self.entry.bitrate = attributes.get("br")
+      self.entry.listen_id = attributes.get("id")
+      self.entry.listeners = attributes.get("lc")
+      self.model.append(self.parent,[self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,"shoutcast:"+str(self.entry.listen_id)])
 
 class IcecastSource(rb.StreamingSource):
     __gproperties__ = {
@@ -69,6 +95,8 @@ class IcecastSource(rb.StreamingSource):
 
     def __init__(self):
         self.hasActivated = False
+        self.loadedFiles = []
+        self.createdGenres = {}
         rb.StreamingSource.__init__(self,name="IcecastPlugin")
 
     def do_set_property(self, property, value):
@@ -97,11 +125,16 @@ class IcecastSource(rb.StreamingSource):
            #sp.connect ('playing-song-property-changed',self.playing_song_property_changed)
            sp.props.player.connect("info",self.info_available)
 
-           self.catalogue_file_name = rb.find_user_cache_file("icecastdir.xml")
+           self.cache_dir = rb.find_user_cache_file("icecast")
+           if os.path.exists(self.cache_dir) is False:
+              os.makedirs(self.cache_dir, 0700)
            self.updating = False
 
-           self.list_store = gtk.ListStore(str,str,str,str,str)
-           self.sorted_list_store = gtk.TreeModelSort(self.list_store)
+           self.filter_entry = gtk.Entry()
+           self.filter_entry.connect("changed",self.filter_entry_changed)
+
+           self.tree_store = gtk.TreeStore(str,str,str,str,str)
+           self.sorted_list_store = gtk.TreeModelSort(self.tree_store)
            self.filtered_list_store = self.sorted_list_store.filter_new()
            self.filtered_list_store.set_visible_func(self.list_store_visible_func)
            self.tree_view = gtk.TreeView(self.filtered_list_store)
@@ -140,9 +173,6 @@ class IcecastSource(rb.StreamingSource):
 
            self.update_button = gtk.Button("Update catalogue")
            self.update_button.connect("clicked",self.update_button_clicked)
-
-           self.filter_entry = gtk.Entry()
-           self.filter_entry.connect("changed",self.filter_entry_changed)
 
            filterbox = gtk.HBox()
            filterbox.pack_start(gtk.Label("Filter:"),False)
@@ -194,12 +224,16 @@ class IcecastSource(rb.StreamingSource):
     def list_store_visible_func(self,model,iter):
         # returns true if the row should be visible
         filter_string = self.filter_entry.get_text().lower()
+        if len(model) == 0:
+           return True
         if filter_string == "":
            return True
         elif model.get_value(iter,0).lower().find(filter_string) >= 0:
            return True
-        elif model.get_value(iter,1).lower().find(filter_string) >= 0:
+        elif model.get_value(iter,1) == None:
            return True
+        elif model.get_value(iter,1).lower().find(filter_string) >= 0:
+              return True
         else:
            return False
 
@@ -223,25 +257,121 @@ class IcecastSource(rb.StreamingSource):
         player.play_entry(self.entry)
 
     def row_activated_handler(self,treeview,path,column):
-        myiter = self.list_store.get_iter(self.sorted_list_store.convert_path_to_child_path(self.filtered_list_store.convert_path_to_child_path(path)))
-        uri = self.list_store.get_value(myiter,4)
-        title = self.list_store.get_value(myiter,0)
-        self.play_uri(uri,title)
+        myiter = self.tree_store.get_iter(self.sorted_list_store.convert_path_to_child_path(self.filtered_list_store.convert_path_to_child_path(path)))
+        uri = self.tree_store.get_value(myiter,4)
+        title = self.tree_store.get_value(myiter,0)
+
+        if not uri == None:
+           self.play_uri(uri,title)
+        else:
+           if self.tree_store.is_ancestor(self.tree_iter_shoutcast,myiter):
+              print "download "+title
+              handler_stations = ShoutcastHandler(self.tree_store,myiter)
+              self.refill_list_part(myiter,handler_stations,"shoutcast--"+title+".xml","http://www.shoutcast.com/sbin/newxml.phtml?genre="+title)
 
     def do_impl_delete_thyself(self):
         print "not implemented"
 
+    def refill_list(self):
+       self.update_button.set_sensitive(False)
+       # deactivate sorting
+       self.sorted_list_store.reset_default_sort_func()
+       #self.tree_view.set_model()
+       if not "start" in self.loadedFiles:
+          # delete old entries
+          self.tree_store.clear()
+          # create parent entries
+          self.tree_iter_icecast = self.tree_store.append(None,("Icecast",None,None,None,None))
+          self.tree_iter_shoutcast = self.tree_store.append(None,("Shoutcast",None,None,None,None))
+          self.loadedFiles.append("start")
+
+       # load icecast streams
+       if self.refill_list_part(self.tree_iter_icecast,IcecastHandler(self.tree_store,self.tree_iter_icecast),"icecast.xml","http://dir.xiph.org/yp.xml") == "downloading":
+          return
+       # load shoutcast genres
+       handler_genres = ShoutcastHandler(self.tree_store,self.tree_iter_shoutcast)
+       retval = self.refill_list_part(self.tree_iter_shoutcast,handler_genres,"shoutcast-genres.xml","http://www.shoutcast.com/sbin/newxml.phtml")
+       if retval == "downloading":
+          return
+       if retval == "loaded":
+          self.genres = handler_genres.genres
+       # load shoutcast stations genre by genre
+       for genre in self.genres:
+          if not "shoutcast--"+genre+".xml" in self.loadedFiles:
+             if genre in self.createdGenres:
+                parent = self.createdGenres[genre]
+             else:
+                # add entry for genre
+                parent = self.tree_store.append(self.tree_iter_shoutcast,[genre,None,None,None,None])
+                self.createdGenres[genre] = parent
+             # add stations under that new entry
+             handler_stations = ShoutcastHandler(self.tree_store,parent)
+             if self.refill_list_part(parent,handler_stations,"shoutcast--"+genre+".xml","http://www.shoutcast.com/sbin/newxml.phtml?genre="+genre,False) == "downloading":
+                return
+
+       # activate sorting
+       #self.tree_view.set_model(self.filtered_list_store)
+       self.sorted_list_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
+       # change status
+       self.notify_status_changed()
+       self.update_button.set_sensitive(True)
+
+# Description
+# ===========
+# try to load xml information from a file with a given handler,
+# if file is not present, start downloading it from url
+# returns: True .. if file is present and could be loaded
+#          False .. if file was not there and download is in progress
+    def refill_list_part(self,parent,handler,filename,url,trydownload=True):
+       if filename in self.loadedFiles:
+          #print "do not fill:"+filename
+          return "finished"
+       filepath = os.path.join(self.cache_dir, filename)
+       try:
+          self.catalogue_file = open(filepath,"r")
+          print "loading "+filename
+          try:
+             xml.sax.parse(self.catalogue_file,handler)
+          except:
+             print "parse failed of "+filename
+             if trydownload:
+                print "redownloading ... "+url
+                self.download_catalogue(url,filepath)
+                return "downloading"
+             else:
+                return "finished"
+          self.catalogue_file.close()
+          self.loadedFiles.append(filename)
+          return "loaded"
+       except IOError:
+          if trydownload:
+             print "downloading "+url
+             self.download_catalogue(url,filepath)
+             return "downloading"
+          else:
+             return "finished"
+
+    def download_catalogue(self,url,filename):
+       self.load_current_size = 0
+       self.load_total_size = 0
+       self.updating = True
+       self.catalogue_file = open(filename,"w")
+       self.catalogue_loader = rb.ChunkLoader()
+       self.catalogue_loader.get_url_chunks(url, 4*1024, True, self.download_catalogue_chunk_cb, self.catalogue_file)
+
     def download_catalogue_chunk_cb (self, result, total, out):
         if not result:
            # download finished
+           print "download finished"
            self.updating = False
            self.catalogue_loader = None
            out.close()
            self.refill_list()
-           self.update_button.set_sensitive(True)
 
         elif isinstance(result, Exception):
            # complain
+           print "download error!!!"+result.message
+           self.refill_list()
            pass
         else:
            # downloading...
@@ -249,34 +379,6 @@ class IcecastSource(rb.StreamingSource):
            self.load_current_size += len(result)
            self.load_total_size = total
            self.notify_status_changed()
-
-    def refill_list(self):
-       self.list_store.clear()
-       handler = IcecastHandler(self.list_store)
-
-       try:
-          self.catalogue_file = open(self.catalogue_file_name,"r")
-
-          self.sorted_list_store.reset_default_sort_func()
-          self.tree_view.set_model()
-          xml.sax.parse(self.catalogue_file,handler)
-          self.catalogue_file.close()
-          self.tree_view.set_model(self.filtered_list_store)
-          self.sorted_list_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
-       except IOError:
-          self.download_catalogue()
-
-       #self.tree_view.columns_autosize()
-       self.notify_status_changed()
-
-    def download_catalogue(self):
-       self.load_current_size = 0
-       self.load_total_size = 0
-       self.updating = True
-       self.update_button.set_sensitive(False)
-       self.catalogue_file = open(self.catalogue_file_name,"w")
-       self.catalogue_loader = rb.ChunkLoader()
-       self.catalogue_loader.get_url_chunks("http://dir.xiph.org/yp.xml", 4*1024, True, self.download_catalogue_chunk_cb, self.catalogue_file)
 
 class IcecastPlugin (rb.Plugin):
     def __init__(self):
