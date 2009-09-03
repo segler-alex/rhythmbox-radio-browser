@@ -101,10 +101,10 @@ class IcecastSource(rb.StreamingSource):
            self.updating = False
 
            self.list_store = gtk.ListStore(str,str,str,str,str)
-           self.filtered_list_store = self.list_store.filter_new()
+           self.sorted_list_store = gtk.TreeModelSort(self.list_store)
+           self.filtered_list_store = self.sorted_list_store.filter_new()
            self.filtered_list_store.set_visible_func(self.list_store_visible_func)
-           self.sorted_list_store = gtk.TreeModelSort(self.filtered_list_store)
-           self.tree_view = gtk.TreeView(self.sorted_list_store)
+           self.tree_view = gtk.TreeView(self.filtered_list_store)
 
            column_title = gtk.TreeViewColumn("Title",gtk.CellRendererText(),text=0)
            column_title.set_resizable(True)
@@ -223,7 +223,7 @@ class IcecastSource(rb.StreamingSource):
         player.play_entry(self.entry)
 
     def row_activated_handler(self,treeview,path,column):
-        myiter = self.list_store.get_iter(self.filtered_list_store.convert_path_to_child_path(self.sorted_list_store.convert_path_to_child_path(path)))
+        myiter = self.list_store.get_iter(self.sorted_list_store.convert_path_to_child_path(self.filtered_list_store.convert_path_to_child_path(path)))
         uri = self.list_store.get_value(myiter,4)
         title = self.list_store.get_value(myiter,0)
         self.play_uri(uri,title)
@@ -261,7 +261,7 @@ class IcecastSource(rb.StreamingSource):
           self.tree_view.set_model()
           xml.sax.parse(self.catalogue_file,handler)
           self.catalogue_file.close()
-          self.tree_view.set_model(self.sorted_list_store)
+          self.tree_view.set_model(self.filtered_list_store)
           self.sorted_list_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
        except IOError:
           download_catalogue()
