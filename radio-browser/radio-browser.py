@@ -262,12 +262,38 @@ class IcecastSource(rb.StreamingSource):
         title = self.tree_store.get_value(myiter,0)
 
         if not uri == None:
-           self.play_uri(uri,title)
+           if uri.startswith("shoutcast:"):
+              # special handling for shoutcast
+              shoutcast_id = uri.split(":")[1];
+              shoutcast_uri = "http://www.shoutcast.com"+self.tunein+"?id="+shoutcast_id
+              self.download_shoutcast_playlist(shoutcast_uri,title)
+           else:
+              # presume its an icecast link
+              self.play_uri(uri,title)
         else:
            if self.tree_store.is_ancestor(self.tree_iter_shoutcast,myiter):
               print "download "+title
               handler_stations = ShoutcastHandler(self.tree_store,myiter)
               self.refill_list_part(myiter,handler_stations,"shoutcast--"+title+".xml","http://www.shoutcast.com/sbin/newxml.phtml?genre="+title)
+
+    def download_shoutcast_playlist(self,uri,title):
+        print "starting download: "+uri
+        playlist_loader = rb.Loader()
+        playlist_loader.get_url(uri,self.shoutcast_download_callback,uri,title)
+
+    def shoutcast_download_callback(self,data,uri,title):
+        if data == None:
+           print "shoutcast download failed:"+uri
+        else:
+           print "shoutcast download OK:"+uri
+           lines = data.splitlines()
+           for line in lines:
+              if line.startswith("File"):
+                 uri_single = line.split("=")[1];
+                 print "playing uri:"+uri_single
+                 self.play_uri(uri_single,title)
+                 return
+           print "could not find 'File' entry"
 
     def do_impl_delete_thyself(self):
         print "not implemented"
@@ -306,8 +332,11 @@ class IcecastSource(rb.StreamingSource):
                 self.createdGenres[genre] = parent
              # add stations under that new entry
              handler_stations = ShoutcastHandler(self.tree_store,parent)
-             if self.refill_list_part(parent,handler_stations,"shoutcast--"+genre+".xml","http://www.shoutcast.com/sbin/newxml.phtml?genre="+genre,False) == "downloading":
+             retval = self.refill_list_part(parent,handler_stations,"shoutcast--"+genre+".xml","http://www.shoutcast.com/sbin/newxml.phtml?genre="+genre,False)
+             if retval == "downloading":
                 return
+             if retval == "loaded":
+                self.tunein = handler_stations.tunein;
 
        # activate sorting
        #self.tree_view.set_model(self.filtered_list_store)
@@ -380,15 +409,15 @@ class IcecastSource(rb.StreamingSource):
            self.load_total_size = total
            self.notify_status_changed()
 
-class IcecastPlugin (rb.Plugin):
+class RadioBrowserPlugin (rb.Plugin):
     def __init__(self):
         rb.Plugin.__init__(self)
     def activate(self, shell):
         db = shell.props.db
-        entry_type = db.entry_register_type("IcecastEntryType")
+        entry_type = db.entry_register_type("RadioBrowserEntryType")
         entry_type.category = rhythmdb.ENTRY_STREAM
         group = rb.rb_source_group_get_by_name ("library")
-        self.source = gobject.new (IcecastSource, shell=shell, name=_("Icecast"), entry_type=entry_type,source_group=group)
+        self.source = gobject.new (IcecastSource, shell=shell, name=_("Radio browser"), entry_type=entry_type,source_group=group)
         shell.append_source(self.source, None)
         shell.register_entry_type_for_source(self.source, entry_type)
         gobject.type_register(IcecastSource)
