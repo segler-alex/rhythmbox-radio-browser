@@ -111,7 +111,7 @@ class RadioBrowserSource(rb.StreamingSource):
 				progress = min (float(self.load_current_size) / self.load_total_size, 1.0)
 			else:
 				progress = -1.0
-			return (_("Loading catalog.."), None, progress)
+			return (_("Downloading ..")+" "+_("Try")+" "+str(self.download_try_no)+" "+_("of")+" "+str(self.download_try_max), None, progress)
 		else:
 			return (str(len(self.filtered_list_store))+_(" entries"),None,0.0)
 
@@ -303,10 +303,17 @@ class RadioBrowserSource(rb.StreamingSource):
 		playlist_loader.get_url(uri,self.shoutcast_download_callback,uri,title)
 
 	def shoutcast_download_callback(self,data,uri,title):
-		self.hide_user(False)
 		if data == None:
-			print "shoutcast download failed:"+uri
+			self.download_try_no+=1
+			if self.download_try_no > self.download_try_max:
+				print "shoutcast download failed:"+uri
+				self.hide_user(False)
+			else:
+				self.notify_status_changed()
+				playlist_loader = rb.Loader()
+				playlist_loader.get_url(uri,self.shoutcast_download_callback,uri,title)
 		else:
+			self.hide_user(False)
 			print "shoutcast download OK:"+uri
 			lines = data.splitlines()
 			for line in lines:
@@ -405,6 +412,8 @@ class RadioBrowserSource(rb.StreamingSource):
 		if hide:
 			self.load_current_size = 0
 			self.load_total_size = 0
+			self.download_try_no = 1
+			self.download_try_max = 3
 			self.updating = True
 			self.notify_status_changed()
 			self.tree_view.set_sensitive(False)
@@ -425,17 +434,24 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.catalogue_loader.get_url_chunks(url, 4*1024, True, self.download_catalogue_chunk_cb, self.catalogue_file)
 		else:
 			self.catalogue_loader = rb.Loader()
-			self.catalogue_loader.get_url(url, self.download_catalogue_cb, self.catalogue_file)
+			self.catalogue_loader.get_url(url, self.download_catalogue_cb, url)
 
-	def download_catalogue_cb (self,result, out):
+	def download_catalogue_cb (self,result, url):
 		if result == None:
-			print "error while downloading"
+			self.download_try_no+=1
+			if self.download_try_no > self.download_try_max:
+				print "error while downloading"
+			else:
+				self.notify_status_changed()
+				self.catalogue_loader = rb.Loader()
+				self.catalogue_loader.get_url(url, self.download_catalogue_cb, url)
+				return
 		else:
 			# download finished
 			print "download finished"
 			self.catalogue_loader = None
-			out.write(result)
-		out.close()
+			self.catalogue_file.write(result)
+		self.catalogue_file.close()
 		self.hide_user(False)
 		self.refill_list()
 
