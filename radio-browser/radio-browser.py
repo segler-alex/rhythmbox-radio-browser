@@ -125,7 +125,7 @@ class IcecastSource(rb.StreamingSource):
            #sp.connect ('playing-song-property-changed',self.playing_song_property_changed)
            sp.props.player.connect("info",self.info_available)
 
-           self.cache_dir = rb.find_user_cache_file("icecast")
+           self.cache_dir = rb.find_user_cache_file("radio-browser")
            if os.path.exists(self.cache_dir) is False:
               os.makedirs(self.cache_dir, 0700)
            self.updating = False
