@@ -497,8 +497,10 @@ class RadioBrowserPlugin (rb.Plugin):
 		gobject.type_register(RadioBrowserSource)
 
 		width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
-		icon = gtk.gdk.pixbuf_new_from_file_at_size(self.find_file("xiph-logo.png"), width, height)
-		self.source.set_property( "icon",  icon)
+		filepath = self.find_file("xiph-logo.png")
+		if filepath:
+			icon = gtk.gdk.pixbuf_new_from_file_at_size(filepath, width, height)
+			self.source.set_property( "icon",  icon)
 
 		action = gtk.Action('UpdateList', None, _("Update radio station list"), gtk.STOCK_GO_DOWN)
 		action.connect('activate', lambda a: shell.get_property("selected-source").update_button_clicked())
