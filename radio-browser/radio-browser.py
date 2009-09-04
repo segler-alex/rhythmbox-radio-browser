@@ -223,9 +223,20 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	def list_store_visible_func(self,model,iter):
 		# returns true if the row should be visible
-		filter_string = self.filter_entry.get_text().lower()
 		if len(model) == 0:
 			return True
+
+		if not model.get_value(iter,2) == None:
+			try:
+				bitrate = int(model.get_value(iter,2))
+				if bitrate < 96:
+					return False
+				return True
+			except:
+				return True
+
+		filter_string = self.filter_entry.get_text().lower()
+		
 		if filter_string == "":
 			return True
 		elif model.get_value(iter,0).lower().find(filter_string) >= 0:
