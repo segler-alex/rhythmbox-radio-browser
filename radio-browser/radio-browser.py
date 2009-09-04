@@ -22,6 +22,7 @@ import gobject
 import xml.sax.handler
 import httplib
 import gtk
+import gconf
 import os
 
 #TODO: should not be defined here, but I don't know where to get it from. HELP: much apreciated
@@ -100,7 +101,8 @@ class RadioBrowserSource(rb.StreamingSource):
 		rb.StreamingSource.__init__(self,name="IcecastPlugin")
 
 	def do_set_property(self, property, value):
-		print "try to set property("+str(property)+") to value: "+str(value)
+		if property.name == 'plugin':
+			self.plugin = value
 
 	def do_impl_get_ui_actions(self):
 		return ["UpdateList"]
@@ -186,7 +188,6 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			self.refill_list()
 
-
 		rb.BrowserSource.do_impl_activate (self)
 
 	def info_available(self,player,uri,field,value):
@@ -229,7 +230,8 @@ class RadioBrowserSource(rb.StreamingSource):
 		if not model.get_value(iter,2) == None:
 			try:
 				bitrate = int(model.get_value(iter,2))
-				if bitrate < 96:
+				min_bitrate = int(float(self.plugin.min_bitrate))
+				if bitrate < min_bitrate:
 					return False
 				return True
 			except:
@@ -413,7 +415,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.load_current_size = 0
 			self.load_total_size = 0
 			self.download_try_no = 1
-			self.download_try_max = 3
+			self.download_try_max = int(float(self.plugin.download_trys))
 			self.updating = True
 			self.notify_status_changed()
 			self.tree_view.set_sensitive(False)
@@ -477,6 +479,10 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.load_total_size = total
 			self.notify_status_changed()
 
+gconf_keys = {'download_trys' : '/apps/rhythmbox/plugins/radio-browser/download_trys',
+	'min_bitrate': '/apps/rhythmbox/plugins/radio-browser/min_bitrate'
+	}
+
 class RadioBrowserPlugin (rb.Plugin):
 	def __init__(self):
 		rb.Plugin.__init__(self)
@@ -485,7 +491,7 @@ class RadioBrowserPlugin (rb.Plugin):
 		entry_type = db.entry_register_type("RadioBrowserEntryType")
 		entry_type.category = rhythmdb.ENTRY_STREAM
 		group = rb.rb_source_group_get_by_name ("library")
-		self.source = gobject.new (RadioBrowserSource, shell=shell, name=_("Radio browser"), entry_type=entry_type,source_group=group)
+		self.source = gobject.new (RadioBrowserSource, shell=shell, name=_("Radio browser"), entry_type=entry_type,source_group=group,plugin=self)
 		shell.append_source(self.source, None)
 		shell.register_entry_type_for_source(self.source, entry_type)
 		gobject.type_register(RadioBrowserSource)
@@ -496,16 +502,55 @@ class RadioBrowserPlugin (rb.Plugin):
 
 		action = gtk.Action('UpdateList', None, _("Update radio station list"), gtk.STOCK_GO_DOWN)
 		action.connect('activate', lambda a: shell.get_property("selected-source").update_button_clicked())
-		actiongroup = gtk.ActionGroup('RadioBrowserActionGroup')
-		actiongroup.add_action(action)
+		self.actiongroup = gtk.ActionGroup('RadioBrowserActionGroup')
+		self.actiongroup.add_action(action)
 	
 		uim = shell.get_ui_manager ()
-		uim.insert_action_group (actiongroup)
+		uim.insert_action_group (self.actiongroup)
 		uim.ensure_update()
+
+		# initialize gconf entries
+		self.download_trys = gconf.client_get_default().get_string(gconf_keys['download_trys'])
+		if not self.download_trys:
+			self.download_trys = "3"
+		gconf.client_get_default().set_string(gconf_keys['download_trys'], self.download_trys)
+
+		self.min_bitrate = gconf.client_get_default().get_string(gconf_keys['min_bitrate'])
+		if not self.min_bitrate:
+			self.min_bitrate = "96"
+		gconf.client_get_default().set_string(gconf_keys['min_bitrate'], self.min_bitrate)
+
+	def create_configure_dialog(self, dialog=None):
+		if not dialog:
+			builder_file = self.find_file("prefs.ui")
+			builder = gtk.Builder()
+			builder.add_from_file(builder_file)
+			dialog = builder.get_object('radio_browser_prefs')
+			dialog.connect("response",self.dialog_response)
+			self.spin_download_trys = builder.get_object('SpinButton_DownloadTrys')
+			self.spin_download_trys.connect("changed",self.download_trys_changed)
+			self.spin_min_bitrate = builder.get_object('SpinButton_Bitrate')
+			self.spin_min_bitrate.connect("changed",self.download_bitrate_changed)
+
+			self.spin_download_trys.set_value(float(self.download_trys))
+			self.spin_min_bitrate.set_value(float(self.min_bitrate))
+
+		dialog.present()
+		return dialog
+
+	def dialog_response(self,dialog,response):
+		dialog.hide()
+
+	def download_trys_changed(self,spin):
+		self.download_trys = str(self.spin_download_trys.get_value())
+		gconf.client_get_default().set_string(gconf_keys['download_trys'], self.download_trys)
+
+	def download_bitrate_changed(self,spin):
+		self.min_bitrate = str(self.spin_min_bitrate.get_value())
+		gconf.client_get_default().set_string(gconf_keys['min_bitrate'], self.min_bitrate)
        
 	def deactivate(self, shell):
 		uim = shell.get_ui_manager ()
-		uim.remove_ui (self.ui_id)
-		uim.remove_action_group(self.action_group)
+		uim.remove_action_group(self.actiongroup)
 		self.source.delete_thyself()
 		self.source = None
