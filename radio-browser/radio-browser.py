@@ -88,7 +88,7 @@ class ShoutcastHandler(xml.sax.handler.ContentHandler):
 			self.entry.listeners = attributes.get("lc")
 			self.model.append(self.parent,[self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,"shoutcast:"+str(self.entry.listen_id)])
 
-class IcecastSource(rb.StreamingSource):
+class RadioBrowserSource(rb.StreamingSource):
 	__gproperties__ = {
 		'plugin': (rb.Plugin, 'plugin', 'plugin', gobject.PARAM_WRITABLE|gobject.PARAM_CONSTRUCT_ONLY),
 	}
@@ -102,6 +102,9 @@ class IcecastSource(rb.StreamingSource):
 	def do_set_property(self, property, value):
 		print "try to set property("+str(property)+") to value: "+str(value)
 
+	def do_impl_get_ui_actions(self):
+		return ["UpdateList"]
+
 	def do_impl_get_status(self):
 		if self.updating:
 			if self.load_total_size > 0:
@@ -112,7 +115,7 @@ class IcecastSource(rb.StreamingSource):
 		else:
 			return (str(len(self.filtered_list_store))+_(" entries"),None,0.0)
 
-    def do_impl_activate(self):
+	def do_impl_activate(self):
 		if not self.hasActivated:
 			self.shell = self.get_property('shell')
 			self.db = self.shell.get_property('db')
@@ -127,7 +130,7 @@ class IcecastSource(rb.StreamingSource):
 
 			self.cache_dir = rb.find_user_cache_file("radio-browser")
 			if os.path.exists(self.cache_dir) is False:
-			os.makedirs(self.cache_dir, 0700)
+				os.makedirs(self.cache_dir, 0700)
 			self.updating = False
 
 			self.filter_entry = gtk.Entry()
@@ -170,9 +173,6 @@ class IcecastSource(rb.StreamingSource):
 			mywin.add(self.tree_view)
 			mywin.set_property("hscrollbar-policy", gtk.POLICY_AUTOMATIC)
 
-			self.update_button = gtk.Button("Update catalogue")
-			self.update_button.connect("clicked",self.update_button_clicked)
-
 			filterbox = gtk.HBox()
 			filterbox.pack_start(gtk.Label("Filter:"),False)
 			filterbox.pack_start(self.filter_entry)
@@ -180,12 +180,13 @@ class IcecastSource(rb.StreamingSource):
 			mybox = gtk.VBox()
 			mybox.pack_start(filterbox,False)
 			mybox.pack_start(mywin)
-			mybox.pack_start(self.update_button,False)
 
 			self.pack_start(mybox)
 			mybox.show_all()
 
 			self.refill_list()
+
+
 		rb.BrowserSource.do_impl_activate (self)
 
 	def info_available(self,player,uri,field,value):
@@ -220,33 +221,34 @@ class IcecastSource(rb.StreamingSource):
 		self.filtered_list_store.refilter()
 		self.notify_status_changed()
 
-    def list_store_visible_func(self,model,iter):
-        # returns true if the row should be visible
-        filter_string = self.filter_entry.get_text().lower()
-        if len(model) == 0:
-           return True
-        if filter_string == "":
-           return True
-        elif model.get_value(iter,0).lower().find(filter_string) >= 0:
-           return True
-        elif model.get_value(iter,1) == None:
-           return True
-        elif model.get_value(iter,1).lower().find(filter_string) >= 0:
-              return True
-        else:
-           return False
+	def list_store_visible_func(self,model,iter):
+		# returns true if the row should be visible
+		filter_string = self.filter_entry.get_text().lower()
+		if len(model) == 0:
+			return True
+		if filter_string == "":
+			return True
+		elif model.get_value(iter,0).lower().find(filter_string) >= 0:
+			return True
+		elif model.get_value(iter,1) == None:
+			return True
+		elif model.get_value(iter,1).lower().find(filter_string) >= 0:
+			return True
+		else:
+			return False
 
-	def update_button_clicked(self,button):
-		# delete cache files
-		files = os.listdir(self.cache_dir)
-		for filename in files:
-			filepath = os.path.join(self.cache_dir, filename)
-			os.unlink(filepath)
-		# clear shortcut lists
-		self.loadedFiles = []
-		self.createdGenres = {}
-		# start filling again
-		self.refill_list()
+	def update_button_clicked(self):
+		if not self.updating:
+			# delete cache files
+			files = os.listdir(self.cache_dir)
+			for filename in files:
+				filepath = os.path.join(self.cache_dir, filename)
+				os.unlink(filepath)
+			# clear shortcut lists
+			self.loadedFiles = []
+			self.createdGenres = {}
+			# start filling again
+			self.refill_list()
 
 	def play_uri(self,uri,title):
 		player = self.shell.get_player()
@@ -395,12 +397,14 @@ class IcecastSource(rb.StreamingSource):
 			self.updating = True
 			self.notify_status_changed()
 			self.tree_view.set_sensitive(False)
-			self.update_button.set_sensitive(False)
+            # how do i get the widget of the toolbar button????
+			#self.shell.get_ui_manager ().get_widget('/Toolbar/UpdateList').set_sensitive(False)
 		else:
 			self.updating = False
 			self.notify_status_changed()
 			self.tree_view.set_sensitive(True)
-			self.update_button.set_sensitive(True)
+			# how do i get the widget of the toolbar button????
+			#self.shell.get_ui_manager ().get_widget('/Toolbar/UpdateList').set_sensitive(False)
 
 	def download_catalogue(self,url,filename,loadchunks):
 		self.hide_user()
@@ -454,15 +458,27 @@ class RadioBrowserPlugin (rb.Plugin):
 		entry_type = db.entry_register_type("RadioBrowserEntryType")
 		entry_type.category = rhythmdb.ENTRY_STREAM
 		group = rb.rb_source_group_get_by_name ("library")
-		self.source = gobject.new (IcecastSource, shell=shell, name=_("Radio browser"), entry_type=entry_type,source_group=group)
+		self.source = gobject.new (RadioBrowserSource, shell=shell, name=_("Radio browser"), entry_type=entry_type,source_group=group)
 		shell.append_source(self.source, None)
 		shell.register_entry_type_for_source(self.source, entry_type)
-		gobject.type_register(IcecastSource)
+		gobject.type_register(RadioBrowserSource)
 
 		width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
 		icon = gtk.gdk.pixbuf_new_from_file_at_size(self.find_file("xiph-logo.png"), width, height)
-		self.source.set_property( "icon",  icon) 
+		self.source.set_property( "icon",  icon)
+
+		action = gtk.Action('UpdateList', None, _("Update radio station list"), gtk.STOCK_GO_DOWN)
+		action.connect('activate', lambda a: shell.get_property("selected-source").update_button_clicked())
+		actiongroup = gtk.ActionGroup('RadioBrowserActionGroup')
+		actiongroup.add_action(action)
+	
+		uim = shell.get_ui_manager ()
+		uim.insert_action_group (actiongroup)
+		uim.ensure_update()
        
 	def deactivate(self, shell):
+		uim = shell.get_ui_manager ()
+		uim.remove_ui (self.ui_id)
+		uim.remove_action_group(self.action_group)
 		self.source.delete_thyself()
 		self.source = None
