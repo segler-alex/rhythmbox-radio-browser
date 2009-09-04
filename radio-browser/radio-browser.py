@@ -272,9 +272,9 @@ class IcecastSource(rb.StreamingSource):
               self.play_uri(uri,title)
         else:
            if self.tree_store.is_ancestor(self.tree_iter_shoutcast,myiter):
-              print "download "+title
+              print "download genre "+title
               handler_stations = ShoutcastHandler(self.tree_store,myiter)
-              self.refill_list_part(myiter,handler_stations,"shoutcast--"+title+".xml","http://www.shoutcast.com/sbin/newxml.phtml?genre="+title)
+              self.refill_list_part(myiter,handler_stations,"shoutcast--"+title+".xml","http://www.shoutcast.com/sbin/newxml.phtml?genre="+title,True,False)
 
     def download_shoutcast_playlist(self,uri,title):
         print "starting download: "+uri
@@ -332,7 +332,7 @@ class IcecastSource(rb.StreamingSource):
                 self.createdGenres[genre] = parent
              # add stations under that new entry
              handler_stations = ShoutcastHandler(self.tree_store,parent)
-             retval = self.refill_list_part(parent,handler_stations,"shoutcast--"+genre+".xml","http://www.shoutcast.com/sbin/newxml.phtml?genre="+genre,False)
+             retval = self.refill_list_part(parent,handler_stations,"shoutcast--"+genre+".xml","http://www.shoutcast.com/sbin/newxml.phtml?genre="+genre,False,False)
              if retval == "downloading":
                 return
              if retval == "loaded":
@@ -351,7 +351,7 @@ class IcecastSource(rb.StreamingSource):
 # if file is not present, start downloading it from url
 # returns: True .. if file is present and could be loaded
 #          False .. if file was not there and download is in progress
-    def refill_list_part(self,parent,handler,filename,url,trydownload=True):
+    def refill_list_part(self,parent,handler,filename,url,trydownload=True,loadchunks=True):
        if filename in self.loadedFiles:
           #print "do not fill:"+filename
           return "finished"
@@ -365,7 +365,7 @@ class IcecastSource(rb.StreamingSource):
              print "parse failed of "+filename
              if trydownload:
                 print "redownloading ... "+url
-                self.download_catalogue(url,filepath)
+                self.download_catalogue(url,filepath,loadchunks)
                 return "downloading"
              else:
                 return "finished"
@@ -375,18 +375,36 @@ class IcecastSource(rb.StreamingSource):
        except IOError:
           if trydownload:
              print "downloading "+url
-             self.download_catalogue(url,filepath)
+             self.download_catalogue(url,filepath,loadchunks)
              return "downloading"
           else:
              return "finished"
 
-    def download_catalogue(self,url,filename):
+    def download_catalogue(self,url,filename,loadchunks):
        self.load_current_size = 0
        self.load_total_size = 0
        self.updating = True
        self.catalogue_file = open(filename,"w")
-       self.catalogue_loader = rb.ChunkLoader()
-       self.catalogue_loader.get_url_chunks(url, 4*1024, True, self.download_catalogue_chunk_cb, self.catalogue_file)
+       if loadchunks:
+          self.catalogue_loader = rb.ChunkLoader()
+          self.catalogue_loader.get_url_chunks(url, 4*1024, True, self.download_catalogue_chunk_cb, self.catalogue_file)
+       else:
+          self.catalogue_loader = rb.Loader()
+          self.catalogue_loader.get_url(url, self.download_catalogue_cb, self.catalogue_file)
+
+    def download_catalogue_cb (self,result, out):
+        if result == None:
+           print "error while downloading"
+           out.close()
+           self.refill_list()
+        else:
+           # download finished
+           print "download finished"
+           self.updating = False
+           self.catalogue_loader = None
+           out.write(result)
+           out.close()
+           self.refill_list()
 
     def download_catalogue_chunk_cb (self, result, total, out):
         if not result:
@@ -400,6 +418,7 @@ class IcecastSource(rb.StreamingSource):
         elif isinstance(result, Exception):
            # complain
            print "download error!!!"+result.message
+           out.close()
            self.refill_list()
            pass
         else:
