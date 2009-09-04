@@ -233,9 +233,8 @@ class RadioBrowserSource(rb.StreamingSource):
 				min_bitrate = int(float(self.plugin.min_bitrate))
 				if bitrate < min_bitrate:
 					return False
-				return True
 			except:
-				return True
+				pass
 
 		filter_string = self.filter_entry.get_text().lower()
 		
