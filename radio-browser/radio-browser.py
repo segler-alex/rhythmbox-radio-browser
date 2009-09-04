@@ -171,7 +171,6 @@ class IcecastSource(rb.StreamingSource):
            mywin.set_property("hscrollbar-policy", gtk.POLICY_AUTOMATIC)
 
            self.update_button = gtk.Button("Update catalogue")
-           self.update_button.set_sensitive(False)
            self.update_button.connect("clicked",self.update_button_clicked)
 
            filterbox = gtk.HBox()
@@ -238,7 +237,16 @@ class IcecastSource(rb.StreamingSource):
            return False
 
     def update_button_clicked(self,button):
-        self.download_catalogue()
+        # delete cache files
+        files = os.listdir(self.cache_dir)
+        for filename in files:
+           filepath = os.path.join(self.cache_dir, filename)
+           os.unlink(filepath)
+        # clear shortcut lists
+        self.loadedFiles = []
+        self.createdGenres = {}
+        # start filling again
+        self.refill_list()
 
     def play_uri(self,uri,title):
         player = self.shell.get_player()
@@ -277,10 +285,12 @@ class IcecastSource(rb.StreamingSource):
 
     def download_shoutcast_playlist(self,uri,title):
         print "starting download: "+uri
+        self.hide_user()
         playlist_loader = rb.Loader()
         playlist_loader.get_url(uri,self.shoutcast_download_callback,uri,title)
 
     def shoutcast_download_callback(self,data,uri,title):
+        self.hide_user(False)
         if data == None:
            print "shoutcast download failed:"+uri
         else:
@@ -377,12 +387,22 @@ class IcecastSource(rb.StreamingSource):
           else:
              return "finished"
 
+    def hide_user(self, hide=True):
+       if hide:
+          self.load_current_size = 0
+          self.load_total_size = 0
+          self.updating = True
+          self.notify_status_changed()
+          self.tree_view.set_sensitive(False)
+          self.update_button.set_sensitive(False)
+       else:
+          self.updating = False
+          self.notify_status_changed()
+          self.tree_view.set_sensitive(True)
+          self.update_button.set_sensitive(True)
+
     def download_catalogue(self,url,filename,loadchunks):
-       self.load_current_size = 0
-       self.load_total_size = 0
-       self.updating = True
-       self.notify_status_changed()
-       self.tree_view.set_sensitive(False)
+       self.hide_user()
        self.catalogue_file = open(filename,"w")
        if loadchunks:
           self.catalogue_loader = rb.ChunkLoader()
@@ -400,9 +420,8 @@ class IcecastSource(rb.StreamingSource):
            self.catalogue_loader = None
            out.write(result)
         out.close()
-        self.updating = False
+        self.hide_user(False)
         self.refill_list()
-        self.tree_view.set_sensitive(True)
 
     def download_catalogue_chunk_cb (self, result, total, out):
         if not result:
@@ -410,17 +429,14 @@ class IcecastSource(rb.StreamingSource):
            print "download finished"
            self.catalogue_loader = None
            out.close()
+           self.hide_user(False)
            self.refill_list()
-           self.updating = False
-           self.tree_view.set_sensitive(True)
         elif isinstance(result, Exception):
            # complain
            print "download error!!!"+result.message
            out.close()
-           self.updating = False
-           self.notify_status_changed()
+           self.hide_user(False)
            self.refill_list()
-           self.tree_view.set_sensitive(True)
            pass
         else:
            # downloading...
