@@ -164,7 +164,6 @@ class IcecastSource(rb.StreamingSource):
            column_song.set_fixed_width(100)
            column_song.set_expand(True)
            self.tree_view.append_column(column_song)
-
            self.tree_view.connect("row-activated",self.row_activated_handler)
 
            mywin = gtk.ScrolledWindow()
@@ -172,6 +171,7 @@ class IcecastSource(rb.StreamingSource):
            mywin.set_property("hscrollbar-policy", gtk.POLICY_AUTOMATIC)
 
            self.update_button = gtk.Button("Update catalogue")
+           self.update_button.set_sensitive(False)
            self.update_button.connect("clicked",self.update_button_clicked)
 
            filterbox = gtk.HBox()
@@ -238,7 +238,6 @@ class IcecastSource(rb.StreamingSource):
            return False
 
     def update_button_clicked(self,button):
-        self.update_button.set_sensitive(False)
         self.download_catalogue()
 
     def play_uri(self,uri,title):
@@ -299,7 +298,6 @@ class IcecastSource(rb.StreamingSource):
         print "not implemented"
 
     def refill_list(self):
-       self.update_button.set_sensitive(False)
        # deactivate sorting
        self.sorted_list_store.reset_default_sort_func()
        #self.tree_view.set_model()
@@ -316,7 +314,7 @@ class IcecastSource(rb.StreamingSource):
           return
        # load shoutcast genres
        handler_genres = ShoutcastHandler(self.tree_store,self.tree_iter_shoutcast)
-       retval = self.refill_list_part(self.tree_iter_shoutcast,handler_genres,"shoutcast-genres.xml","http://www.shoutcast.com/sbin/newxml.phtml")
+       retval = self.refill_list_part(self.tree_iter_shoutcast,handler_genres,"shoutcast-genres.xml","http://www.shoutcast.com/sbin/newxml.phtml",loadchunks=False)
        if retval == "downloading":
           return
        if retval == "loaded":
@@ -343,7 +341,6 @@ class IcecastSource(rb.StreamingSource):
        self.sorted_list_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
        # change status
        self.notify_status_changed()
-       self.update_button.set_sensitive(True)
 
 # Description
 # ===========
@@ -384,6 +381,8 @@ class IcecastSource(rb.StreamingSource):
        self.load_current_size = 0
        self.load_total_size = 0
        self.updating = True
+       self.notify_status_changed()
+       self.tree_view.set_sensitive(False)
        self.catalogue_file = open(filename,"w")
        if loadchunks:
           self.catalogue_loader = rb.ChunkLoader()
@@ -395,31 +394,33 @@ class IcecastSource(rb.StreamingSource):
     def download_catalogue_cb (self,result, out):
         if result == None:
            print "error while downloading"
-           out.close()
-           self.refill_list()
         else:
            # download finished
            print "download finished"
-           self.updating = False
            self.catalogue_loader = None
            out.write(result)
-           out.close()
-           self.refill_list()
+        out.close()
+        self.updating = False
+        self.refill_list()
+        self.tree_view.set_sensitive(True)
 
     def download_catalogue_chunk_cb (self, result, total, out):
         if not result:
            # download finished
            print "download finished"
-           self.updating = False
            self.catalogue_loader = None
            out.close()
            self.refill_list()
-
+           self.updating = False
+           self.tree_view.set_sensitive(True)
         elif isinstance(result, Exception):
            # complain
            print "download error!!!"+result.message
            out.close()
+           self.updating = False
+           self.notify_status_changed()
            self.refill_list()
+           self.tree_view.set_sensitive(True)
            pass
         else:
            # downloading...
