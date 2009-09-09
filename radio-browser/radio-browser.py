@@ -129,6 +129,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			#sp.connect ('playing-changed',self.playing_changed)
 			#sp.connect ('playing-song-property-changed',self.playing_song_property_changed)
 			sp.props.player.connect("info",self.info_available)
+			sp.set_playing_source(self)
 
 			self.cache_dir = rb.find_user_cache_file("radio-browser")
 			if os.path.exists(self.cache_dir) is False:
@@ -275,7 +276,8 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.shell.props.db.commit()
 		#shell.load_uri(uri,False)
 
-		player.play_entry(self.entry)
+		player.play()
+		player.play_entry(self.entry,self)
 
 	def row_activated_handler(self,treeview,path,column):
 		myiter = self.tree_store.get_iter(self.sorted_list_store.convert_path_to_child_path(self.filtered_list_store.convert_path_to_child_path(path)))
