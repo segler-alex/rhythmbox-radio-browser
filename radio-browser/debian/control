@@ -1,7 +1,7 @@
 Source: rhythmbox-radio-browser
 Section: sound
 Priority: extra
-Maintainer: segler_alex <segler_alex@web.de>
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 Build-Depends: debhelper (>= 7)
 Standards-Version: 3.8.1
 Homepage: http://programmierecke.net/programmed/
