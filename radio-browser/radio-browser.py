@@ -24,6 +24,7 @@ import httplib
 import gtk
 import gconf
 import os
+import subprocess
 
 #TODO: should not be defined here, but I don't know where to get it from. HELP: much apreciated
 RB_METADATA_FIELD_TITLE = 0
@@ -88,6 +89,14 @@ class ShoutcastHandler(xml.sax.handler.ContentHandler):
 			self.entry.listen_id = attributes.get("id")
 			self.entry.listeners = attributes.get("lc")
 			self.model.append(self.parent,[self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,"shoutcast:"+str(self.entry.listen_id)])
+
+class RecordProcess:
+	def __init__(self):
+		self.process = None # subprocess
+		self.box = None # GUI Box
+		self.relay_port = None # port for listening to the recorded stream
+		self.title = None
+		self.uri = None
 
 class RadioBrowserSource(rb.StreamingSource):
 	__gproperties__ = {
@@ -171,6 +180,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			column_song.set_expand(True)
 			self.tree_view.append_column(column_song)
 			self.tree_view.connect("row-activated",self.row_activated_handler)
+			self.tree_view.connect("button-press-event",self.button_press_handler)
 
 			mywin = gtk.ScrolledWindow()
 			mywin.add(self.tree_view)
@@ -180,14 +190,19 @@ class RadioBrowserSource(rb.StreamingSource):
 			filterbox.pack_start(gtk.Label("Filter:"),False)
 			filterbox.pack_start(self.filter_entry)
 
+			self.record_box = gtk.VBox()
+
 			mybox = gtk.VBox()
 			mybox.pack_start(filterbox,False)
 			mybox.pack_start(mywin)
+			mybox.pack_start(self.record_box,False)
 
 			self.pack_start(mybox)
 			mybox.show_all()
 
 			self.refill_list()
+
+			self.recording_streams = {}
 
 		rb.BrowserSource.do_impl_activate (self)
 
@@ -218,6 +233,66 @@ class RadioBrowserSource(rb.StreamingSource):
 
 #	def playing_song_property_changed (self, sp, uri, property, old, new):
 #		print "property changed "+str(new)
+
+	def button_press_handler(self,widget,event):
+		if event.button == 3:
+			menu = gtk.Menu()
+
+			playitem = gtk.MenuItem("Play")
+			playitem.connect("activate",self.play_handler,False)
+			menu.append(playitem)
+
+			recorditem = gtk.MenuItem("Record")
+			recorditem.connect("activate",self.play_handler,True)
+			menu.append(recorditem)
+
+			menu.show_all()
+			menu.popup(None,None,None,event.button,event.time)
+
+	def play_handler(self,menuitem,record):
+		selection = self.tree_view.get_selection()
+		if selection.count_selected_rows() == 1:
+			model,iter = selection.get_selected()
+			title = model.get_value(iter,0)
+			uri = model.get_value(iter,4)
+			
+			if record == True:
+				self.record_uri(uri,title)
+			else:
+				self.generic_play_uri(uri,title)
+
+	def record_uri(self,uri,title):
+		print "record "+uri
+		homedir = os.path.expanduser("~")
+
+		commandline = ["streamripper",uri,"-d",homedir,"-r"]
+		process = subprocess.Popen(commandline)
+
+		box = gtk.HBox()
+		box.pack_start(gtk.Label("RIPPING:'"+title+"'"))
+		#box.pack_start(gtk.Button(stock=gtk.STOCK_MEDIA_PLAY))
+		stop_button = gtk.Button(stock=gtk.STOCK_STOP)
+		box.pack_start(stop_button)
+
+		rp = RecordProcess()
+		rp.process = process
+		rp.title = title
+		rp.uri = uri
+		rp.box = box
+		self.recording_streams[uri] = rp
+
+		stop_button.connect("clicked",self.record_stop_button_handler,uri)
+
+		self.record_box.pack_start(box)
+		self.record_box.show_all()
+
+	def record_stop_button_handler(self,button,uri):
+		print "stop pressed"
+		rp = self.recording_streams[uri]
+		rp.process.terminate()
+		rp.process.wait()
+
+		self.record_box.remove(rp.box)
 
 	def filter_entry_changed(self,gtk_entry):
 		self.filtered_list_store.refilter()
@@ -279,20 +354,23 @@ class RadioBrowserSource(rb.StreamingSource):
 		player.play()
 		player.play_entry(self.entry,self)
 
+	def generic_play_uri(self,uri,title):
+		if uri.startswith("shoutcast:"):
+			# special handling for shoutcast
+			shoutcast_id = uri.split(":")[1];
+			shoutcast_uri = "http://www.shoutcast.com"+self.tunein+"?id="+shoutcast_id
+			self.download_shoutcast_playlist(shoutcast_uri,title)
+		else:
+			# presume its an icecast link
+			self.play_uri(uri,title)
+
 	def row_activated_handler(self,treeview,path,column):
 		myiter = self.tree_store.get_iter(self.sorted_list_store.convert_path_to_child_path(self.filtered_list_store.convert_path_to_child_path(path)))
 		uri = self.tree_store.get_value(myiter,4)
 		title = self.tree_store.get_value(myiter,0)
 
 		if not uri == None:
-			if uri.startswith("shoutcast:"):
-				# special handling for shoutcast
-				shoutcast_id = uri.split(":")[1];
-				shoutcast_uri = "http://www.shoutcast.com"+self.tunein+"?id="+shoutcast_id
-				self.download_shoutcast_playlist(shoutcast_uri,title)
-			else:
-				# presume its an icecast link
-				self.play_uri(uri,title)
+			self.generic_play_uri(uri,title)
 		else:
 			if self.tree_store.is_ancestor(self.tree_iter_shoutcast,myiter):
 				print "download genre "+title
