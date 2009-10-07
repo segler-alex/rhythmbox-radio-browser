@@ -1,5 +1,5 @@
-rhythmbox-radio-browser (1.2-1~karmic2) karmic; urgency=low
+rhythmbox-radio-browser (1.3-1~karmic1) karmic; urgency=low
 
-  * Initial release (LP: #426184)
+  * Initial release
 
- -- segler_alex <segler_alex@web.de>  Tue, 08 Sep 2009 10:01:53 +0200
+ -- segler_alex <segler_alex@web.de>  Wed, 7 Sep 2009 11:41:53 +0200
