@@ -256,7 +256,9 @@ class RadioBrowserSource(rb.StreamingSource):
 			menu.append(playitem)
 
 			try:
-				process = subprocess.Popen("streamripper")
+				process = subprocess.Popen("streamripper",stdout=subprocess.PIPE)
+				process.communicate()
+				process.wait()
 			except(OSError):
 				print "streamripper not found"
 			else:
