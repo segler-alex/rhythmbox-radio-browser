@@ -631,6 +631,17 @@ class RadioBrowserPlugin (rb.Plugin):
 		self.outputpath = gconf.client_get_default().get_string(gconf_keys['outputpath'])
 		if not self.outputpath:
 			self.outputpath = os.path.expanduser("~")
+			# try to read xdg music dir
+			try:
+				f = open(self.outputpath+"/.config/user-dirs.dirs","r")
+			except IOError:
+				print "xdg user dir file not found"
+			else:
+				for line in f:
+					if line.startswith("XDG_MUSIC_DIR"):
+						self.outputpath = os.path.expandvars(line.split("=")[1].strip().strip('"'))
+						print self.outputpath
+				f.close()
 		gconf.client_get_default().set_string(gconf_keys['outputpath'], self.outputpath)
 
 	def create_configure_dialog(self, dialog=None):
