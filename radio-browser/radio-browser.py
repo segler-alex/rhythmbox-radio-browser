@@ -25,6 +25,7 @@ import gtk
 import gconf
 import os
 import subprocess
+import threading
 
 #TODO: should not be defined here, but I don't know where to get it from. HELP: much apreciated
 RB_METADATA_FIELD_TITLE = 0
@@ -90,13 +91,22 @@ class ShoutcastHandler(xml.sax.handler.ContentHandler):
 			self.entry.listeners = attributes.get("lc")
 			self.model.append(self.parent,[self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,"shoutcast:"+str(self.entry.listen_id)])
 
-class RecordProcess:
+class RecordProcess(threading.Thread):
 	def __init__(self):
+		threading.Thread.__init__(self)
 		self.process = None # subprocess
 		self.box = None # GUI Box
 		self.relay_port = None # port for listening to the recorded stream
 		self.title = None
 		self.uri = None
+		self.thread = None
+	def run(self):
+		pout = self.process.stdout
+		while not pout.closed:
+			line = pout.readline()
+			if line.startswith("relay port"):
+				self.relay_port = line.split(":")[1].strip()
+				print "relay port:" + self.relay_port
 
 class RadioBrowserSource(rb.StreamingSource):
 	__gproperties__ = {
@@ -266,11 +276,12 @@ class RadioBrowserSource(rb.StreamingSource):
 		homedir = os.path.expanduser("~")
 
 		commandline = ["streamripper",uri,"-d",homedir,"-r"]
-		process = subprocess.Popen(commandline)
+		process = subprocess.Popen(commandline,stdout=subprocess.PIPE)
 
 		box = gtk.HBox()
 		box.pack_start(gtk.Label("RIPPING:'"+title+"'"))
-		#box.pack_start(gtk.Button(stock=gtk.STOCK_MEDIA_PLAY))
+		play_button = gtk.Button(stock=gtk.STOCK_MEDIA_PLAY)
+		box.pack_start(play_button)
 		stop_button = gtk.Button(stock=gtk.STOCK_STOP)
 		box.pack_start(stop_button)
 
@@ -280,11 +291,18 @@ class RadioBrowserSource(rb.StreamingSource):
 		rp.uri = uri
 		rp.box = box
 		self.recording_streams[uri] = rp
+		rp.start()
 
+		play_button.connect("clicked",self.record_play_button_handler,uri)
 		stop_button.connect("clicked",self.record_stop_button_handler,uri)
 
 		self.record_box.pack_start(box)
 		self.record_box.show_all()
+
+	def record_play_button_handler(self,button,uri):
+		rp = self.recording_streams[uri]
+		print "play pressed:"+rp.relay_port
+		self.generic_play_uri("http://127.0.0.1:"+rp.relay_port,rp.title)
 
 	def record_stop_button_handler(self,button,uri):
 		print "stop pressed"
