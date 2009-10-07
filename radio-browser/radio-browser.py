@@ -102,11 +102,14 @@ class RecordProcess(threading.Thread):
 		self.thread = None
 	def run(self):
 		pout = self.process.stdout
-		while not pout.closed:
+		while self.process.poll()==None:
 			line = pout.readline()
+			#print line
 			if line.startswith("relay port"):
 				self.relay_port = line.split(":")[1].strip()
 				print "relay port:" + self.relay_port
+		print "thread closed"
+		self.box.get_parent().remove(self.box)
 
 class RadioBrowserSource(rb.StreamingSource):
 	__gproperties__ = {
@@ -303,9 +306,6 @@ class RadioBrowserSource(rb.StreamingSource):
 		print "stop pressed"
 		rp = self.recording_streams[uri]
 		rp.process.terminate()
-		rp.process.wait()
-
-		self.record_box.remove(rp.box)
 
 	def filter_entry_changed(self,gtk_entry):
 		self.filtered_list_store.refilter()
