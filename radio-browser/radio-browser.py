@@ -255,9 +255,14 @@ class RadioBrowserSource(rb.StreamingSource):
 			playitem.connect("activate",self.play_handler,False)
 			menu.append(playitem)
 
-			recorditem = gtk.MenuItem("Record")
-			recorditem.connect("activate",self.play_handler,True)
-			menu.append(recorditem)
+			try:
+				process = subprocess.Popen("streamripper")
+			except(OSError):
+				print "streamripper not found"
+			else:
+				recorditem = gtk.MenuItem("Record")
+				recorditem.connect("activate",self.play_handler,True)
+				menu.append(recorditem)
 
 			menu.show_all()
 			menu.popup(None,None,None,event.button,event.time)
