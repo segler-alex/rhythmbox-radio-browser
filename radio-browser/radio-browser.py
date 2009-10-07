@@ -270,9 +270,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	def record_uri(self,uri,title):
 		print "record "+uri
-		homedir = os.path.expanduser("~")
-
-		commandline = ["streamripper",uri,"-d",homedir,"-r"]
+		commandline = ["streamripper",uri,"-d",self.plugin.outputpath,"-r"]
 		process = subprocess.Popen(commandline,stdout=subprocess.PIPE)
 
 		box = gtk.HBox()
@@ -580,7 +578,8 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.notify_status_changed()
 
 gconf_keys = {'download_trys' : '/apps/rhythmbox/plugins/radio-browser/download_trys',
-	'min_bitrate': '/apps/rhythmbox/plugins/radio-browser/min_bitrate'
+	'min_bitrate': '/apps/rhythmbox/plugins/radio-browser/min_bitrate',
+	'outputpath': '/apps/rhythmbox/plugins/radio-browser/streamripper_outputpath'
 	}
 
 class RadioBrowserPlugin (rb.Plugin):
@@ -622,6 +621,11 @@ class RadioBrowserPlugin (rb.Plugin):
 			self.min_bitrate = "96"
 		gconf.client_get_default().set_string(gconf_keys['min_bitrate'], self.min_bitrate)
 
+		self.outputpath = gconf.client_get_default().get_string(gconf_keys['outputpath'])
+		if not self.outputpath:
+			self.outputpath = os.path.expanduser("~")
+		gconf.client_get_default().set_string(gconf_keys['outputpath'], self.outputpath)
+
 	def create_configure_dialog(self, dialog=None):
 		if not dialog:
 			builder_file = self.find_file("prefs.ui")
@@ -633,9 +637,12 @@ class RadioBrowserPlugin (rb.Plugin):
 			self.spin_download_trys.connect("changed",self.download_trys_changed)
 			self.spin_min_bitrate = builder.get_object('SpinButton_Bitrate')
 			self.spin_min_bitrate.connect("changed",self.download_bitrate_changed)
+			self.entry_outputpath = builder.get_object('Entry_OutputPath')
+			self.entry_outputpath.connect("changed",self.outputpath_changed)
 
 			self.spin_download_trys.set_value(float(self.download_trys))
 			self.spin_min_bitrate.set_value(float(self.min_bitrate))
+			self.entry_outputpath.set_text(self.outputpath)
 
 		dialog.present()
 		return dialog
@@ -650,6 +657,10 @@ class RadioBrowserPlugin (rb.Plugin):
 	def download_bitrate_changed(self,spin):
 		self.min_bitrate = str(self.spin_min_bitrate.get_value())
 		gconf.client_get_default().set_string(gconf_keys['min_bitrate'], self.min_bitrate)
+
+	def outputpath_changed(self,entry):
+		self.outputpath = self.entry_outputpath.get_text()
+		gconf.client_get_default().set_string(gconf_keys['outputpath'], self.outputpath)
        
 	def deactivate(self, shell):
 		uim = shell.get_ui_manager ()
