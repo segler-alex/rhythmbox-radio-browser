@@ -415,7 +415,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			else:
 				self.notify_status_changed()
 				playlist_loader = rb.Loader()
-				playlist_loader.get_url(uri,self.shoutcast_download_callback,uri,title)
+				playlist_loader.get_url(uri,self.shoutcast_download_callback,uri,title,record)
 		else:
 			self.hide_user(False)
 			print "shoutcast download OK:"+uri
