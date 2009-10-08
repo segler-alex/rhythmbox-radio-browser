@@ -468,7 +468,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.loadedFiles.append("start")
 
 		# load local streams
-		if self.refill_list_part(self.tree_iter_local,LocalHandler(self.tree_store,self.tree_iter_local),"local.xml","http://localhost/programmed/local.xml") == "downloading":
+		if self.refill_list_part(self.tree_iter_local,LocalHandler(self.tree_store,self.tree_iter_local),"local.xml","http://www.programmierecke.net/programmed/local.xml") == "downloading":
 			return
 		# load icecast streams
 		if self.refill_list_part(self.tree_iter_icecast,IcecastHandler(self.tree_store,self.tree_iter_icecast),"icecast.xml","http://dir.xiph.org/yp.xml") == "downloading":
