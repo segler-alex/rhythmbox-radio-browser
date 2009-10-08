@@ -91,6 +91,26 @@ class ShoutcastHandler(xml.sax.handler.ContentHandler):
 			self.entry.listeners = attributes.get("lc")
 			self.model.append(self.parent,[self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,"shoutcast:"+str(self.entry.listen_id)])
 
+class LocalHandler(xml.sax.handler.ContentHandler):
+	def __init__(self,model,parent):
+		self.model = model
+		self.parent = parent
+		self.countries = []
+ 
+	def startElement(self, name, attributes):
+		if name == "country":
+			self.countries.append(attributes.get("name"))
+			self.current_country = self.model.append(self.parent,[attributes.get("name"),None,None,None,None])
+		if name == "station":
+			self.entry = RadioStation()
+			self.entry.type = "Local"
+			self.entry.server_name = attributes.get("name")
+			self.entry.genre = attributes.get("genre")
+			self.entry.listen_url = attributes.get("address")
+			self.entry.current_song = ""
+			self.entry.bitrate = attributes.get("bitrate")
+			self.model.append(self.current_country,[self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,self.entry.listen_url])
+
 class RecordProcess(threading.Thread):
 	def __init__(self):
 		threading.Thread.__init__(self)
@@ -442,10 +462,14 @@ class RadioBrowserSource(rb.StreamingSource):
 			# delete old entries
 			self.tree_store.clear()
 			# create parent entries
+			self.tree_iter_local = self.tree_store.append(None,("Local",None,None,None,None))
 			self.tree_iter_icecast = self.tree_store.append(None,("Icecast",None,None,None,None))
 			self.tree_iter_shoutcast = self.tree_store.append(None,("Shoutcast",None,None,None,None))
 			self.loadedFiles.append("start")
 
+		# load local streams
+		if self.refill_list_part(self.tree_iter_local,LocalHandler(self.tree_store,self.tree_iter_local),"local.xml","http://localhost/programmed/local.xml") == "downloading":
+			return
 		# load icecast streams
 		if self.refill_list_part(self.tree_iter_icecast,IcecastHandler(self.tree_store,self.tree_iter_icecast),"icecast.xml","http://dir.xiph.org/yp.xml") == "downloading":
 			return
