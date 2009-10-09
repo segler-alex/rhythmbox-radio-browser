@@ -171,7 +171,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			#sp.connect ('playing-changed',self.playing_changed)
 			#sp.connect ('playing-song-property-changed',self.playing_song_property_changed)
 			sp.props.player.connect("info",self.info_available)
-			sp.set_playing_source(self)
+			#sp.set_playing_source(self)
 
 			self.cache_dir = rb.find_user_cache_file("radio-browser")
 			if os.path.exists(self.cache_dir) is False:
