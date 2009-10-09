@@ -269,34 +269,70 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	def button_press_handler(self,widget,event):
 		if event.button == 3:
-			menu = gtk.Menu()
+			x = int(event.x)
+			y = int(event.y)
+			selection = self.tree_view.get_path_at_pos(x, y)
+			# only display menu, if exactly one item is selected
+			if selection is not None:
+				path, col, cellx, celly = selection
+				self.tree_view.grab_focus()
+				self.tree_view.set_cursor(path, col, 0)
+				iter = self.tree_store.get_iter(self.sorted_list_store.convert_path_to_child_path(self.filtered_list_store.convert_path_to_child_path(path)))
 
-			playitem = gtk.MenuItem("Play")
-			playitem.connect("activate",self.play_handler,False)
-			menu.append(playitem)
+				title = self.tree_store.get_value(iter,0)
+				uri = self.tree_store.get_value(iter,4)
 
-			try:
-				process = subprocess.Popen("streamripper",stdout=subprocess.PIPE)
-				process.communicate()
-				process.wait()
-			except(OSError):
-				print "streamripper not found"
-			else:
-				recorditem = gtk.MenuItem("Record")
-				recorditem.connect("activate",self.play_handler,True)
-				menu.append(recorditem)
+				menu = gtk.Menu()
 
-			menu.show_all()
-			menu.popup(None,None,None,event.button,event.time)
+				if uri == None:
+					filename = None
+					if self.tree_store.get_path(iter) == self.tree_store.get_path(self.tree_iter_local):
+						filename = "local.xml"
 
-	def play_handler(self,menuitem,record):
-		selection = self.tree_view.get_selection()
-		if selection.count_selected_rows() == 1:
-			model,iter = selection.get_selected()
-			title = model.get_value(iter,0)
-			uri = model.get_value(iter,4)
-			
-			self.generic_play_uri(uri,title,record)
+					if self.tree_store.get_path(iter) == self.tree_store.get_path(self.tree_iter_icecast):
+						filename = "icecast.xml"
+
+					if self.tree_store.get_path(iter) == self.tree_store.get_path(self.tree_iter_shoutcast):
+						filename = "shoutcast-genres.xml"
+
+					if filename is not None:
+						redownloaditem = gtk.MenuItem("Redownload")
+						redownloaditem.connect("activate",self.redownload_handler,filename)
+						menu.append(redownloaditem)
+					else:
+						return
+				else:
+					playitem = gtk.MenuItem("Play")
+					playitem.connect("activate",self.play_handler,False,uri,title)
+					menu.append(playitem)
+
+					try:
+						process = subprocess.Popen("streamripper",stdout=subprocess.PIPE)
+						process.communicate()
+						process.wait()
+					except(OSError):
+						print "streamripper not found"
+					else:
+						recorditem = gtk.MenuItem("Record")
+						recorditem.connect("activate",self.play_handler,True,uri,title)
+						menu.append(recorditem)
+
+				menu.show_all()
+				menu.popup(None,None,None,event.button,event.time)
+
+	def redownload_handler(self,menuitem,filename):
+		filepath = os.path.join(self.cache_dir, filename)
+		os.unlink(filepath)
+		print "redownload "+filepath
+
+		# clear shortcut lists
+		self.loadedFiles = []
+		self.createdGenres = {}
+		# start filling again
+		self.refill_list()
+
+	def play_handler(self,menuitem,record,uri,title):
+		self.generic_play_uri(uri,title,record)
 
 	def record_uri(self,uri,title):
 		print "record "+uri
