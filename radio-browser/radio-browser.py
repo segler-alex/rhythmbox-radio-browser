@@ -351,7 +351,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		self.generic_play_uri(uri,title,record)
 
 	def record_uri(self,uri,title):
-		print "record "+uri
+		self.add_recently_played(uri,title)
 		commandline = ["streamripper",uri,"-d",self.plugin.outputpath,"-r"]
 		process = subprocess.Popen(commandline,stdout=subprocess.PIPE)
 
@@ -429,6 +429,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.refill_list()
 
 	def play_uri(self,uri,title):
+		self.add_recently_played(uri,title)
 		player = self.shell.get_player()
 		player.stop()
 
@@ -452,7 +453,6 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.download_shoutcast_playlist(shoutcast_uri,title,record)
 		else:
 			# presume its an icecast link
-			self.add_recently_played(uri,title)
 			if record == True:
 				self.record_uri(uri,title)
 			else:
