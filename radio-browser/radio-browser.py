@@ -438,6 +438,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.download_shoutcast_playlist(shoutcast_uri,title,record)
 		else:
 			# presume its an icecast link
+			self.add_recently_played(uri,title)
 			if record == True:
 				self.record_uri(uri,title)
 			else:
@@ -490,6 +491,10 @@ class RadioBrowserSource(rb.StreamingSource):
 	def do_impl_delete_thyself(self):
 		print "not implemented"
 
+	def add_recently_played(self,uri,title):
+		self.tree_store.append(self.tree_iter_recently_played,(title,None,None,None,uri))
+		print "added:"+uri
+
 	def refill_list(self):
 		# deactivate sorting
 		self.sorted_list_store.reset_default_sort_func()
@@ -501,6 +506,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.tree_iter_local = self.tree_store.append(None,("Local",None,None,None,None))
 			self.tree_iter_icecast = self.tree_store.append(None,("Icecast",None,None,None,None))
 			self.tree_iter_shoutcast = self.tree_store.append(None,("Shoutcast",None,None,None,None))
+			self.tree_iter_recently_played = self.tree_store.append(None,("Recently played",None,None,None,None))
 			self.loadedFiles.append("start")
 
 		# load local streams
