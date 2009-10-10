@@ -299,7 +299,14 @@ class RadioBrowserSource(rb.StreamingSource):
 						redownloaditem = gtk.MenuItem("Redownload")
 						redownloaditem.connect("activate",self.redownload_handler,filename)
 						menu.append(redownloaditem)
-					else:
+					
+					if self.tree_store.get_path(iter) == self.tree_store.get_path(self.tree_iter_recently_played):
+						filename = "recently.save"
+						clearitem = gtk.MenuItem("Clear")
+						clearitem.connect("activate",self.clear_recently_handler)
+						menu.append(clearitem)
+
+					if filename is None:
 						return
 				else:
 					playitem = gtk.MenuItem("Play")
@@ -319,6 +326,15 @@ class RadioBrowserSource(rb.StreamingSource):
 
 				menu.show_all()
 				menu.popup(None,None,None,event.button,event.time)
+
+	def clear_recently_handler(self,menuitem):
+		self.recently_played = {}
+		self.save_recently_played()
+		# clear shortcut lists
+		self.loadedFiles = []
+		self.createdGenres = {}
+		# start filling again
+		self.refill_list()
 
 	def redownload_handler(self,menuitem,filename):
 		filepath = os.path.join(self.cache_dir, filename)
@@ -362,11 +378,9 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	def record_play_button_handler(self,button,uri):
 		rp = self.recording_streams[uri]
-		print "play pressed:"+rp.relay_port
 		self.generic_play_uri("http://127.0.0.1:"+rp.relay_port,rp.title)
 
 	def record_stop_button_handler(self,button,uri):
-		print "stop pressed"
 		rp = self.recording_streams[uri]
 		rp.process.terminate()
 
@@ -491,9 +505,34 @@ class RadioBrowserSource(rb.StreamingSource):
 	def do_impl_delete_thyself(self):
 		print "not implemented"
 
+	def load_recently_played(self):
+		self.recently_played = {}
+		filepath = os.path.join(self.cache_dir, "recently.save")
+		if os.path.exists(filepath):
+			f = open(filepath,"r")
+			lines = f.readlines()
+			for i in range(0,len(lines)/2):
+				title = lines[(i)*2].strip("\n")
+				uri = lines[(i)*2+1].strip("\n")
+				print str(i)+"added "+title+":"+uri
+
+				self.recently_played[uri] = title
+				self.tree_store.append(self.tree_iter_recently_played,(title,None,None,None,uri))
+			f.close()
+
+	def save_recently_played(self):
+		filepath = os.path.join(self.cache_dir, "recently.save")
+		f = open(filepath,"w")
+		for (key,value) in self.recently_played.items():
+			f.write(value+"\n")
+			f.write(key+"\n")
+		f.close()
+
 	def add_recently_played(self,uri,title):
-		self.tree_store.append(self.tree_iter_recently_played,(title,None,None,None,uri))
-		print "added:"+uri
+		if not self.recently_played.has_key(uri):
+			self.recently_played[uri] = title
+			self.tree_store.append(self.tree_iter_recently_played,(title,None,None,None,uri))
+			self.save_recently_played()
 
 	def refill_list(self):
 		# deactivate sorting
@@ -507,6 +546,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.tree_iter_icecast = self.tree_store.append(None,("Icecast",None,None,None,None))
 			self.tree_iter_shoutcast = self.tree_store.append(None,("Shoutcast",None,None,None,None))
 			self.tree_iter_recently_played = self.tree_store.append(None,("Recently played",None,None,None,None))
+			self.load_recently_played()
 			self.loadedFiles.append("start")
 
 		# load local streams
