@@ -26,6 +26,9 @@ import gconf
 import os
 import subprocess
 import threading
+import hashlib
+import urllib
+import webbrowser
 
 #TODO: should not be defined here, but I don't know where to get it from. HELP: much apreciated
 RB_METADATA_FIELD_TITLE = 0
@@ -40,6 +43,7 @@ class RadioStation:
 		self.bitrate = ""
 		self.current_song = ""
 		self.type = ""
+		self.icon_src = ""
 
 class IcecastHandler(xml.sax.handler.ContentHandler):
 	def __init__(self,model,parent):
@@ -66,7 +70,7 @@ class IcecastHandler(xml.sax.handler.ContentHandler):
  
 	def endElement(self, name):
 		if name == "entry":
-			self.model.append(self.parent,(self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,self.entry.listen_url))
+			self.model.append(self.parent,(self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,self.entry.listen_url,self.entry))
 		self.currentEntry = ""
 
 class ShoutcastHandler(xml.sax.handler.ContentHandler):
@@ -89,7 +93,7 @@ class ShoutcastHandler(xml.sax.handler.ContentHandler):
 			self.entry.bitrate = attributes.get("br")
 			self.entry.listen_id = attributes.get("id")
 			self.entry.listeners = attributes.get("lc")
-			self.model.append(self.parent,[self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,"shoutcast:"+str(self.entry.listen_id)])
+			self.model.append(self.parent,[self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,"shoutcast:"+str(self.entry.listen_id),self.entry])
 
 class LocalHandler(xml.sax.handler.ContentHandler):
 	def __init__(self,model,parent):
@@ -100,7 +104,7 @@ class LocalHandler(xml.sax.handler.ContentHandler):
 	def startElement(self, name, attributes):
 		if name == "country":
 			self.countries.append(attributes.get("name"))
-			self.current_country = self.model.append(self.parent,[attributes.get("name"),None,None,None,None])
+			self.current_country = self.model.append(self.parent,[attributes.get("name"),None,None,None,None,None])
 		if name == "station":
 			self.entry = RadioStation()
 			self.entry.type = "Local"
@@ -109,7 +113,9 @@ class LocalHandler(xml.sax.handler.ContentHandler):
 			self.entry.listen_url = attributes.get("address")
 			self.entry.current_song = ""
 			self.entry.bitrate = attributes.get("bitrate")
-			self.model.append(self.current_country,[self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,self.entry.listen_url])
+			self.entry.homepage = attributes.get("homepage")
+			self.entry.icon_src = attributes.get("favicon")
+			self.model.append(self.current_country,[self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,self.entry.listen_url,self.entry])
 
 class RecordProcess(threading.Thread):
 	def __init__(self):
@@ -171,7 +177,6 @@ class RadioBrowserSource(rb.StreamingSource):
 			#sp.connect ('playing-changed',self.playing_changed)
 			#sp.connect ('playing-song-property-changed',self.playing_song_property_changed)
 			sp.props.player.connect("info",self.info_available)
-			#sp.set_playing_source(self)
 
 			self.cache_dir = rb.find_user_cache_file("radio-browser")
 			if os.path.exists(self.cache_dir) is False:
@@ -181,13 +186,20 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.filter_entry = gtk.Entry()
 			self.filter_entry.connect("changed",self.filter_entry_changed)
 
-			self.tree_store = gtk.TreeStore(str,str,str,str,str)
+			self.tree_store = gtk.TreeStore(str,str,str,str,str,object)
 			self.sorted_list_store = gtk.TreeModelSort(self.tree_store)
 			self.filtered_list_store = self.sorted_list_store.filter_new()
 			self.filtered_list_store.set_visible_func(self.list_store_visible_func)
 			self.tree_view = gtk.TreeView(self.filtered_list_store)
 
 			column_title = gtk.TreeViewColumn("Title",gtk.CellRendererText(),text=0)
+			#column_title.set_title("Title")
+			#renderer = gtk.CellRendererPixbuf()
+			#column_title.pack_start(renderer, expand=False)
+			#column_title.set_cell_data_func(renderer,self.model_data_func,"image")
+			#renderer = gtk.CellRendererText()
+			#column_title.pack_start(renderer, expand=True)
+			#column_title.add_attribute(renderer, 'text', 0)
 			column_title.set_resizable(True)
 			column_title.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
 			column_title.set_fixed_width(100)
@@ -239,6 +251,37 @@ class RadioBrowserSource(rb.StreamingSource):
 
 		rb.BrowserSource.do_impl_activate (self)
 
+	def model_data_func(self,column,cell,model,iter,infostr):
+		obj = model.get_value(iter,5)
+		width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
+		current_iter = self.sorted_list_store.convert_iter_to_child_iter(None,self.filtered_list_store.convert_iter_to_child_iter(iter))
+		icon = None
+
+		if infostr == "image":
+			if obj is not None:
+				if not obj.icon_src == "":
+					hash_src = hashlib.md5(obj.icon_src).hexdigest()
+					filepath = os.path.join(self.cache_dir, hash_src)
+					if os.path.exists(filepath):
+						#print "downloading "+obj.icon_src
+						#mysock = urllib.urlopen(obj.icon_src)
+						#fileToSave = mysock.read()
+						#oFile = open(filepath,'wb')
+						#oFile.write(fileToSave)
+						#oFile.close
+
+						icon = gtk.gdk.pixbuf_new_from_file(filepath)
+
+			if self.tree_store.get_path(current_iter) == self.tree_store.get_path(self.tree_iter_icecast):
+				#print "path : "+str(path)
+				icon = gtk.gdk.pixbuf_new_from_file_at_size(self.plugin.find_file("xiph-logo.png"), width, height)
+			if self.tree_store.get_path(current_iter) == self.tree_store.get_path(self.tree_iter_shoutcast):
+				icon = gtk.gdk.pixbuf_new_from_file_at_size(self.plugin.find_file("shoutcast-logo.ico"), width, height)
+			if self.tree_store.is_ancestor(self.tree_iter_icecast,current_iter):
+				icon = None
+
+			cell.set_property("pixbuf",icon)
+
 	def info_available(self,player,uri,field,value):
 		if field == RB_METADATA_FIELD_TITLE:
 			self.title = value
@@ -281,6 +324,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 				title = self.tree_store.get_value(iter,0)
 				uri = self.tree_store.get_value(iter,4)
+				obj = self.tree_store.get_value(iter,5)
 
 				menu = gtk.Menu()
 
@@ -313,6 +357,11 @@ class RadioBrowserSource(rb.StreamingSource):
 					playitem.connect("activate",self.play_handler,False,uri,title)
 					menu.append(playitem)
 
+					if obj is not None:
+						if not obj.homepage == "":
+							homepageitem = gtk.MenuItem("Homepage")
+							homepageitem.connect("activate",self.homepage_handler,obj.homepage)
+							menu.append(homepageitem)
 					try:
 						process = subprocess.Popen("streamripper",stdout=subprocess.PIPE)
 						process.communicate()
@@ -326,6 +375,9 @@ class RadioBrowserSource(rb.StreamingSource):
 
 				menu.show_all()
 				menu.popup(None,None,None,event.button,event.time)
+
+	def homepage_handler(self,menuitem,homepage):
+		webbrowser.open(homepage)
 
 	def clear_recently_handler(self,menuitem):
 		self.recently_played = {}
@@ -517,7 +569,7 @@ class RadioBrowserSource(rb.StreamingSource):
 				print str(i)+"added "+title+":"+uri
 
 				self.recently_played[uri] = title
-				self.tree_store.append(self.tree_iter_recently_played,(title,None,None,None,uri))
+				self.tree_store.append(self.tree_iter_recently_played,(title,None,None,None,uri,None))
 			f.close()
 
 	def save_recently_played(self):
@@ -531,7 +583,7 @@ class RadioBrowserSource(rb.StreamingSource):
 	def add_recently_played(self,uri,title):
 		if not self.recently_played.has_key(uri):
 			self.recently_played[uri] = title
-			self.tree_store.append(self.tree_iter_recently_played,(title,None,None,None,uri))
+			self.tree_store.append(self.tree_iter_recently_played,(title,None,None,None,uri,None))
 			self.save_recently_played()
 
 	def refill_list(self):
@@ -542,10 +594,10 @@ class RadioBrowserSource(rb.StreamingSource):
 			# delete old entries
 			self.tree_store.clear()
 			# create parent entries
-			self.tree_iter_local = self.tree_store.append(None,("Local",None,None,None,None))
-			self.tree_iter_icecast = self.tree_store.append(None,("Icecast",None,None,None,None))
-			self.tree_iter_shoutcast = self.tree_store.append(None,("Shoutcast",None,None,None,None))
-			self.tree_iter_recently_played = self.tree_store.append(None,("Recently played",None,None,None,None))
+			self.tree_iter_local = self.tree_store.append(None,("Local",None,None,None,None,None))
+			self.tree_iter_icecast = self.tree_store.append(None,("Icecast",None,None,None,None,None))
+			self.tree_iter_shoutcast = self.tree_store.append(None,("Shoutcast",None,None,None,None,None))
+			self.tree_iter_recently_played = self.tree_store.append(None,("Recently played",None,None,None,None,None))
 			self.load_recently_played()
 			self.loadedFiles.append("start")
 
@@ -569,7 +621,7 @@ class RadioBrowserSource(rb.StreamingSource):
 					parent = self.createdGenres[genre]
 				else:
 					# add entry for genre
-					parent = self.tree_store.append(self.tree_iter_shoutcast,[genre,None,None,None,None])
+					parent = self.tree_store.append(self.tree_iter_shoutcast,[genre,None,None,None,None,None])
 					self.createdGenres[genre] = parent
 				# add stations under that new entry
 				handler_stations = ShoutcastHandler(self.tree_store,parent)
