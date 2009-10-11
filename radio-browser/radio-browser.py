@@ -44,6 +44,7 @@ class RadioStation:
 		self.current_song = ""
 		self.type = ""
 		self.icon_src = ""
+		self.homepage = ""
 
 class IcecastHandler(xml.sax.handler.ContentHandler):
 	def __init__(self,model,parent):
