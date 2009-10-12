@@ -29,6 +29,7 @@ import threading
 import hashlib
 import urllib
 import webbrowser
+import Queue
 
 #TODO: should not be defined here, but I don't know where to get it from. HELP: much apreciated
 RB_METADATA_FIELD_TITLE = 0
@@ -192,6 +193,9 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.cache_dir = rb.find_user_cache_file("radio-browser")
 			if os.path.exists(self.cache_dir) is False:
 				os.makedirs(self.cache_dir, 0700)
+			self.icon_cache_dir = os.path.join(self.cache_dir,"icons")
+			if os.path.exists(self.icon_cache_dir) is False:
+				os.makedirs(self.icon_cache_dir,0700)
 			self.updating = False
 
 			self.filter_entry = gtk.Entry()
@@ -203,14 +207,14 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.filtered_list_store.set_visible_func(self.list_store_visible_func)
 			self.tree_view = gtk.TreeView(self.filtered_list_store)
 
-			column_title = gtk.TreeViewColumn("Title",gtk.CellRendererText(),text=0)
-			#column_title.set_title("Title")
-			#renderer = gtk.CellRendererPixbuf()
-			#column_title.pack_start(renderer, expand=False)
-			#column_title.set_cell_data_func(renderer,self.model_data_func,"image")
-			#renderer = gtk.CellRendererText()
-			#column_title.pack_start(renderer, expand=True)
-			#column_title.add_attribute(renderer, 'text', 0)
+			column_title = gtk.TreeViewColumn()#"Title",gtk.CellRendererText(),text=0)
+			column_title.set_title("Title")
+			renderer = gtk.CellRendererPixbuf()
+			column_title.pack_start(renderer, expand=False)
+			column_title.set_cell_data_func(renderer,self.model_data_func,"image")
+			renderer = gtk.CellRendererText()
+			column_title.pack_start(renderer, expand=True)
+			column_title.add_attribute(renderer, 'text', 0)
 			column_title.set_resizable(True)
 			column_title.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
 			column_title.set_fixed_width(100)
@@ -259,12 +263,47 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.refill_list()
 
 			self.recording_streams = {}
+			self.icon_cache = {}
+			self.icon_download_queue = Queue.Queue()
+			self.icon_download_thread = threading.Thread(target = self.icon_download_worker)
+			self.icon_download_thread.setDaemon(True)
+			self.icon_download_thread.start()
 
 		rb.BrowserSource.do_impl_activate (self)
 
+	def icon_download_worker(self):
+		while True:
+			print "waiting..."
+			filepath,src = self.icon_download_queue.get()
+
+			if os.path.exists(filepath) is False:
+				print "downloading "+src
+				mysock = urllib.urlopen(src)
+				fileToSave = mysock.read()
+				oFile = open(filepath,'wb')
+				oFile.write(fileToSave)
+				oFile.close
+
+			self.icon_download_queue.task_done()
+
+
+	def get_icon_pixbuf(self,filepath):
+		if os.path.exists(filepath):
+			width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
+			if filepath in self.icon_cache:
+				return self.icon_cache[filepath]
+			else:
+				try:
+					icon = gtk.gdk.pixbuf_new_from_file_at_size(filepath,width,height)
+				except:
+					icon = None
+					print "could not load icon : "+filepath
+				self.icon_cache[filepath] = icon
+			return icon
+		return None
+
 	def model_data_func(self,column,cell,model,iter,infostr):
 		obj = model.get_value(iter,5)
-		width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
 		current_iter = self.sorted_list_store.convert_iter_to_child_iter(None,self.filtered_list_store.convert_iter_to_child_iter(iter))
 		icon = None
 
@@ -272,22 +311,18 @@ class RadioBrowserSource(rb.StreamingSource):
 			if obj is not None:
 				if not obj.icon_src == "":
 					hash_src = hashlib.md5(obj.icon_src).hexdigest()
-					filepath = os.path.join(self.cache_dir, hash_src)
+					filepath = os.path.join(self.icon_cache_dir, hash_src)
 					if os.path.exists(filepath):
-						#print "downloading "+obj.icon_src
-						#mysock = urllib.urlopen(obj.icon_src)
-						#fileToSave = mysock.read()
-						#oFile = open(filepath,'wb')
-						#oFile.write(fileToSave)
-						#oFile.close
-
-						icon = gtk.gdk.pixbuf_new_from_file(filepath)
+						icon = self.get_icon_pixbuf(filepath)
+					else:
+						# load icon
+						print "put"
+						self.icon_download_queue.put([filepath,obj.icon_src])
 
 			if self.tree_store.get_path(current_iter) == self.tree_store.get_path(self.tree_iter_icecast):
-				#print "path : "+str(path)
-				icon = gtk.gdk.pixbuf_new_from_file_at_size(self.plugin.find_file("xiph-logo.png"), width, height)
+				icon = self.get_icon_pixbuf(self.plugin.find_file("xiph-logo.png"))
 			if self.tree_store.get_path(current_iter) == self.tree_store.get_path(self.tree_iter_shoutcast):
-				icon = gtk.gdk.pixbuf_new_from_file_at_size(self.plugin.find_file("shoutcast-logo.ico"), width, height)
+				icon = self.get_icon_pixbuf(self.plugin.find_file("shoutcast-logo.ico"))
 			if self.tree_store.is_ancestor(self.tree_iter_icecast,current_iter):
 				icon = None
 
