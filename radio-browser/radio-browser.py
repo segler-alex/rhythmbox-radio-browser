@@ -101,11 +101,16 @@ class LocalHandler(xml.sax.handler.ContentHandler):
 		self.model = model
 		self.parent = parent
 		self.countries = []
+		self.current_directory = self.parent
  
 	def startElement(self, name, attributes):
 		if name == "country":
 			self.countries.append(attributes.get("name"))
-			self.current_country = self.model.append(self.parent,[attributes.get("name"),None,None,None,None,None])
+			self.current_country = self.model.append(self.current_directory,[attributes.get("name"),None,None,None,None,None])
+			self.current_directory = self.current_country
+		if name == "category":
+			self.current_category = self.model.append(self.current_directory,[attributes.get("name"),None,None,None,None,None])
+			self.current_directory = self.current_category
 		if name == "station":
 			self.entry = RadioStation()
 			self.entry.type = "Local"
@@ -116,7 +121,12 @@ class LocalHandler(xml.sax.handler.ContentHandler):
 			self.entry.bitrate = attributes.get("bitrate")
 			self.entry.homepage = attributes.get("homepage")
 			self.entry.icon_src = attributes.get("favicon")
-			self.model.append(self.current_country,[self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,self.entry.listen_url,self.entry])
+			self.model.append(self.current_directory,[self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,self.entry.listen_url,self.entry])
+	def endElement(self, name):
+		if name == "category":
+			self.current_directory = self.current_country
+		if name == "country":
+			self.current_directory = self.parent
 
 class RecordProcess(threading.Thread):
 	def __init__(self):
