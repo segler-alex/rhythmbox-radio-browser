@@ -273,21 +273,21 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	def icon_download_worker(self):
 		while True:
-			print "waiting..."
 			filepath,src = self.icon_download_queue.get()
 
 			if os.path.exists(filepath) is False:
-				print "downloading "+src
+				print "downloading favicon: "+src
 				mysock = urllib.urlopen(src)
 				fileToSave = mysock.read()
 				oFile = open(filepath,'wb')
 				oFile.write(fileToSave)
-				oFile.close
+				oFile.flush()
+				oFile.close()
 
 			self.icon_download_queue.task_done()
 
 
-	def get_icon_pixbuf(self,filepath):
+	def get_icon_pixbuf(self,filepath,return_value_not_found=None):
 		if os.path.exists(filepath):
 			width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
 			if filepath in self.icon_cache:
@@ -296,16 +296,17 @@ class RadioBrowserSource(rb.StreamingSource):
 				try:
 					icon = gtk.gdk.pixbuf_new_from_file_at_size(filepath,width,height)
 				except:
-					icon = None
+					icon = return_value_not_found
 					print "could not load icon : "+filepath
 				self.icon_cache[filepath] = icon
 			return icon
-		return None
+		return return_value_not_found
 
 	def model_data_func(self,column,cell,model,iter,infostr):
 		obj = model.get_value(iter,5)
 		current_iter = self.sorted_list_store.convert_iter_to_child_iter(None,self.filtered_list_store.convert_iter_to_child_iter(iter))
 		icon = None
+		self.violinschluessel_icon = self.get_icon_pixbuf(self.plugin.find_file("violinschluessel.png"))
 
 		if infostr == "image":
 			if obj is not None:
@@ -313,11 +314,13 @@ class RadioBrowserSource(rb.StreamingSource):
 					hash_src = hashlib.md5(obj.icon_src).hexdigest()
 					filepath = os.path.join(self.icon_cache_dir, hash_src)
 					if os.path.exists(filepath):
-						icon = self.get_icon_pixbuf(filepath)
+						icon = self.get_icon_pixbuf(filepath,self.violinschluessel_icon)
 					else:
 						# load icon
 						print "put"
 						self.icon_download_queue.put([filepath,obj.icon_src])
+				else:
+					icon = self.violinschluessel_icon
 
 			if self.tree_store.get_path(current_iter) == self.tree_store.get_path(self.tree_iter_icecast):
 				icon = self.get_icon_pixbuf(self.plugin.find_file("xiph-logo.png"))
