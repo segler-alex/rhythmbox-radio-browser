@@ -305,8 +305,8 @@ class RadioBrowserSource(rb.StreamingSource):
 	def model_data_func(self,column,cell,model,iter,infostr):
 		obj = model.get_value(iter,5)
 		current_iter = self.sorted_list_store.convert_iter_to_child_iter(None,self.filtered_list_store.convert_iter_to_child_iter(iter))
-		icon = None
-		self.violinschluessel_icon = self.get_icon_pixbuf(self.plugin.find_file("violinschluessel.png"))
+		self.clef_icon = self.get_icon_pixbuf(self.plugin.find_file("clef.png"))
+		icon = self.clef_icon
 
 		if infostr == "image":
 			if obj is not None:
@@ -314,13 +314,13 @@ class RadioBrowserSource(rb.StreamingSource):
 					hash_src = hashlib.md5(obj.icon_src).hexdigest()
 					filepath = os.path.join(self.icon_cache_dir, hash_src)
 					if os.path.exists(filepath):
-						icon = self.get_icon_pixbuf(filepath,self.violinschluessel_icon)
+						icon = self.get_icon_pixbuf(filepath,self.clef_icon)
 					else:
 						# load icon
 						print "put"
 						self.icon_download_queue.put([filepath,obj.icon_src])
 				else:
-					icon = self.violinschluessel_icon
+					icon = self.clef_icon
 
 			if self.tree_store.get_path(current_iter) == self.tree_store.get_path(self.tree_iter_icecast):
 				icon = self.get_icon_pixbuf(self.plugin.find_file("xiph-logo.png"))
@@ -411,16 +411,17 @@ class RadioBrowserSource(rb.StreamingSource):
 							homepageitem = gtk.MenuItem("Homepage")
 							homepageitem.connect("activate",self.homepage_handler,obj.homepage)
 							menu.append(homepageitem)
-					try:
-						process = subprocess.Popen("streamripper",stdout=subprocess.PIPE)
-						process.communicate()
-						process.wait()
-					except(OSError):
-						print "streamripper not found"
-					else:
-						recorditem = gtk.MenuItem("Record")
-						recorditem.connect("activate",self.play_handler,True,uri,title)
-						menu.append(recorditem)
+					if not uri.startswith("mms:"):
+						try:
+							process = subprocess.Popen("streamripper",stdout=subprocess.PIPE)
+							process.communicate()
+							process.wait()
+						except(OSError):
+							print "streamripper not found"
+						else:
+							recorditem = gtk.MenuItem("Record")
+							recorditem.connect("activate",self.play_handler,True,uri,title)
+							menu.append(recorditem)
 
 				menu.show_all()
 				menu.popup(None,None,None,event.button,event.time)
