@@ -350,6 +350,9 @@ class RadioBrowserSource(rb.StreamingSource):
 			#self.shell.props.db.commit()
 			print "setting bitrate to:"+str(value/1000)
 
+		else:
+			print "unknwon info available ("+str(field)+"):"+str(value)
+
 #	def playing_changed (self, sp, playing):
 #		print "playing changed"
 
@@ -644,7 +647,6 @@ class RadioBrowserSource(rb.StreamingSource):
 			for i in range(0,len(lines)/2):
 				title = lines[(i)*2].strip("\n")
 				uri = lines[(i)*2+1].strip("\n")
-				print str(i)+"added "+title+":"+uri
 
 				itemlist[uri] = title
 				self.tree_store.append(tree_iter,(title,None,None,None,uri,None))
