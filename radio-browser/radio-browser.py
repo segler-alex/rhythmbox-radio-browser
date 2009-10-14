@@ -151,18 +151,74 @@ class RecordProcess(threading.Thread):
 		threading.Thread.__init__(self)
 		self.process = None # subprocess
 		self.box = None # GUI Box
+		self.info_box = None
 		self.relay_port = None # port for listening to the recorded stream
 		self.title = None
 		self.uri = None
 		self.thread = None
+		self.song_info = ""
+		self.server_name = ""
+		self.stream_name = ""
+		self.bitrate = ""
+
+	def set_info_box(self):
+		def add_label(title,value):
+			if not value == "":
+				label = gtk.Label()
+				if value.startswith("http://"):
+					label.set_markup("<b>"+xml.sax.saxutils.escape(title)+"</b>:<a href='"+xml.sax.saxutils.escape(value)+"'>"+value+"</a>")
+				else:
+					label.set_markup("<b>"+xml.sax.saxutils.escape(title)+"</b>:"+xml.sax.saxutils.escape(value))
+				label.set_selectable(True)
+				self.info_box.pack_start(label)		
+
+		for widget in self.info_box.get_children():
+			self.info_box.remove(widget)
+
+		add_label("Server",self.server_name)
+		add_label("Stream",self.stream_name)
+		add_label("Current song",self.song_info)
+		add_label("Bitrate",self.bitrate)
+		add_label("Relay port",str(self.relay_port))
+
+		self.info_box.show_all()
+
+		return False
+
 	def run(self):
 		pout = self.process.stdout
 		while self.process.poll()==None:
-			line = pout.readline()
+			line = ""
+			
+			while True:
+				try:
+					char = pout.read(1)
+				except:
+					print "exception"
+					break
+
+				if char == None or char == "":
+					break
+
+				if char == "\n":
+					break
+				if char == "\r":
+					break
+				line = line+char
+
 			#print line
 			if line.startswith("relay port"):
 				self.relay_port = line.split(":")[1].strip()
-				print "relay port:" + self.relay_port
+			if line.startswith("stream"):
+				self.stream_name = line.split(":")[1].strip()
+			if line.startswith("server name"):
+				self.server_name = line.split(":")[1].strip()
+			if line.startswith("declared bitrate"):
+				self.bitrate = line.split(":")[1].strip()
+			if line.startswith("[ripping") or line.startswith("[skipping"):
+				self.song_info = line[17:]
+			gobject.idle_add(self.set_info_box)
+
 		print "thread closed"
 		self.box.get_parent().remove(self.box)
 
@@ -264,8 +320,6 @@ class RadioBrowserSource(rb.StreamingSource):
 			mywin.set_shadow_type(gtk.SHADOW_IN)
 			mywin.add(self.tree_view)
 			mywin.set_property("hscrollbar-policy", gtk.POLICY_AUTOMATIC)
-
-#			treeview_frame = gtk.Frame()
 
 			filterbox = gtk.HBox()
 			filterbox.pack_start(gtk.Label("Filter:"),False)
@@ -544,25 +598,34 @@ class RadioBrowserSource(rb.StreamingSource):
 		commandline = ["streamripper",uri,"-d",self.plugin.outputpath,"-r"]
 		process = subprocess.Popen(commandline,stdout=subprocess.PIPE)
 
-		box = gtk.HBox()
-		box.pack_start(gtk.Label("RIPPING:'"+title+"'"))
+		left = gtk.VBox()
+		left.pack_start(gtk.Label(title))
+
+		right = gtk.VBox()
 		play_button = gtk.Button(stock=gtk.STOCK_MEDIA_PLAY)
-		box.pack_start(play_button)
+		right.pack_start(play_button)
 		stop_button = gtk.Button(stock=gtk.STOCK_STOP)
-		box.pack_start(stop_button)
+		right.pack_start(stop_button)
+
+		box = gtk.HBox()
+		box.pack_start(left)
+		box.pack_start(right,False)
+		decorated_box = gtk.Frame("Ripping stream")
+		decorated_box.add(box)
 
 		rp = RecordProcess()
 		rp.process = process
 		rp.title = title
 		rp.uri = uri
-		rp.box = box
+		rp.box = decorated_box
+		rp.info_box = left
 		self.recording_streams[uri] = rp
 		rp.start()
 
 		play_button.connect("clicked",self.record_play_button_handler,uri)
 		stop_button.connect("clicked",self.record_stop_button_handler,uri)
-
-		self.record_box.pack_start(box)
+		
+		self.record_box.pack_start(decorated_box)
 		self.record_box.show_all()
 
 	def record_play_button_handler(self,button,uri):
