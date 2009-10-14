@@ -309,7 +309,7 @@ class RadioBrowserSource(rb.StreamingSource):
 				add_label("Bitrate",obj.bitrate)
 				add_label("Server type",obj.server_type)
 				add_label("Homepage",obj.homepage)
-				add_label("Current song",obj.current_song)
+				add_label("Current song (on last refresh)",obj.current_song)
 				add_label("Current listeners",obj.listeners)
 
 				decorated_info_box = gtk.Frame(obj.server_name)
