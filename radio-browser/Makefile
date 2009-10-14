@@ -11,3 +11,5 @@ install:
 	install radio-browser.rb-plugin $(DESTDIR)$(SUBDIR)
 	install prefs.ui $(DESTDIR)$(SUBDIR)
 	install xiph-logo.png $(DESTDIR)$(SUBDIR)
+	install shoutcast-logo.ico $(DESTDIR)$(SUBDIR)
+	install clef.png $(DESTDIR)$(SUBDIR)
