@@ -30,6 +30,7 @@ import hashlib
 import urllib
 import webbrowser
 import Queue
+import xml.sax.saxutils
 
 #TODO: should not be defined here, but I don't know where to get it from. HELP: much apreciated
 RB_METADATA_FIELD_TITLE = 0
@@ -46,6 +47,8 @@ class RadioStation:
 		self.type = ""
 		self.icon_src = ""
 		self.homepage = ""
+		self.listeners = ""
+		self.server_type = ""
 
 class IcecastHandler(xml.sax.handler.ContentHandler):
 	def __init__(self,model,parent):
@@ -69,6 +72,8 @@ class IcecastHandler(xml.sax.handler.ContentHandler):
 			self.entry.current_song += data
 		elif self.currentEntry == "bitrate":
 			self.entry.bitrate += data
+		elif self.currentEntry == "server_type":
+			self.entry.server_type += data
  
 	def endElement(self, name):
 		if name == "entry":
@@ -95,6 +100,7 @@ class ShoutcastHandler(xml.sax.handler.ContentHandler):
 			self.entry.bitrate = attributes.get("br")
 			self.entry.listen_id = attributes.get("id")
 			self.entry.listeners = attributes.get("lc")
+			self.entry.server_type = attributes.get("mt")
 			self.model.append(self.parent,[self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,"shoutcast:"+str(self.entry.listen_id),self.entry])
 
 class LocalHandler(xml.sax.handler.ContentHandler):
@@ -118,7 +124,6 @@ class LocalHandler(xml.sax.handler.ContentHandler):
 			self.entry.server_name = attributes.get("name")
 			self.entry.genre = attributes.get("genre")
 			self.entry.listen_url = attributes.get("address")
-			self.entry.current_song = ""
 			self.entry.bitrate = attributes.get("bitrate")
 			self.entry.homepage = attributes.get("homepage")
 			self.entry.icon_src = attributes.get("favicon")
@@ -221,7 +226,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			column_title.set_expand(True)
 			self.tree_view.append_column(column_title)
 
-			column_genre = gtk.TreeViewColumn("Genre",gtk.CellRendererText(),text=1)
+			column_genre = gtk.TreeViewColumn("Tags",gtk.CellRendererText(),text=1)
 			column_genre.set_resizable(True)
 			column_genre.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
 			column_genre.set_fixed_width(100)
@@ -233,28 +238,34 @@ class RadioBrowserSource(rb.StreamingSource):
 			column_bitrate.set_fixed_width(100)
 			self.tree_view.append_column(column_bitrate)
 
-			column_song = gtk.TreeViewColumn("Current Song",gtk.CellRendererText(),text=3)
-			column_song.set_resizable(True)
-			column_song.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
-			column_song.set_fixed_width(100)
-			column_song.set_expand(True)
-			self.tree_view.append_column(column_song)
+			#column_song = gtk.TreeViewColumn("Current Song",gtk.CellRendererText(),text=3)
+			#column_song.set_resizable(True)
+			#column_song.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+			#column_song.set_fixed_width(100)
+			#column_song.set_expand(True)
+			#self.tree_view.append_column(column_song)
 			self.tree_view.connect("row-activated",self.row_activated_handler)
 			self.tree_view.connect("button-press-event",self.button_press_handler)
+			self.tree_view.connect("cursor-changed",self.treeview_cursor_changed_handler)
 
 			mywin = gtk.ScrolledWindow()
+			mywin.set_shadow_type(gtk.SHADOW_IN)
 			mywin.add(self.tree_view)
 			mywin.set_property("hscrollbar-policy", gtk.POLICY_AUTOMATIC)
+
+#			treeview_frame = gtk.Frame()
 
 			filterbox = gtk.HBox()
 			filterbox.pack_start(gtk.Label("Filter:"),False)
 			filterbox.pack_start(self.filter_entry)
 
 			self.record_box = gtk.VBox()
+			self.info_box = gtk.VBox()
 
 			mybox = gtk.VBox()
 			mybox.pack_start(filterbox,False)
 			mybox.pack_start(mywin)
+			mybox.pack_start(self.info_box,False)
 			mybox.pack_start(self.record_box,False)
 
 			self.pack_start(mybox)
@@ -270,6 +281,41 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.icon_download_thread.start()
 
 		rb.BrowserSource.do_impl_activate (self)
+
+	def treeview_cursor_changed_handler(self,treeview):
+		for widget in self.info_box.get_children():
+			self.info_box.remove(widget)
+
+		selection = self.tree_view.get_selection()
+		model,iter = selection.get_selected()
+		if not iter == None:
+			obj = model.get_value(iter,5)
+
+			if obj is not None:
+				info_container = gtk.VBox()
+
+				def add_label(title,value):
+					if not value == "":
+						label = gtk.Label()
+						if value.startswith("http://"):
+							label.set_markup("<b>"+xml.sax.saxutils.escape(title)+"</b>:<a href='"+xml.sax.saxutils.escape(value)+"'>"+value+"</a>")
+						else:
+							label.set_markup("<b>"+xml.sax.saxutils.escape(title)+"</b>:"+xml.sax.saxutils.escape(value))
+						label.set_selectable(True)
+						info_container.pack_start(label)
+
+				#add_label("Name",obj.server_name)
+				add_label("Tags",obj.genre)
+				add_label("Bitrate",obj.bitrate)
+				add_label("Server type",obj.server_type)
+				add_label("Homepage",obj.homepage)
+				add_label("Current song",obj.current_song)
+				add_label("Current listeners",obj.listeners)
+
+				decorated_info_box = gtk.Frame(obj.server_name)
+				decorated_info_box.add(info_container)
+				self.info_box.pack_start(decorated_info_box)
+				self.info_box.show_all()
 
 	def icon_download_worker(self):
 		while True:
