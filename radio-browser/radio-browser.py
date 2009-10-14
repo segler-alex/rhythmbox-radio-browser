@@ -78,9 +78,9 @@ class IcecastHandler(xml.sax.handler.ContentHandler):
  
 	def endElement(self, name):
 		if name == "entry":
-			char = self.entry.server_name[0:1].lower()
+			char = self.entry.server_name[0:1].upper()
 
-			if char >= 'a' and char <= 'z':
+			if char >= 'A' and char <= 'Z':
 				if char not in self.categories:
 					self.categories[char] = self.model.append(self.parent,(char,None,None,None,None,None))
 				parent = self.categories[char]
