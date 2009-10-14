@@ -396,7 +396,13 @@ class RadioBrowserSource(rb.StreamingSource):
 					if self.tree_store.get_path(iter) == self.tree_store.get_path(self.tree_iter_recently_played):
 						filename = "recently.save"
 						clearitem = gtk.MenuItem("Clear")
-						clearitem.connect("activate",self.clear_recently_handler)
+						clearitem.connect("activate",self.clear_recently_handler,filename,self.recently_played)
+						menu.append(clearitem)
+
+					if self.tree_store.get_path(iter) == self.tree_store.get_path(self.tree_iter_bookmarks):
+						filename = "bookmarks.save"
+						clearitem = gtk.MenuItem("Clear")
+						clearitem.connect("activate",self.clear_recently_handler,filename,self.bookmarks)
 						menu.append(clearitem)
 
 					if filename is None:
@@ -405,6 +411,15 @@ class RadioBrowserSource(rb.StreamingSource):
 					playitem = gtk.MenuItem("Play")
 					playitem.connect("activate",self.play_handler,False,uri,title)
 					menu.append(playitem)
+
+					if self.tree_store.is_ancestor(self.tree_iter_bookmarks,iter):
+						bookmarkitem = gtk.MenuItem("Delete bookmark")
+						bookmarkitem.connect("activate",self.delete_bookmark_handler,uri,iter)
+					else:
+						bookmarkitem = gtk.MenuItem("Bookmark")
+						bookmarkitem.connect("activate",self.bookmark_handler,uri,title)
+
+					menu.append(bookmarkitem)
 
 					if obj is not None:
 						if not obj.homepage == "":
@@ -429,9 +444,9 @@ class RadioBrowserSource(rb.StreamingSource):
 	def homepage_handler(self,menuitem,homepage):
 		webbrowser.open(homepage)
 
-	def clear_recently_handler(self,menuitem):
-		self.recently_played = {}
-		self.save_recently_played()
+	def clear_recently_handler(self,menuitem,filename,itemlist):
+		itemlist = {}
+		self.save_to_file(filename,itemlist.items())
 		# clear shortcut lists
 		self.loadedFiles = []
 		self.createdGenres = {}
@@ -451,6 +466,18 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	def play_handler(self,menuitem,record,uri,title):
 		self.generic_play_uri(uri,title,record)
+
+	def bookmark_handler(self,menuitem,uri,title):
+		if not self.bookmarks.has_key(uri):
+			self.bookmarks[uri] = title
+			self.tree_store.append(self.tree_iter_bookmarks,(title,None,None,None,uri,None))
+			self.save_to_file("bookmarks.save",self.bookmarks.items())
+
+	def delete_bookmark_handler(self,menuitem,uri,iter):
+		if self.bookmarks.has_key(uri):
+			del self.bookmarks[uri]
+			self.save_to_file("bookmarks.save",self.bookmarks.items())
+			self.tree_store.remove(iter)
 
 	def record_uri(self,uri,title):
 		self.add_recently_played(uri,title)
@@ -608,9 +635,9 @@ class RadioBrowserSource(rb.StreamingSource):
 	def do_impl_delete_thyself(self):
 		print "not implemented"
 
-	def load_recently_played(self):
-		self.recently_played = {}
-		filepath = os.path.join(self.cache_dir, "recently.save")
+	def load_from_file(self,filename,tree_iter,itemlist):
+		itemlist = {}
+		filepath = os.path.join(self.cache_dir, filename)
 		if os.path.exists(filepath):
 			f = open(filepath,"r")
 			lines = f.readlines()
@@ -619,14 +646,14 @@ class RadioBrowserSource(rb.StreamingSource):
 				uri = lines[(i)*2+1].strip("\n")
 				print str(i)+"added "+title+":"+uri
 
-				self.recently_played[uri] = title
-				self.tree_store.append(self.tree_iter_recently_played,(title,None,None,None,uri,None))
+				itemlist[uri] = title
+				self.tree_store.append(tree_iter,(title,None,None,None,uri,None))
 			f.close()
 
-	def save_recently_played(self):
-		filepath = os.path.join(self.cache_dir, "recently.save")
+	def save_to_file(self,filename,items):
+		filepath = os.path.join(self.cache_dir, filename)
 		f = open(filepath,"w")
-		for (key,value) in self.recently_played.items():
+		for (key,value) in items:
 			f.write(value+"\n")
 			f.write(key+"\n")
 		f.close()
@@ -635,7 +662,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		if not self.recently_played.has_key(uri):
 			self.recently_played[uri] = title
 			self.tree_store.append(self.tree_iter_recently_played,(title,None,None,None,uri,None))
-			self.save_recently_played()
+			self.save_to_file("recently.save",self.recently_played.items())
 
 	def refill_list(self):
 		# deactivate sorting
@@ -649,7 +676,12 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.tree_iter_icecast = self.tree_store.append(None,("Icecast",None,None,None,None,None))
 			self.tree_iter_shoutcast = self.tree_store.append(None,("Shoutcast",None,None,None,None,None))
 			self.tree_iter_recently_played = self.tree_store.append(None,("Recently played",None,None,None,None,None))
-			self.load_recently_played()
+			self.tree_iter_bookmarks = self.tree_store.append(None,("Bookmarks",None,None,None,None,None))
+
+			self.recently_played = {}
+			self.bookmarks = {}
+			self.load_from_file("recently.save",self.tree_iter_recently_played,self.recently_played)
+			self.load_from_file("bookmarks.save",self.tree_iter_bookmarks,self.bookmarks)
 			self.loadedFiles.append("start")
 
 		# load local streams
