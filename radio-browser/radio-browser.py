@@ -636,7 +636,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		print "not implemented"
 
 	def load_from_file(self,filename,tree_iter,itemlist):
-		itemlist = {}
+		itemlist.clear()
 		filepath = os.path.join(self.cache_dir, filename)
 		if os.path.exists(filepath):
 			f = open(filepath,"r")
