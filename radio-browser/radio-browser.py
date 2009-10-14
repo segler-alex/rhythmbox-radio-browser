@@ -522,8 +522,9 @@ class RadioBrowserSource(rb.StreamingSource):
 			# delete cache files
 			files = os.listdir(self.cache_dir)
 			for filename in files:
-				filepath = os.path.join(self.cache_dir, filename)
-				os.unlink(filepath)
+				if filename.endswith("xml"):
+					filepath = os.path.join(self.cache_dir, filename)
+					os.unlink(filepath)
 			# clear shortcut lists
 			self.loadedFiles = []
 			self.createdGenres = {}
