@@ -375,7 +375,6 @@ class RadioBrowserSource(rb.StreamingSource):
 						icon = self.get_icon_pixbuf(filepath,self.clef_icon)
 					else:
 						# load icon
-						print "put"
 						self.icon_download_queue.put([filepath,obj.icon_src])
 				else:
 					icon = self.clef_icon
@@ -384,8 +383,8 @@ class RadioBrowserSource(rb.StreamingSource):
 				icon = self.get_icon_pixbuf(self.plugin.find_file("xiph-logo.png"))
 			if self.tree_store.get_path(current_iter) == self.tree_store.get_path(self.tree_iter_shoutcast):
 				icon = self.get_icon_pixbuf(self.plugin.find_file("shoutcast-logo.ico"))
-			if self.tree_store.is_ancestor(self.tree_iter_icecast,current_iter):
-				icon = None
+			#if self.tree_store.is_ancestor(self.tree_iter_icecast,current_iter):
+			#	icon = None
 
 			cell.set_property("pixbuf",icon)
 
