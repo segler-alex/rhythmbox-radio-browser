@@ -54,6 +54,7 @@ class IcecastHandler(xml.sax.handler.ContentHandler):
 	def __init__(self,model,parent):
 		self.model = model
 		self.parent = parent
+		self.categories = {}
  
 	def startElement(self, name, attributes):
 		self.currentEntry = name;
@@ -77,7 +78,18 @@ class IcecastHandler(xml.sax.handler.ContentHandler):
  
 	def endElement(self, name):
 		if name == "entry":
-			self.model.append(self.parent,(self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,self.entry.listen_url,self.entry))
+			char = self.entry.server_name[0:1].lower()
+
+			if char >= 'a' and char <= 'z':
+				if char not in self.categories:
+					self.categories[char] = self.model.append(self.parent,(char,None,None,None,None,None))
+				parent = self.categories[char]
+			else:
+				if "#" not in self.categories:
+					self.categories["#"] = self.model.append(self.parent,("#",None,None,None,None,None))
+				parent = self.categories["#"]
+
+			self.model.append(parent,(self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,self.entry.listen_url,self.entry))
 		self.currentEntry = ""
 
 class ShoutcastHandler(xml.sax.handler.ContentHandler):
