@@ -78,6 +78,11 @@ class IcecastHandler(xml.sax.handler.ContentHandler):
  
 	def endElement(self, name):
 		if name == "entry":
+			try:
+				self.entry.homepage = "http://dir.xiph.org/search?search="+urllib.quote_plus(self.entry.server_name)
+			except:
+				self.entry.homepage = ""
+
 			char = self.entry.server_name[0:1].upper()
 
 			if char >= 'A' and char <= 'Z':
@@ -113,6 +118,10 @@ class ShoutcastHandler(xml.sax.handler.ContentHandler):
 			self.entry.listen_id = attributes.get("id")
 			self.entry.listeners = attributes.get("lc")
 			self.entry.server_type = attributes.get("mt")
+			try:
+				self.entry.homepage = "http://shoutcast.com/directory/search_results.jsp?searchCrit=simple&s="+urllib.quote_plus(self.entry.server_name.replace("- [SHOUTcast.com]","").strip())
+			except:
+				self.entry.homepage = ""
 			self.model.append(self.parent,[self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,"shoutcast:"+str(self.entry.listen_id),self.entry])
 
 class LocalHandler(xml.sax.handler.ContentHandler):
@@ -364,7 +373,7 @@ class RadioBrowserSource(rb.StreamingSource):
 					if not value == "":
 						label = gtk.Label()
 						if value.startswith("http://"):
-							label.set_markup("<b>"+xml.sax.saxutils.escape(title)+"</b>:<a href='"+xml.sax.saxutils.escape(value)+"'>"+value+"</a>")
+							label.set_markup("<b>"+xml.sax.saxutils.escape(title)+"</b>:<a href='"+xml.sax.saxutils.escape(value)+"'>"+xml.sax.saxutils.escape(value)+"</a>")
 						else:
 							label.set_markup("<b>"+xml.sax.saxutils.escape(title)+"</b>:"+xml.sax.saxutils.escape(value))
 						label.set_selectable(True)
