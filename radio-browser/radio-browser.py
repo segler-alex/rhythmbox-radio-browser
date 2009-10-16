@@ -371,11 +371,16 @@ class RadioBrowserSource(rb.StreamingSource):
 
 				def add_label(title,value):
 					if not value == "":
+						if len(value) > 43:
+							short_value = value[0:40]+"..."
+						else:
+							short_value = value
+
 						label = gtk.Label()
 						if value.startswith("http://"):
-							label.set_markup("<b>"+xml.sax.saxutils.escape(title)+"</b>:<a href='"+xml.sax.saxutils.escape(value)+"'>"+xml.sax.saxutils.escape(value)+"</a>")
+							label.set_markup("<b>"+xml.sax.saxutils.escape(title)+"</b>:<a href='"+xml.sax.saxutils.escape(value)+"'>"+xml.sax.saxutils.escape(short_value)+"</a>")
 						else:
-							label.set_markup("<b>"+xml.sax.saxutils.escape(title)+"</b>:"+xml.sax.saxutils.escape(value))
+							label.set_markup("<b>"+xml.sax.saxutils.escape(title)+"</b>:"+xml.sax.saxutils.escape(short_value))
 						label.set_selectable(True)
 						info_container.pack_start(label)
 
