@@ -403,12 +403,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			if os.path.exists(filepath) is False:
 				print "downloading favicon: "+src
-				mysock = urllib.urlopen(src)
-				fileToSave = mysock.read()
-				oFile = open(filepath,'wb')
-				oFile.write(fileToSave)
-				oFile.flush()
-				oFile.close()
+				urllib.urlretrieve(src,filepath)
 
 			self.icon_download_queue.task_done()
 
