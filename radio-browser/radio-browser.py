@@ -177,6 +177,7 @@ class BoardHandler(xml.sax.handler.ContentHandler):
 		if name == "station":
 			self.entry = RadioStation()
 			self.entry.type = "Board"
+			self.entry.id = attributes.get("id")
 			self.entry.server_name = attributes.get("name")
 			self.entry.genre = attributes.get("tags")
 			self.entry.listen_url = attributes.get("url")
@@ -430,22 +431,35 @@ class RadioBrowserSource(rb.StreamingSource):
 		for widget in self.info_box.get_children():
 			self.info_box.remove(widget)
 
-		info_container = gtk.VBox()
+		info_container = gtk.Table(10,2)
+		info_container.set_col_spacing(0,10)
+		self.info_box_added_rows = 0
 
-		def add_label(title,value):
+		def add_label(title,value,shorten=True):
 			if not value == "":
-				if len(value) > 53:
-					short_value = value[0:50]+"..."
+				if shorten:
+					if len(value) > 53:
+						short_value = value[0:50]+"..."
+					else:
+						short_value = value
 				else:
 					short_value = value
 
 				label = gtk.Label()
+				label.set_line_wrap(True)
 				if value.startswith("http://"):
-					label.set_markup("<b>"+xml.sax.saxutils.escape(title)+"</b>:<a href='"+xml.sax.saxutils.escape(value)+"'>"+xml.sax.saxutils.escape(short_value)+"</a>")
+					label.set_markup("<a href='"+xml.sax.saxutils.escape(value)+"'>"+xml.sax.saxutils.escape(short_value)+"</a>")
 				else:
-					label.set_markup("<b>"+xml.sax.saxutils.escape(title)+"</b>:"+xml.sax.saxutils.escape(short_value))
+					label.set_markup(xml.sax.saxutils.escape(short_value))
 				label.set_selectable(True)
-				info_container.pack_start(label)
+				label.set_alignment(0, 0)
+
+				title_label = gtk.Label(title)
+				title_label.set_alignment(1, 0)
+				title_label.set_markup("<b>"+xml.sax.saxutils.escape(title)+"</b>")
+				info_container.attach(title_label,0,1,self.info_box_added_rows,self.info_box_added_rows+1)
+				info_container.attach(label,1,2,self.info_box_added_rows,self.info_box_added_rows+1)
+				self.info_box_added_rows = self.info_box_added_rows+1
 
 		selection = self.tree_view.get_selection()
 		model,iter = selection.get_selected()
@@ -454,6 +468,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			if path == self.tree_store.get_path(self.tree_iter_board):
 				add_label("Entry type","Feed")
+				add_label("Description","If you cannot find your favorite station in the other feeds, just post it here with right click!",False)
 				add_label("Feed homepage","http://segler.bplaced.net")
 				add_label("Feed source","http://segler.bplaced.net/xml.php")
 
