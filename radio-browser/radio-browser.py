@@ -49,6 +49,9 @@ class RadioStation:
 		self.homepage = ""
 		self.listeners = ""
 		self.server_type = ""
+		self.language = ""
+		self.country = ""
+		self.votes = ""
 
 class IcecastHandler(xml.sax.handler.ContentHandler):
 	def __init__(self,model,parent):
@@ -154,6 +157,70 @@ class LocalHandler(xml.sax.handler.ContentHandler):
 			self.current_directory = self.current_country
 		if name == "country":
 			self.current_directory = self.parent
+
+class BoardHandler(xml.sax.handler.ContentHandler):
+	def __init__(self,model,parent):
+		self.model = model
+		self.parent = parent
+		self.tags = {}
+		self.countries = {}
+		self.languages = {}
+ 
+	def startElement(self, name, attributes):
+		try:
+			self.iter_tags
+		except:
+			self.iter_tags = self.model.append(self.parent,["By Tag",None,None,None,None,None])
+			self.iter_countries = self.model.append(self.parent,["By Country",None,None,None,None,None])
+			self.iter_languages = self.model.append(self.parent,["By Language",None,None,None,None,None])
+		if name == "station":
+			self.entry = RadioStation()
+			self.entry.type = "Local"
+			self.entry.server_name = attributes.get("name")
+			self.entry.genre = attributes.get("tags")
+			self.entry.listen_url = attributes.get("url")
+			self.entry.language = attributes.get("language")
+			self.entry.country = attributes.get("country")
+			self.entry.votes = attributes.get("votes")
+			self.entry.homepage = attributes.get("homepage")
+			self.entry.icon_src = attributes.get("favicon")
+
+			if self.entry.country not in self.countries:
+				if self.entry.country == "":
+					parent = self.model.append(self.iter_countries,["Undefined",None,None,None,None,None])
+				else:
+					parent = self.model.append(self.iter_countries,[self.entry.country,None,None,None,None,None])
+				self.countries[self.entry.country] = parent
+			else:
+				parent = self.countries[self.entry.country]
+
+			self.model.append(parent,[self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,self.entry.listen_url,self.entry])
+
+			if self.entry.language not in self.languages:
+				if self.entry.language == "":
+					parent = self.model.append(self.iter_languages,["Undefined",None,None,None,None,None])
+				else:
+					parent = self.model.append(self.iter_languages,[self.entry.language,None,None,None,None,None])
+				self.languages[self.entry.language] = parent
+			else:
+				parent = self.languages[self.entry.language]
+
+			self.model.append(parent,[self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,self.entry.listen_url,self.entry])
+
+			tags = self.entry.genre.split(" ")
+			for tag in tags:
+				tag = tag.strip()
+				if tag not in self.tags:
+					if tag == "":
+						parent = self.model.append(self.iter_tags,["Undefined",None,None,None,None,None])
+					else:
+						parent = self.model.append(self.iter_tags,[tag,None,None,None,None,None])
+					self.tags[tag] = parent
+				else:
+					parent = self.tags[tag]
+
+				self.model.append(parent,[self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,self.entry.listen_url,self.entry])
+
 
 class RecordProcess(threading.Thread):
 	def __init__(self):
@@ -361,49 +428,89 @@ class RadioBrowserSource(rb.StreamingSource):
 		for widget in self.info_box.get_children():
 			self.info_box.remove(widget)
 
+		info_container = gtk.VBox()
+
+		def add_label(title,value):
+			if not value == "":
+				if len(value) > 53:
+					short_value = value[0:50]+"..."
+				else:
+					short_value = value
+
+				label = gtk.Label()
+				if value.startswith("http://"):
+					label.set_markup("<b>"+xml.sax.saxutils.escape(title)+"</b>:<a href='"+xml.sax.saxutils.escape(value)+"'>"+xml.sax.saxutils.escape(short_value)+"</a>")
+				else:
+					label.set_markup("<b>"+xml.sax.saxutils.escape(title)+"</b>:"+xml.sax.saxutils.escape(short_value))
+				label.set_selectable(True)
+				info_container.pack_start(label)
+
 		selection = self.tree_view.get_selection()
 		model,iter = selection.get_selected()
 		if not iter == None:
+			path = self.sorted_list_store.convert_path_to_child_path(self.filtered_list_store.convert_path_to_child_path(model.get_path(iter)))
+
+			if path == self.tree_store.get_path(self.tree_iter_board):
+				add_label("Entry type","Feed")
+				add_label("Feed homepage","http://segler.bplaced.net")
+				add_label("Feed source","http://segler.bplaced.net/xml.php")
+
+			if path == self.tree_store.get_path(self.tree_iter_local):
+				add_label("Entry type","Feed")
+				add_label("Feed admin","segler_alex@web.de")
+				add_label("Feed source","http://www.programmierecke.net/programmed/local.xml")
+
+			if path == self.tree_store.get_path(self.tree_iter_shoutcast):
+				add_label("Entry type","Feed")
+				add_label("Feed homepage","http://shoutcast.com/")
+				add_label("Feed source","http://www.shoutcast.com/sbin/newxml.phtml")
+
+			if path == self.tree_store.get_path(self.tree_iter_icecast):
+				add_label("Entry type","Feed")
+				add_label("Feed homepage","http://dir.xiph.org")
+				add_label("Feed source","http://dir.xiph.org/yp.xml")
+
+			if path == self.tree_store.get_path(self.tree_iter_bookmarks):
+				add_label("Entry type","Feed")
+				add_label("Description","User saved bookmarks")
+				add_label("Feed source","local source")
+
+			if path == self.tree_store.get_path(self.tree_iter_recently_played):
+				add_label("Entry type","Feed")
+				add_label("Description","Recently played streams")
+				add_label("Feed source","local source")
+
 			obj = model.get_value(iter,5)
 
 			if obj is not None:
-				info_container = gtk.VBox()
-
-				def add_label(title,value):
-					if not value == "":
-						if len(value) > 43:
-							short_value = value[0:40]+"..."
-						else:
-							short_value = value
-
-						label = gtk.Label()
-						if value.startswith("http://"):
-							label.set_markup("<b>"+xml.sax.saxutils.escape(title)+"</b>:<a href='"+xml.sax.saxutils.escape(value)+"'>"+xml.sax.saxutils.escape(short_value)+"</a>")
-						else:
-							label.set_markup("<b>"+xml.sax.saxutils.escape(title)+"</b>:"+xml.sax.saxutils.escape(short_value))
-						label.set_selectable(True)
-						info_container.pack_start(label)
-
-				#add_label("Name",obj.server_name)
+				add_label("Entry type","Internet radio station")
+				add_label("Name",obj.server_name)
 				add_label("Tags",obj.genre)
 				add_label("Bitrate",obj.bitrate)
 				add_label("Server type",obj.server_type)
 				add_label("Homepage",obj.homepage)
 				add_label("Current song (on last refresh)",obj.current_song)
 				add_label("Current listeners",obj.listeners)
+				add_label("Language",obj.language)
+				add_label("Country",obj.country)
+				add_label("Votes",obj.votes)
 
-				decorated_info_box = gtk.Frame(obj.server_name)
-				decorated_info_box.add(info_container)
-				self.info_box.pack_start(decorated_info_box)
-				self.info_box.show_all()
+			decorated_info_box = gtk.Frame("Info box")
+			decorated_info_box.add(info_container)
+			self.info_box.pack_start(decorated_info_box)
+			self.info_box.show_all()
 
 	def icon_download_worker(self):
 		while True:
 			filepath,src = self.icon_download_queue.get()
 
 			if os.path.exists(filepath) is False:
-				print "downloading favicon: "+src
-				urllib.urlretrieve(src,filepath)
+				if src.lower().startswith("http://"):
+					print "downloading favicon: "+src
+					try:
+						urllib.urlretrieve(src,filepath)
+					except:
+						print "error while downloading favicon:"+src
 
 			self.icon_download_queue.task_done()
 
@@ -511,6 +618,12 @@ class RadioBrowserSource(rb.StreamingSource):
 					if self.tree_store.get_path(iter) == self.tree_store.get_path(self.tree_iter_shoutcast):
 						filename = "shoutcast-genres.xml"
 
+					if self.tree_store.get_path(iter) == self.tree_store.get_path(self.tree_iter_board):
+						filename = "board.xml"
+						additem = gtk.MenuItem("Post new station")
+						additem.connect("activate",self.post_new_station_handler)
+						menu.append(additem)
+
 					if filename is not None:
 						redownloaditem = gtk.MenuItem("Redownload")
 						redownloaditem.connect("activate",self.redownload_handler,filename)
@@ -564,6 +677,84 @@ class RadioBrowserSource(rb.StreamingSource):
 				menu.show_all()
 				menu.popup(None,None,None,event.button,event.time)
 
+	def post_new_station_handler(self,menuitem):
+		builder_file = self.plugin.find_file("prefs.ui")
+		builder = gtk.Builder()
+		builder.add_from_file(builder_file)
+		dialog = builder.get_object('post_station_dialog')
+
+		#dialog.OKButton = builder.get_object('OKButton')
+		#dialog.OKButton.connect("clicked",dialog_OK_clicked,dialog)
+		#dialog.CancelButton = builder.get_object('CancelButton')
+		#dialog.CancelButton.connect("clicked",dialog_Cancel_clicked,dialog)
+
+		dialog.StationName = builder.get_object("StationName")
+		dialog.StationUrl = builder.get_object("StationURL")
+		dialog.StationHomepage = builder.get_object("StationHomepage")
+		dialog.StationFavicon = builder.get_object("StationFavicon")
+		dialog.StationLanguage = builder.get_object("StationLanguage")
+		dialog.StationCountry = builder.get_object("StationCountry")
+		dialog.StationTags = builder.get_object("StationTags")
+
+		LanguageList = gtk.ListStore(str)
+		for language in self.board_languages:
+			LanguageList.append([language])
+		dialog.StationLanguage.set_model(LanguageList)
+		dialog.StationLanguage.set_text_column(0)
+
+		CountryList = gtk.ListStore(str)
+		for country in self.board_countries:
+			CountryList.append([country])
+		dialog.StationCountry.set_model(CountryList)
+		dialog.StationCountry.set_text_column(0)
+
+		while True:
+			def show_message(message):
+				info_dialog = gtk.MessageDialog(parent=dialog,buttons=gtk.BUTTONS_OK,message_format=message)
+				info_dialog.run()
+				info_dialog.destroy()
+
+			print "test"
+			response = dialog.run()
+			if response == 1:
+				break
+			if response == 0:
+				Name = dialog.StationName.get_text().strip()
+				URL = dialog.StationUrl.get_text().strip()
+				Homepage = dialog.StationHomepage.get_text().strip()
+				Favicon = dialog.StationFavicon.get_text().strip()
+				Tags = dialog.StationTags.get_text().strip()
+				Country = dialog.StationCountry.get_child().get_text().strip()
+				Language = dialog.StationLanguage.get_child().get_text().strip()
+
+				if Name == "" or URL == "":
+					show_message("Name and URL are necessary")
+					continue
+
+				if not URL.lower().startswith("http://"):
+					show_message("URL needs to start with http://")
+					continue
+
+				if Homepage != "":
+					if not Homepage.lower().startswith("http://"):
+						show_message("Homepage URL needs to start with http://")
+						continue
+
+				if Favicon != "":
+					if not Favicon.lower().startswith("http://"):
+						show_message("Favicon URL needs to start with http://")
+						continue
+				
+				params = urllib.urlencode({'action': 'add','name': Name, 'url': URL, 'homepage': Homepage,'favicon': Favicon, 'tags': Tags,'language': Language, 'country':Country})
+				f = urllib.urlopen("http://segler.bplaced.net/?%s" % params)
+				f.read()
+
+				self.reset_feed("board.xml")
+				show_message("Station posted")
+				break
+
+		dialog.destroy()
+
 	def homepage_handler(self,menuitem,homepage):
 		webbrowser.open(homepage)
 
@@ -576,7 +767,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		# start filling again
 		self.refill_list()
 
-	def redownload_handler(self,menuitem,filename):
+	def reset_feed(self,filename):
 		filepath = os.path.join(self.cache_dir, filename)
 		os.unlink(filepath)
 		print "redownload "+filepath
@@ -586,6 +777,9 @@ class RadioBrowserSource(rb.StreamingSource):
 		self.createdGenres = {}
 		# start filling again
 		self.refill_list()
+
+	def redownload_handler(self,menuitem,filename):
+		self.reset_feed(filename)
 
 	def play_handler(self,menuitem,record,uri,title):
 		self.generic_play_uri(uri,title,record)
@@ -808,6 +1002,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.tree_iter_shoutcast = self.tree_store.append(None,("Shoutcast",None,None,None,None,None))
 			self.tree_iter_recently_played = self.tree_store.append(None,("Recently played",None,None,None,None,None))
 			self.tree_iter_bookmarks = self.tree_store.append(None,("Bookmarks",None,None,None,None,None))
+			self.tree_iter_board = self.tree_store.append(None,("Public station board",None,None,None,None,None))
 
 			self.recently_played = {}
 			self.bookmarks = {}
@@ -818,6 +1013,12 @@ class RadioBrowserSource(rb.StreamingSource):
 		# load local streams
 		if self.refill_list_part(self.tree_iter_local,LocalHandler(self.tree_store,self.tree_iter_local),"local.xml","http://www.programmierecke.net/programmed/local.xml") == "downloading":
 			return
+		# load public board streams
+		handler = BoardHandler(self.tree_store,self.tree_iter_board)
+		if self.refill_list_part(self.tree_iter_board,handler,"board.xml","http://segler.bplaced.net/xml.php") == "downloading":
+			return
+		self.board_languages = handler.languages
+		self.board_countries = handler.countries
 		# load icecast streams
 		if self.refill_list_part(self.tree_iter_icecast,IcecastHandler(self.tree_store,self.tree_iter_icecast),"icecast.xml","http://dir.xiph.org/yp.xml") == "downloading":
 			return
