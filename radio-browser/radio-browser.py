@@ -52,6 +52,7 @@ class RadioStation:
 		self.language = ""
 		self.country = ""
 		self.votes = ""
+		self.negativevotes = ""
 		self.id = ""
 
 class IcecastHandler(xml.sax.handler.ContentHandler):
@@ -431,7 +432,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		for widget in self.info_box.get_children():
 			self.info_box.remove(widget)
 
-		info_container = gtk.Table(10,2)
+		info_container = gtk.Table(12,2)
 		info_container.set_col_spacing(0,10)
 		self.info_box_added_rows = 0
 
@@ -468,7 +469,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			if path == self.tree_store.get_path(self.tree_iter_board):
 				add_label("Entry type","Feed")
-				add_label("Description","If you cannot find your favorite station in the other feeds, just post it here with right click!",False)
+				add_label("Description","If you cannot find your favorite station in the other feeds, just post it here with right click! You can also vote for stations.",False)
 				add_label("Feed homepage","http://segler.bplaced.net")
 				add_label("Feed source","http://segler.bplaced.net/xml.php")
 
@@ -680,6 +681,15 @@ class RadioBrowserSource(rb.StreamingSource):
 							homepageitem = gtk.MenuItem("Homepage")
 							homepageitem.connect("activate",self.homepage_handler,obj.homepage)
 							menu.append(homepageitem)
+						if obj.type == "Board":
+							voteitem = gtk.MenuItem("Vote! (You like this station)")
+							voteitem.connect("activate",self.vote_station,obj)
+							menu.append(voteitem)
+
+							voteitem = gtk.MenuItem("Mark as bad station (station does not work)")
+							voteitem.connect("activate",self.bad_station,obj)
+							menu.append(voteitem)
+
 					if not uri.startswith("mms:"):
 						try:
 							process = subprocess.Popen("streamripper",stdout=subprocess.PIPE)
@@ -694,17 +704,23 @@ class RadioBrowserSource(rb.StreamingSource):
 
 				menu.show_all()
 				menu.popup(None,None,None,event.button,event.time)
+	def vote_station(self,menuitem,station):
+		params = urllib.urlencode({'action': 'vote','id': station.id})
+		f = urllib.urlopen("http://segler.bplaced.net/?%s" % params)
+		f.read()
+		self.reset_feed("board.xml")
+		
+	def bad_station(self,menuitem,station):
+		params = urllib.urlencode({'action': 'negativevote','id': station.id})
+		f = urllib.urlopen("http://segler.bplaced.net/?%s" % params)
+		f.read()
+		self.reset_feed("board.xml")
 
 	def post_new_station_handler(self,menuitem):
 		builder_file = self.plugin.find_file("prefs.ui")
 		builder = gtk.Builder()
 		builder.add_from_file(builder_file)
 		dialog = builder.get_object('post_station_dialog')
-
-		#dialog.OKButton = builder.get_object('OKButton')
-		#dialog.OKButton.connect("clicked",dialog_OK_clicked,dialog)
-		#dialog.CancelButton = builder.get_object('CancelButton')
-		#dialog.CancelButton.connect("clicked",dialog_Cancel_clicked,dialog)
 
 		dialog.StationName = builder.get_object("StationName")
 		dialog.StationUrl = builder.get_object("StationURL")
