@@ -52,6 +52,7 @@ class RadioStation:
 		self.language = ""
 		self.country = ""
 		self.votes = ""
+		self.id = ""
 
 class IcecastHandler(xml.sax.handler.ContentHandler):
 	def __init__(self,model,parent):
@@ -175,7 +176,7 @@ class BoardHandler(xml.sax.handler.ContentHandler):
 			self.iter_languages = self.model.append(self.parent,["By Language",None,None,None,None,None])
 		if name == "station":
 			self.entry = RadioStation()
-			self.entry.type = "Local"
+			self.entry.type = "Board"
 			self.entry.server_name = attributes.get("name")
 			self.entry.genre = attributes.get("tags")
 			self.entry.listen_url = attributes.get("url")
