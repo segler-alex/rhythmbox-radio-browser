@@ -182,6 +182,7 @@ class BoardHandler(xml.sax.handler.ContentHandler):
 			self.entry.language = attributes.get("language")
 			self.entry.country = attributes.get("country")
 			self.entry.votes = attributes.get("votes")
+			self.entry.negativevotes = attributes.get("negativevotes")
 			self.entry.homepage = attributes.get("homepage")
 			self.entry.icon_src = attributes.get("favicon")
 
@@ -494,6 +495,7 @@ class RadioBrowserSource(rb.StreamingSource):
 				add_label("Language",obj.language)
 				add_label("Country",obj.country)
 				add_label("Votes",obj.votes)
+				add_label("Negative votes",obj.negativevotes)
 
 			decorated_info_box = gtk.Frame("Info box")
 			decorated_info_box.add(info_container)
