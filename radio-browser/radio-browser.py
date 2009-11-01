@@ -705,16 +705,26 @@ class RadioBrowserSource(rb.StreamingSource):
 				menu.show_all()
 				menu.popup(None,None,None,event.button,event.time)
 	def vote_station(self,menuitem,station):
-		params = urllib.urlencode({'action': 'vote','id': station.id})
-		f = urllib.urlopen("http://segler.bplaced.net/?%s" % params)
-		f.read()
-		self.reset_feed("board.xml")
+		message = gtk.MessageDialog(message_format="Vote for station",buttons=gtk.BUTTONS_YES_NO,type=gtk.MESSAGE_QUESTION)
+		message.format_secondary_text("Do you really want to vote for this station?")
+		response = message.run()
+		if response == gtk.RESPONSE_YES:
+			params = urllib.urlencode({'action': 'vote','id': station.id})
+			f = urllib.urlopen("http://segler.bplaced.net/?%s" % params)
+			f.read()
+			self.reset_feed("board.xml")
+		message.destroy()
 		
 	def bad_station(self,menuitem,station):
-		params = urllib.urlencode({'action': 'negativevote','id': station.id})
-		f = urllib.urlopen("http://segler.bplaced.net/?%s" % params)
-		f.read()
-		self.reset_feed("board.xml")
+		message = gtk.MessageDialog(message_format="Mark station as bad",buttons=gtk.BUTTONS_YES_NO,type=gtk.MESSAGE_WARNING)
+		message.format_secondary_text("Do you really want to mark this radio station as bad?\n\nIf you do so, it will get deleted after getting 5 times 'Mark station as bad' from different people!\n\nYou can only do that once in 10 minutes for a single station!")
+		response = message.run()
+		if response == gtk.RESPONSE_YES:
+			params = urllib.urlencode({'action': 'negativevote','id': station.id})
+			f = urllib.urlopen("http://segler.bplaced.net/?%s" % params)
+			f.read()
+			self.reset_feed("board.xml")
+		message.destroy()
 
 	def post_new_station_handler(self,menuitem):
 		builder_file = self.plugin.find_file("prefs.ui")
