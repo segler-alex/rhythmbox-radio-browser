@@ -167,6 +167,7 @@ class BoardHandler(xml.sax.handler.ContentHandler):
 		self.tags = {}
 		self.countries = {}
 		self.languages = {}
+		self.votes = {}
  
 	def startElement(self, name, attributes):
 		try:
@@ -175,6 +176,7 @@ class BoardHandler(xml.sax.handler.ContentHandler):
 			self.iter_tags = self.model.append(self.parent,["By Tag",None,None,None,None,None])
 			self.iter_countries = self.model.append(self.parent,["By Country",None,None,None,None,None])
 			self.iter_languages = self.model.append(self.parent,["By Language",None,None,None,None,None])
+			self.iter_votes = self.model.append(self.parent,["Most liked",None,None,None,None,None])
 		if name == "station":
 			self.entry = RadioStation()
 			self.entry.type = "Board"
@@ -222,6 +224,19 @@ class BoardHandler(xml.sax.handler.ContentHandler):
 					self.tags[tag] = parent
 				else:
 					parent = self.tags[tag]
+
+				self.model.append(parent,[self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,self.entry.listen_url,self.entry])
+
+			counter = 1
+			while int(self.entry.votes) > (counter*10):
+				counter = counter*10
+
+			if counter > 1:
+				if counter in self.votes:
+					parent = self.votes[counter]
+				else:
+					parent = self.model.append(self.iter_votes,["More than "+str(counter)+" votes",None,None,None,None,None])
+					self.votes[counter] = parent
 
 				self.model.append(parent,[self.entry.server_name,self.entry.genre,self.entry.bitrate,self.entry.current_song,self.entry.listen_url,self.entry])
 
@@ -469,7 +484,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			if path == self.tree_store.get_path(self.tree_iter_board):
 				add_label("Entry type","Feed")
-				add_label("Description","If you cannot find your favorite station in the other feeds, just post it here with right click! You can also vote for stations.",False)
+				add_label("Description","If you cannot find your favourite station in the other feeds, just post it here with right click! You can also vote for stations.",False)
 				add_label("Feed homepage","http://segler.bplaced.net")
 				add_label("Feed source","http://segler.bplaced.net/xml.php")
 
@@ -717,7 +732,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		
 	def bad_station(self,menuitem,station):
 		message = gtk.MessageDialog(message_format="Mark station as bad",buttons=gtk.BUTTONS_YES_NO,type=gtk.MESSAGE_WARNING)
-		message.format_secondary_text("Do you really want to mark this radio station as bad?\n\nIf you do so, it will get deleted after getting 5 times 'Mark station as bad' from different people!\n\nYou can only do that once in 10 minutes for a single station!")
+		message.format_secondary_text("Do you really want to mark this radio station as bad?\n\nIt will eventually get deleted if enough people do that!\n\nMore information on that on the feeds homepage:\nhttp://segler.bplaced.net/")
 		response = message.run()
 		if response == gtk.RESPONSE_YES:
 			params = urllib.urlencode({'action': 'negativevote','id': station.id})
