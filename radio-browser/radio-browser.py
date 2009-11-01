@@ -790,8 +790,8 @@ class RadioBrowserSource(rb.StreamingSource):
 					show_message("Name and URL are necessary")
 					continue
 
-				if not URL.lower().startswith("http://"):
-					show_message("URL needs to start with http://")
+				if not (URL.lower().startswith("http://") or URL.lower().startswith("mms://")):
+					show_message("URL needs to start with http:// or mms://")
 					continue
 
 				if Homepage != "":
