@@ -36,10 +36,12 @@ import xml.sax.saxutils
 RB_METADATA_FIELD_TITLE = 0
 RB_METADATA_FIELD_GENRE = 4
 RB_METADATA_FIELD_BITRATE = 20
+BOARD_ROOT = "http://segler.bplaced.net/"
 
 class RadioStation:
 	def __init__(self):
 		self.listen_url = ""
+		self.real_url = ""
 		self.server_name = ""
 		self.genre = ""
 		self.bitrate = ""
@@ -592,10 +594,23 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			cell.set_property("pixbuf",icon)
 
+	def transmit_station(self):
+		params = urllib.urlencode({'action':'clicked','name': self.station.server_name,'url': self.station.real_url,'source':self.station.type})
+		f = urllib.urlopen(BOARD_ROOT+"?%s" % params)
+		f.read()
+		print "Transmit station '"+str(self.station.server_name)+"' OK"
+
+	def transmit_title(self,title):
+		params = urllib.urlencode({'action':'streaming','name': self.station.server_name,'url': self.station.real_url,'source':self.station.type,'title':title})
+		f = urllib.urlopen(BOARD_ROOT+"?%s" % params)
+		f.read()
+		print "Transmit title '"+str(title)+"' OK"
+
 	def info_available(self,player,uri,field,value):
 		if field == RB_METADATA_FIELD_TITLE:
 			self.title = value
 			self.set_streaming_title(self.title)
+			gobject.idle_add(self.transmit_title,value)
 			print "setting title to:"+value
            
 		elif field == RB_METADATA_FIELD_GENRE:
@@ -944,6 +959,8 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.refill_list()
 
 	def play_uri(self,uri,title):
+		self.station.real_url = uri
+		gobject.idle_add(self.transmit_station)
 		self.add_recently_played(uri,title)
 		player = self.shell.get_player()
 		player.stop()
@@ -977,6 +994,12 @@ class RadioBrowserSource(rb.StreamingSource):
 		myiter = self.tree_store.get_iter(self.sorted_list_store.convert_path_to_child_path(self.filtered_list_store.convert_path_to_child_path(path)))
 		uri = self.tree_store.get_value(myiter,4)
 		title = self.tree_store.get_value(myiter,0)
+		self.station = self.tree_store.get_value(myiter,5)
+		if self.station == None:
+			self.station = RadioStation()
+			self.station.server_name = title
+			self.station.listen_url = uri
+			self.station.type = "local"
 
 		if not uri == None:
 			self.generic_play_uri(uri,title)
