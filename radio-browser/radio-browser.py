@@ -673,6 +673,9 @@ class RadioBrowserSource(rb.StreamingSource):
 						additem.connect("activate",self.post_new_station_handler)
 						menu.append(additem)
 
+#					if self.tree_store.is_ancestor(self.tree_iter_shoutcast,iter):
+#						filename = "shoutcast--"+title+".xml"
+
 					if filename is not None:
 						redownloaditem = gtk.MenuItem("Redownload")
 						redownloaditem.connect("activate",self.redownload_handler,filename)
@@ -1005,9 +1008,17 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.generic_play_uri(uri,title)
 		else:
 			if self.tree_store.is_ancestor(self.tree_iter_shoutcast,myiter):
+				filename = "shoutcast--"+title+".xml"
+
+				if filename in self.loadedFiles:
+					self.loadedFiles.remove(filename)
+
+				filepath = os.path.join(self.cache_dir, filename)
+				if os.path.exists(filepath):
+					os.unlink(filepath)
 				print "download genre "+title
 				handler_stations = ShoutcastHandler(self.tree_store,myiter)
-				self.refill_list_part(myiter,handler_stations,"shoutcast--"+title+".xml","http://www.shoutcast.com/sbin/newxml.phtml?genre="+title,True,False)
+				self.refill_list_part(myiter,handler_stations,filename,"http://www.shoutcast.com/sbin/newxml.phtml?genre="+title,True,False)
 
 	def download_shoutcast_playlist(self,uri,title,record):
 		print "starting download: "+uri
