@@ -610,7 +610,9 @@ class RadioBrowserSource(rb.StreamingSource):
 		if field == RB_METADATA_FIELD_TITLE:
 			self.title = value
 			self.set_streaming_title(self.title)
-			gobject.idle_add(self.transmit_title,value)
+			transmit_thread = threading.Thread(target = self.transmit_title,args = (value,))
+			transmit_thread.setDaemon(True)
+			transmit_thread.start()
 			print "setting title to:"+value
            
 		elif field == RB_METADATA_FIELD_GENRE:
@@ -963,7 +965,9 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	def play_uri(self,uri,title):
 		self.station.real_url = uri
-		gobject.idle_add(self.transmit_station)
+		transmit_thread = threading.Thread(target = self.transmit_station)
+		transmit_thread.setDaemon(True)
+		transmit_thread.start()
 		self.add_recently_played(uri,title)
 		player = self.shell.get_player()
 		player.stop()
