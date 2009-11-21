@@ -912,6 +912,10 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	def record_play_button_handler(self,button,uri):
 		rp = self.recording_streams[uri]
+		self.station = RadioStation()
+		self.station.server_name = rp.title
+		self.station.listen_url = uri
+		self.station.type = "local"
 		self.generic_play_uri("http://127.0.0.1:"+rp.relay_port,rp.title)
 
 	def record_stop_button_handler(self,button,uri):
