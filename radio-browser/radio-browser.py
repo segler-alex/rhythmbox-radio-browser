@@ -569,7 +569,7 @@ class RadioBrowserSource(rb.StreamingSource):
 	def model_data_func(self,column,cell,model,iter,infostr):
 		obj = model.get_value(iter,5)
 		current_iter = self.sorted_list_store.convert_iter_to_child_iter(None,self.filtered_list_store.convert_iter_to_child_iter(iter))
-		self.clef_icon = self.get_icon_pixbuf(self.plugin.find_file("clef.png"))
+		self.clef_icon = self.get_icon_pixbuf(self.plugin.find_file("note.png"))
 		icon = self.clef_icon
 
 		if infostr == "image":
@@ -588,7 +588,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			if self.tree_store.get_path(current_iter) == self.tree_store.get_path(self.tree_iter_icecast):
 				icon = self.get_icon_pixbuf(self.plugin.find_file("xiph-logo.png"))
 			if self.tree_store.get_path(current_iter) == self.tree_store.get_path(self.tree_iter_shoutcast):
-				icon = self.get_icon_pixbuf(self.plugin.find_file("shoutcast-logo.ico"))
+				icon = self.get_icon_pixbuf(self.plugin.find_file("shoutcast-logo.png"))
 			#if self.tree_store.is_ancestor(self.tree_iter_icecast,current_iter):
 			#	icon = None
 
