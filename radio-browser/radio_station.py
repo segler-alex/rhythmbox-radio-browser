@@ -1,0 +1,18 @@
+class RadioStation:
+	def __init__(self):
+		self.listen_url = ""
+		self.real_url = ""
+		self.server_name = ""
+		self.genre = ""
+		self.bitrate = ""
+		self.current_song = ""
+		self.type = ""
+		self.icon_src = ""
+		self.homepage = ""
+		self.listeners = ""
+		self.server_type = ""
+		self.language = ""
+		self.country = ""
+		self.votes = ""
+		self.negativevotes = ""
+		self.id = ""

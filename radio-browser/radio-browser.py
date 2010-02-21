@@ -32,30 +32,13 @@ import webbrowser
 import Queue
 import xml.sax.saxutils
 
+from radio_station import RadioStation
+
 #TODO: should not be defined here, but I don't know where to get it from. HELP: much apreciated
 RB_METADATA_FIELD_TITLE = 0
 RB_METADATA_FIELD_GENRE = 4
 RB_METADATA_FIELD_BITRATE = 20
 BOARD_ROOT = "http://segler.bplaced.net/"
-
-class RadioStation:
-	def __init__(self):
-		self.listen_url = ""
-		self.real_url = ""
-		self.server_name = ""
-		self.genre = ""
-		self.bitrate = ""
-		self.current_song = ""
-		self.type = ""
-		self.icon_src = ""
-		self.homepage = ""
-		self.listeners = ""
-		self.server_type = ""
-		self.language = ""
-		self.country = ""
-		self.votes = ""
-		self.negativevotes = ""
-		self.id = ""
 
 class IcecastHandler(xml.sax.handler.ContentHandler):
 	def __init__(self,model,parent):
@@ -884,9 +867,9 @@ class RadioBrowserSource(rb.StreamingSource):
 		left.pack_start(gtk.Label(title))
 
 		right = gtk.VBox()
-		play_button = gtk.Button(stock=gtk.STOCK_MEDIA_PLAY)
+		play_button = gtk.Button(stock=gtk.STOCK_MEDIA_PLAY,label="")
 		right.pack_start(play_button)
-		stop_button = gtk.Button(stock=gtk.STOCK_STOP)
+		stop_button = gtk.Button(stock=gtk.STOCK_STOP,label="")
 		right.pack_start(stop_button)
 
 		box = gtk.HBox()
