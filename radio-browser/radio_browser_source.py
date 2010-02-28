@@ -868,17 +868,19 @@ class RadioBrowserSource(rb.StreamingSource):
 		#self.tree_store.clear()
 
 		for feed in self.engines():
-			current_iter = self.tree_store.append(None,(feed.name(),None))
-
-			gtk.gdk.threads_enter()
-			genre_iter = self.tree_store.append(current_iter,(_("By Genres"),None))
-			country_iter = self.tree_store.append(current_iter,(_("By Country"),None))
-			gtk.gdk.threads_leave()
-
-			genres = {}
-			countries = {}
 			try:
-				for station in feed.entries():
+				entries = feed.entries()
+				current_iter = self.tree_store.append(None,(feed.name(),None))
+
+				gtk.gdk.threads_enter()
+				genre_iter = self.tree_store.append(current_iter,(_("By Genres"),None))
+				country_iter = self.tree_store.append(current_iter,(_("By Country"),None))
+				gtk.gdk.threads_leave()
+
+				genres = {}
+				countries = {}
+
+				for station in entries:
 					self.load_status = "integrating into tree..."
 					gtk.gdk.threads_enter()
 					# by genre
