@@ -27,6 +27,7 @@ class LocalHandler(xml.sax.handler.ContentHandler):
 		self.countries = []
 		self.categories = []
 		self.entries = []
+		self.current_category = None
  
 	def startElement(self, name, attributes):
 		if name == "country":
@@ -34,6 +35,7 @@ class LocalHandler(xml.sax.handler.ContentHandler):
 			self.current_country = attributes.get("name")
 		if name == "category":
 			self.categories.append(attributes.get("name"))
+			self.current_category = attributes.get("name")
 		if name == "station":
 			self.entry = RadioStation()
 			self.entry.type = "Local"
@@ -43,8 +45,15 @@ class LocalHandler(xml.sax.handler.ContentHandler):
 			self.entry.bitrate = attributes.get("bitrate")
 			self.entry.homepage = attributes.get("homepage")
 			self.entry.icon_src = attributes.get("favicon")
-			self.entry.country = self.current_country
+			if self.current_category is not None:
+				self.entry.country = self.current_country+"/"+self.current_category
+			else:
+				self.entry.country = self.current_country
 			self.entries.append(self.entry)
+
+	def endElement(self, name):
+		if name == "category":
+			self.current_category = None
 
 class FeedLocal(Feed):
 	def __init__(self,cache_dir,status_change_handler):

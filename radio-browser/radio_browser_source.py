@@ -879,6 +879,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 				genres = {}
 				countries = {}
+				subcountries = {}
 
 				for station in entries:
 					self.load_status = "integrating into tree..."
@@ -892,9 +893,15 @@ class RadioBrowserSource(rb.StreamingSource):
 							self.tree_store.append(genres[genre],(station.server_name,station))
 
 					# by country
-					if station.country not in countries:
-						countries[station.country] = self.tree_store.append(country_iter,(station.country,None))
-					self.tree_store.append(countries[station.country],(station.server_name,station))
+					country_arr = station.country.split("/")
+					if country_arr[0] not in countries:
+						countries[country_arr[0]] = self.tree_store.append(country_iter,(country_arr[0],None))
+					if len(country_arr) == 2:
+						if station.country not in subcountries:
+							subcountries[station.country] = self.tree_store.append(countries[country_arr[0]],(country_arr[1],None))
+						self.tree_store.append(subcountries[station.country],(station.server_name,station))
+					else:
+						self.tree_store.append(countries[country_arr[0]],(station.server_name,station))
 					gtk.gdk.threads_leave()
 			except:
 				print "error with source:"+feed.name()
