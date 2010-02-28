@@ -697,25 +697,23 @@ class RadioBrowserSource(rb.StreamingSource):
 		# returns true if the row should be visible
 		if len(model) == 0:
 			return True
+		station = model.get_value(iter,1)
+		if station == None:
+			return True
 
-		"""if not model.get_value(iter,2) == None:
-			try:
-				bitrate = int(model.get_value(iter,2))
-				min_bitrate = int(float(self.plugin.min_bitrate))
-				if bitrate < min_bitrate:
-					return False
-			except:
-				pass"""
+		try:
+			bitrate = int(station.bitrate)
+			min_bitrate = int(float(self.plugin.min_bitrate))
+			if bitrate < min_bitrate:
+				return False
+		except:
+			pass
 
 		filter_string = self.filter_entry.get_text().lower()
 		
 		if filter_string == "":
 			return True
 		elif model.get_value(iter,0).lower().find(filter_string) >= 0:
-			return True
-		elif model.get_value(iter,1) == None:
-			return True
-		elif model.get_value(iter,1).lower().find(filter_string) >= 0:
 			return True
 		else:
 			return False
