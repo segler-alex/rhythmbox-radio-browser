@@ -877,22 +877,25 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			genres = {}
 			countries = {}
-			for station in feed.entries():
-				self.load_status = "integrating into tree..."
-				gtk.gdk.threads_enter()
-				# by genre
-				if station.genre is not None:
-					for genre in station.genre.split(","):
-						genre = genre.strip(" ")
-						if genre not in genres:
-							genres[genre] = self.tree_store.append(genre_iter,(genre,None))
-						self.tree_store.append(genres[genre],(station.server_name,station))
+			try:
+				for station in feed.entries():
+					self.load_status = "integrating into tree..."
+					gtk.gdk.threads_enter()
+					# by genre
+					if station.genre is not None:
+						for genre in station.genre.split(","):
+							genre = genre.strip(" ")
+							if genre not in genres:
+								genres[genre] = self.tree_store.append(genre_iter,(genre,None))
+							self.tree_store.append(genres[genre],(station.server_name,station))
 
-				# by country
-				if station.country not in countries:
-					countries[station.country] = self.tree_store.append(country_iter,(station.country,None))
-				self.tree_store.append(countries[station.country],(station.server_name,station))
-				gtk.gdk.threads_leave()
+					# by country
+					if station.country not in countries:
+						countries[station.country] = self.tree_store.append(country_iter,(station.country,None))
+					self.tree_store.append(countries[station.country],(station.server_name,station))
+					gtk.gdk.threads_leave()
+			except:
+				print "error with source:"+feed.name()
 
 		# activate sorting
 		self.sorted_list_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
