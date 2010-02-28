@@ -27,6 +27,11 @@ class Feed:
 
 	def download(self):
 		print "downloading "+self.uri
+		try:
+			os.remove(self.filename)
+		except:
+			print "File unlink failed:"+self.filename
+
 		remotefile = gio.File(self.uri)
 		localfile = gio.File(self.filename)
 		
@@ -42,7 +47,9 @@ class Feed:
 
 			rf = gio.File(self.uri)
 			rfi = rf.query_info(gio.FILE_ATTRIBUTE_TIME_MODIFIED)
-			remote_mod = lfi.get_attribute_uint64(gio.FILE_ATTRIBUTE_TIME_MODIFIED)
+			remote_mod = rfi.get_attribute_uint64(gio.FILE_ATTRIBUTE_TIME_MODIFIED)
+
+			print "Modification time:remote("+str(remote_mod)+" local("+str(local_mod)+")"
 
 			if remote_mod != local_mod:
 				# change date is different -> download
