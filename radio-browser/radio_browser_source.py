@@ -322,36 +322,36 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	""" data display function for tree view """
 	def model_data_func(self,column,cell,model,iter,infostr):
-		obj = model.get_value(iter,1)
-		current_iter = self.sorted_list_store.convert_iter_to_child_iter(None,self.filtered_list_store.convert_iter_to_child_iter(iter))
+		station = model.get_value(iter,1)
 		self.clef_icon = self.get_icon_pixbuf(self.plugin.find_file("note.png"))
-		icon = self.clef_icon
 
 		if infostr == "image":
-			if obj is not None:
-				if obj.type == "Shoutcast":
+			icon = None
+
+			if station is not None:
+				# default icon
+				icon = self.clef_icon
+
+				# icons for special feeds
+				if station.type == "Shoutcast":
 					icon = self.get_icon_pixbuf(self.plugin.find_file("shoutcast-logo.png"))
-				if obj.type == "Icecast":
+				if station.type == "Icecast":
 					icon = self.get_icon_pixbuf(self.plugin.find_file("xiph-logo.png"))
-				if not obj.icon_src == "":
-					hash_src = hashlib.md5(obj.icon_src).hexdigest()
+
+				# most special icons, if the station has one for itsself
+				if station.icon_src != "":
+					hash_src = hashlib.md5(station.icon_src).hexdigest()
 					filepath = os.path.join(self.icon_cache_dir, hash_src)
 					if os.path.exists(filepath):
 						icon = self.get_icon_pixbuf(filepath,self.clef_icon)
 					else:
 						# load icon
-						self.icon_download_queue.put([filepath,obj.icon_src])
-				else:
-					icon = self.clef_icon
+						self.icon_download_queue.put([filepath,station.icon_src])
 
-			#if self.tree_store.get_path(current_iter) == self.tree_store.get_path(self.tree_iter_icecast):
-			#	icon = self.get_icon_pixbuf(self.plugin.find_file("xiph-logo.png"))
-			#if self.tree_store.get_path(current_iter) == self.tree_store.get_path(self.tree_iter_shoutcast):
-			#	icon = self.get_icon_pixbuf(self.plugin.find_file("shoutcast-logo.png"))
-			#if self.tree_store.is_ancestor(self.tree_iter_icecast,current_iter):
-			#	icon = None
-
-			cell.set_property("pixbuf",icon)
+			if icon is None:
+				cell.set_property("stock-id",gtk.STOCK_DIRECTORY)
+			else:
+				cell.set_property("pixbuf",icon)
 
 	""" transmits station information to board """
 	def transmit_station(self):

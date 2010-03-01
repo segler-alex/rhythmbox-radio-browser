@@ -30,7 +30,7 @@ class IcecastHandler(xml.sax.handler.ContentHandler):
 		self.currentEntry = name;
 		if name == "entry":
 			self.entry = RadioStation()
-			self.type = "Icecast"
+			self.entry.type = "Icecast"
  
 	def characters(self, data):
 		if self.currentEntry == "server_name":
