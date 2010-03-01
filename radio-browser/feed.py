@@ -22,6 +22,15 @@ import xml.sax.handler
 from radio_station import RadioStation
 
 class Feed:
+	def getSource(self):
+		return self.uri
+
+	def getDescription(self):
+		return ""
+
+	def getHomepage(self):
+		return ""
+
 	def copy_callback(self,current,total):
 		self.status_change_handler(self.uri,current,total)
 

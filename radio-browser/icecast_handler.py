@@ -68,3 +68,9 @@ class FeedIcecast(Feed):
 
 	def name(self):
 		return "Icecast"
+
+	def getDescription(self):
+		return ""
+
+	def getHomepage(self):
+		return "http://dir.xiph.org"

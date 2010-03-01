@@ -34,6 +34,7 @@ import xml.sax.saxutils
 from radio_station import RadioStation
 from record_process import RecordProcess
 
+from feed import Feed
 from local_handler import FeedLocal
 from icecast_handler import FeedIcecast
 from board_handler import FeedBoard
@@ -180,9 +181,6 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.pack_start(mybox)
 			mybox.show_all()
 
-			# first time filling of the model
-			self.refill_list()
-
 			# initialize lists for recording streams and icon cache
 			self.recording_streams = {}
 			self.icon_cache = {}
@@ -195,17 +193,23 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.icon_download_thread.setDaemon(True)
 			self.icon_download_thread.start()
 
+			# first time filling of the model
+			self.refill_list()
+
 		rb.BrowserSource.do_impl_activate (self)
 
 	""" listener for selection changes """
 	def treeview_cursor_changed_handler(self,treeview):
+		# remove all old information in infobox
 		for widget in self.info_box.get_children():
 			self.info_box.remove(widget)
 
+		# create new infobox
 		info_container = gtk.Table(12,2)
 		info_container.set_col_spacing(0,10)
 		self.info_box_added_rows = 0
 
+		# convinience method for adding new labels to infobox
 		def add_label(title,value,shorten=True):
 			if not value == "":
 				if shorten:
@@ -218,7 +222,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 				label = gtk.Label()
 				label.set_line_wrap(True)
-				if value.startswith("http://"):
+				if value.startswith("http://") or value.startswith("mailto:"):
 					label.set_markup("<a href='"+xml.sax.saxutils.escape(value)+"'>"+xml.sax.saxutils.escape(short_value)+"</a>")
 				else:
 					label.set_markup(xml.sax.saxutils.escape(short_value))
@@ -232,45 +236,38 @@ class RadioBrowserSource(rb.StreamingSource):
 				info_container.attach(label,1,2,self.info_box_added_rows,self.info_box_added_rows+1)
 				self.info_box_added_rows = self.info_box_added_rows+1
 
+		# get selected item
 		selection = self.tree_view.get_selection()
 		model,iter = selection.get_selected()
+
+		# if some item is selected
 		if not iter == None:
 			path = self.sorted_list_store.convert_path_to_child_path(self.filtered_list_store.convert_path_to_child_path(model.get_path(iter)))
+			obj = model.get_value(iter,1)
 
-			"""if path == self.tree_store.get_path(self.tree_iter_board):
+			if isinstance(obj,Feed):
+				feed = obj
 				add_label("Entry type","Feed")
-				add_label("Description","If you cannot find your favourite station in the other feeds, just post it here with right click! You can also vote for stations.",False)
-				add_label("Feed homepage","http://segler.bplaced.net")
-				add_label("Feed source","http://segler.bplaced.net/xml.php")
 
-			if path == self.tree_store.get_path(self.tree_iter_local):
-				add_label("Entry type","Feed")
-				add_label("Feed admin","segler_alex@web.de")
-				add_label("Feed source","http://www.programmierecke.net/programmed/local.xml")
+				add_label("Description",feed.getDescription(),False)
+				add_label("Feed homepage",feed.getHomepage())
+				add_label("Feed source",feed.getSource())
 
-			if path == self.tree_store.get_path(self.tree_iter_shoutcast):
-				add_label("Entry type","Feed")
-				add_label("Feed homepage","http://shoutcast.com/")
-				add_label("Feed source","http://www.shoutcast.com/sbin/newxml.phtml")
+				"""
+				if station == "Shoutcast":
+					add_label("Feed homepage","http://shoutcast.com/")
+					add_label("Feed source","http://www.shoutcast.com/sbin/newxml.phtml")
 
-			if path == self.tree_store.get_path(self.tree_iter_icecast):
-				add_label("Entry type","Feed")
-				add_label("Feed homepage","http://dir.xiph.org")
-				add_label("Feed source","http://dir.xiph.org/yp.xml")
+				if station == "Bookmark":
+					add_label("Description","User saved bookmarks")
+					add_label("Feed source","local source")
 
-			if path == self.tree_store.get_path(self.tree_iter_bookmarks):
-				add_label("Entry type","Feed")
-				add_label("Description","User saved bookmarks")
-				add_label("Feed source","local source")
+				if station == "Recently":
+					add_label("Description","Recently played streams")
+					add_label("Feed source","local source")"""
 
-			if path == self.tree_store.get_path(self.tree_iter_recently_played):
-				add_label("Entry type","Feed")
-				add_label("Description","Recently played streams")
-				add_label("Feed source","local source")"""
-
-			station = model.get_value(iter,1)
-
-			if station is not None:
+			if isinstance(obj,RadioStation):
+				station = obj
 				add_label("Entry type","Internet radio station")
 				add_label("Name",station.server_name)
 				add_label("Tags",station.genre)
@@ -322,13 +319,14 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	""" data display function for tree view """
 	def model_data_func(self,column,cell,model,iter,infostr):
-		station = model.get_value(iter,1)
+		obj = model.get_value(iter,1)
 		self.clef_icon = self.get_icon_pixbuf(self.plugin.find_file("note.png"))
 
 		if infostr == "image":
 			icon = None
 
-			if station is not None:
+			if isinstance(obj,RadioStation):
+				station = obj
 				# default icon
 				icon = self.clef_icon
 
@@ -868,7 +866,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		for feed in self.engines():
 			try:
 				entries = feed.entries()
-				current_iter = self.tree_store.append(None,(feed.name(),None))
+				current_iter = self.tree_store.append(None,(feed.name(),feed))
 
 				gtk.gdk.threads_enter()
 				genre_iter = self.tree_store.append(current_iter,(_("By Genres"),None))

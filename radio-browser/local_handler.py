@@ -66,3 +66,6 @@ class FeedLocal(Feed):
 
 	def name(self):
 		return "Local"
+
+	def getHomepage(self):
+		return "mailto:segler_alex@web.de"
