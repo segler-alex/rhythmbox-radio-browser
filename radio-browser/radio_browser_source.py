@@ -167,7 +167,9 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.icon_view.set_text_column(0)
 			self.icon_view.set_pixbuf_column(2)
 			self.icon_view.set_item_width(150)
+			self.icon_view.set_selection_mode(gtk.SELECTION_SINGLE)
 			self.icon_view.connect("item-activated", self.on_item_activated_icon_view)
+			self.icon_view.connect("selection-changed", self.on_selection_changed_icon_view)
 
 			self.tree_view_container = gtk.ScrolledWindow()
 			self.tree_view_container.set_shadow_type(gtk.SHADOW_IN)
@@ -225,8 +227,26 @@ class RadioBrowserSource(rb.StreamingSource):
 		url = self.station.getRealURL()
 		self.play_uri(url,title)
 
+	def on_selection_changed_icon_view(self,widget):
+		model = widget.get_model()
+		items = widget.get_selected_items()
+
+		if len(items) == 1:
+			obj = model[items[0]][1]
+			self.update_info_box(obj)
+	
 	""" listener for selection changes """
 	def treeview_cursor_changed_handler(self,treeview):
+		# get selected item
+		selection = self.tree_view.get_selection()
+		model,iter = selection.get_selected()
+
+		# if some item is selected
+		if not iter == None:
+			obj = model.get_value(iter,1)
+			self.update_info_box(obj)
+
+	def update_info_box(self,obj):
 		# remove all old information in infobox
 		for widget in self.info_box.get_children():
 			self.info_box.remove(widget)
@@ -263,55 +283,46 @@ class RadioBrowserSource(rb.StreamingSource):
 				info_container.attach(label,1,2,self.info_box_added_rows,self.info_box_added_rows+1)
 				self.info_box_added_rows = self.info_box_added_rows+1
 
-		# get selected item
-		selection = self.tree_view.get_selection()
-		model,iter = selection.get_selected()
+		if isinstance(obj,Feed):
+			feed = obj
+			add_label("Entry type","Feed")
 
-		# if some item is selected
-		if not iter == None:
-			#path = self.sorted_list_store.convert_path_to_child_path(self.filtered_list_store.convert_path_to_child_path(model.get_path(iter)))
-			obj = model.get_value(iter,1)
+			add_label("Description",feed.getDescription(),False)
+			add_label("Feed homepage",feed.getHomepage())
+			add_label("Feed source",feed.getSource())
 
-			if isinstance(obj,Feed):
-				feed = obj
-				add_label("Entry type","Feed")
+			"""
+			if station == "Shoutcast":
+				add_label("Feed homepage","http://shoutcast.com/")
+				add_label("Feed source","http://www.shoutcast.com/sbin/newxml.phtml")
 
-				add_label("Description",feed.getDescription(),False)
-				add_label("Feed homepage",feed.getHomepage())
-				add_label("Feed source",feed.getSource())
+			if station == "Bookmark":
+				add_label("Description","User saved bookmarks")
+				add_label("Feed source","local source")
 
-				"""
-				if station == "Shoutcast":
-					add_label("Feed homepage","http://shoutcast.com/")
-					add_label("Feed source","http://www.shoutcast.com/sbin/newxml.phtml")
+			if station == "Recently":
+				add_label("Description","Recently played streams")
+				add_label("Feed source","local source")"""
 
-				if station == "Bookmark":
-					add_label("Description","User saved bookmarks")
-					add_label("Feed source","local source")
+		if isinstance(obj,RadioStation):
+			station = obj
+			add_label("Entry type","Internet radio station")
+			add_label("Name",station.server_name)
+			add_label("Tags",station.genre)
+			add_label("Bitrate",station.bitrate)
+			add_label("Server type",station.server_type)
+			add_label("Homepage",station.homepage)
+			add_label("Current song (on last refresh)",station.current_song)
+			add_label("Current listeners",station.listeners)
+			add_label("Language",station.language)
+			add_label("Country",station.country)
+			add_label("Votes",station.votes)
+			add_label("Negative votes",station.negativevotes)
 
-				if station == "Recently":
-					add_label("Description","Recently played streams")
-					add_label("Feed source","local source")"""
-
-			if isinstance(obj,RadioStation):
-				station = obj
-				add_label("Entry type","Internet radio station")
-				add_label("Name",station.server_name)
-				add_label("Tags",station.genre)
-				add_label("Bitrate",station.bitrate)
-				add_label("Server type",station.server_type)
-				add_label("Homepage",station.homepage)
-				add_label("Current song (on last refresh)",station.current_song)
-				add_label("Current listeners",station.listeners)
-				add_label("Language",station.language)
-				add_label("Country",station.country)
-				add_label("Votes",station.votes)
-				add_label("Negative votes",station.negativevotes)
-
-			decorated_info_box = gtk.Frame("Info box")
-			decorated_info_box.add(info_container)
-			self.info_box.pack_start(decorated_info_box)
-			self.info_box.show_all()
+		decorated_info_box = gtk.Frame("Info box")
+		decorated_info_box.add(info_container)
+		self.info_box.pack_start(decorated_info_box)
+		self.info_box.show_all()
 
 	""" icon download worker thread function """
 	def icon_download_worker(self):
