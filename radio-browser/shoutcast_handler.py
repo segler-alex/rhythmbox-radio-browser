@@ -22,10 +22,28 @@ import xml.sax.handler
 from radio_station import RadioStation
 from feed import Feed
 
+class ShoutcastRadioStation(RadioStation):
+	def getRealURL(self):
+		if self.listen_url == "":
+			# download from "http://www.shoutcast.com"+self.tunein+"?id="+shoutcast_id
+			url = "http://www.shoutcast.com"+self.tunein+"?id="+self.listen_id
+			remote = gio.File(url)
+			data,datalen,tag = remote.load_contents()
+			print "data:"+data
+			print "datalen:"+str(datalen)
+
+			lines = data.splitlines()
+			for line in lines:
+				if line.startswith("File"):
+					self.listen_url = line.split("=")[1];
+					print "playing uri:"+self.listen_url
+			
+		return self.listen_url
+
 class ShoutcastHandler(xml.sax.handler.ContentHandler):
 	def __init__(self):
 		self.genres = []
-		self.entries = []
+		self.entries = {}
  
 	def startElement(self, name, attributes):
 		if name == "genre":
@@ -33,7 +51,8 @@ class ShoutcastHandler(xml.sax.handler.ContentHandler):
 		if name == "tunein":
 			self.tunein = attributes.get("base")
 		if name == "station":
-			self.entry = RadioStation()
+			self.entry = ShoutcastRadioStation()
+			self.entry.tunein = self.tunein
 			self.entry.type = "Shoutcast"
 			self.entry.server_name = attributes.get("name")
 			self.entry.genre = attributes.get("genre").lower()
@@ -47,7 +66,7 @@ class ShoutcastHandler(xml.sax.handler.ContentHandler):
 				self.entry.homepage = "http://shoutcast.com/directory/search_results.jsp?searchCrit=simple&s="+urllib.quote_plus(self.entry.server_name.replace("- [SHOUTcast.com]","").strip())
 			except:
 				self.entry.homepage = ""
-			self.entries.append(self.entry)
+			self.entries[self.entry.server_name] = self.entry
 
 class FeedShoutcast(Feed):
 	def __init__(self,cache_dir,status_change_handler):
@@ -85,14 +104,29 @@ class FeedShoutcast(Feed):
 			self.load()
 
 	def genres(self):
-		if not os.path.isfile(self.filename):
-			self.download()
+		try:
+			self.loaded
+		except:
+			self.loaded = False
 
-		self.load()
+		if not self.loaded:
+			if not os.path.isfile(self.filename):
+				self.download()
+			self.load()
+			self.loaded = True
+
 		return self.handler.genres
 
 	def entries(self):
-		#self.update()
-		#self.load()
-		return []
-		#self.handler.entries
+		#entrylist = []
+		genres = self.genres()
+		for genre in genres:
+			filename = os.path.join(self.cache_dir, "shoutcast-"+genre+".xml")
+			try:
+				#self.handler = ShoutcastHandler()
+				xml.sax.parse(filename,self.handler)
+				#entrylist.extend(self.handler.entries)
+			except:
+				pass
+
+		return self.handler.entries.values()
