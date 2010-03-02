@@ -117,9 +117,9 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			self.tree_store = gtk.TreeStore(str,object)
 			self.sorted_list_store = gtk.TreeModelSort(self.tree_store)
-			self.filtered_list_store = self.sorted_list_store.filter_new()
-			self.filtered_list_store.set_visible_func(self.list_store_visible_func)
-			self.tree_view = gtk.TreeView(self.filtered_list_store)
+			#self.filtered_list_store = self.sorted_list_store.filter_new()
+			#self.filtered_list_store.set_visible_func(self.list_store_visible_func)
+			self.tree_view = gtk.TreeView(self.sorted_list_store)
 
 			# create the view
 			column_title = gtk.TreeViewColumn()#"Title",gtk.CellRendererText(),text=0)
@@ -306,7 +306,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 		if isinstance(obj,RadioStation):
 			station = obj
-			add_label("Entry type","Internet radio station")
+			add_label("Source feed",station.type)
 			add_label("Name",station.server_name)
 			add_label("Tags",station.genre)
 			add_label("Bitrate",station.bitrate)
@@ -733,8 +733,9 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.tree_view_container.hide_all()
 			self.icon_view_container.show_all()
 
-		#self.filtered_list_store.refilter()
+		self.icon_view.set_model()
 		self.filtered_icon_view_store.refilter()
+		self.icon_view.set_model(self.filtered_icon_view_store)
 		self.notify_status_changed()
 
 	def list_store_visible_func(self,model,iter):
@@ -798,10 +799,13 @@ class RadioBrowserSource(rb.StreamingSource):
 		player.play_entry(self.entry,self)
 
 	def row_activated_handler(self,treeview,path,column):
-		myiter = self.tree_store.get_iter(self.sorted_list_store.convert_path_to_child_path(self.filtered_list_store.convert_path_to_child_path(path)))
+		model = treeview.get_model()
+		myiter = model.get_iter(path)
+		print "ENTER: "+model.get_value(myiter, 0)
+		#myiter = self.tree_store.get_iter(self.sorted_list_store.convert_path_to_child_path(self.filtered_list_store.convert_path_to_child_path(path)))
 		
-		title = self.tree_store.get_value(myiter,0)
-		self.station = self.tree_store.get_value(myiter,1)
+		title = model.get_value(myiter,0)
+		self.station = model.get_value(myiter,1)
 
 		if self.station is not None:
 			uri = self.station.getRealURL()
@@ -888,15 +892,17 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	def refill_list_worker(self):
 		print "refill list worker"
+		self.tree_view.set_model()
+		self.icon_view.set_model()
+
 		self.updating = True
 		# deactivate sorting
-		#self.sorted_list_store.reset_default_sort_func()
+		self.sorted_list_store.reset_default_sort_func()
 
 		# delete old entries
-		gtk.gdk.threads_enter()
 		self.tree_store.clear()
+		#self.icon_view_store.set_default_sort_func(None)
 		self.icon_view_store.clear()
-		gtk.gdk.threads_leave()
 
 		# preload most used icons
 		note_icon = self.load_icon_file(self.plugin.find_file("note.png"),None)
@@ -905,6 +911,12 @@ class RadioBrowserSource(rb.StreamingSource):
 
 		for feed in self.engines():
 			try:
+				gtk.gdk.threads_enter()
+				self.load_status = "loading feed '"+feed.name()+"'"
+				print self.load_status
+				self.notify_status_changed()
+				gtk.gdk.threads_leave()
+
 				# create main feed root item
 				current_iter = self.tree_store.append(None,(feed.name(),feed))
 
@@ -917,12 +929,10 @@ class RadioBrowserSource(rb.StreamingSource):
 				genres_list = feed.genres()
 
 				# add subitems for sorting
-				gtk.gdk.threads_enter()
 				genre_iter = self.tree_store.append(current_iter,(_("By Genres"),None))
 				country_iter = self.tree_store.append(current_iter,(_("By Country"),None))
 				for genre in genres_list:
 					genres[genre] = self.tree_store.append(genre_iter,(genre,None))
-				gtk.gdk.threads_leave()
 
 				# load entries
 				entries = feed.entries()
@@ -934,7 +944,7 @@ class RadioBrowserSource(rb.StreamingSource):
 				gtk.gdk.threads_leave()
 
 				def short_name(name):
-					maxlen = 30
+					maxlen = 50
 					if len(name) > maxlen:
 						return name[0:maxlen-3]+"..."
 					else:
@@ -946,7 +956,9 @@ class RadioBrowserSource(rb.StreamingSource):
 				for station in entries:
 					self.load_current_size += 1
 					gtk.gdk.threads_enter()
-					self.notify_status_changed()
+					if self.load_current_size % 50 == 0:
+						self.notify_status_changed()
+					gtk.gdk.threads_leave()
 
 					# default icon
 					icon = note_icon
@@ -976,18 +988,21 @@ class RadioBrowserSource(rb.StreamingSource):
 					else:
 						self.tree_store.append(countries[country_arr[0]],(station.server_name,station))
 
-					gtk.gdk.threads_leave()
-
 			except Exception,e:
 				print "error with source:"+feed.name()
 				print "error:"+str(e)
-				gtk.gdk.threads_leave()
 
 		# activate sorting
+		self.tree_view.set_model(self.sorted_list_store)
+		self.icon_view.set_model(self.filtered_icon_view_store)
+
 		self.sorted_list_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
 		self.icon_view_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
+
+		gtk.gdk.threads_enter()
 		self.updating = False
 		self.notify_status_changed()
+		gtk.gdk.threads_leave()
 
 	def refill_list(self):
 		print "refill list"
