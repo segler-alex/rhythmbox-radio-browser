@@ -159,11 +159,29 @@ class RadioBrowserSource(rb.StreamingSource):
 			# - selection change
 			self.tree_view.connect("cursor-changed",self.treeview_cursor_changed_handler)
 
-			# pack graphical stuff into boxes and display them
-			mywin = gtk.ScrolledWindow()
-			mywin.set_shadow_type(gtk.SHADOW_IN)
-			mywin.add(self.tree_view)
-			mywin.set_property("hscrollbar-policy", gtk.POLICY_AUTOMATIC)
+			# create icon view
+			self.icon_view_store = gtk.ListStore(str,object,gtk.gdk.Pixbuf)
+			self.icon_view_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
+			self.filtered_icon_view_store = self.icon_view_store.filter_new()
+			self.filtered_icon_view_store.set_visible_func(self.list_store_visible_func)
+			self.icon_view = gtk.IconView(self.filtered_icon_view_store)
+			self.icon_view.set_text_column(0)
+			self.icon_view.set_pixbuf_column(2)
+			self.icon_view.set_item_width(150)
+
+			self.tree_view_container = gtk.ScrolledWindow()
+			self.tree_view_container.set_shadow_type(gtk.SHADOW_IN)
+			self.tree_view_container.add(self.tree_view)
+			self.tree_view_container.set_property("hscrollbar-policy", gtk.POLICY_AUTOMATIC)
+
+			self.icon_view_container = gtk.ScrolledWindow()
+			self.icon_view_container.set_shadow_type(gtk.SHADOW_IN)
+			self.icon_view_container.add(self.icon_view)
+			self.icon_view_container.set_property("hscrollbar-policy", gtk.POLICY_AUTOMATIC)
+
+			self.view = gtk.HBox()
+			self.view.pack_start(self.tree_view_container)
+			self.view.pack_start(self.icon_view_container)
 
 			filterbox = gtk.HBox()
 			filterbox.pack_start(gtk.Label("Filter:"),False)
@@ -174,12 +192,13 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			mybox = gtk.VBox()
 			mybox.pack_start(filterbox,False)
-			mybox.pack_start(mywin)
+			mybox.pack_start(self.view)
 			mybox.pack_start(self.info_box,False)
 			mybox.pack_start(self.record_box,False)
 
 			self.pack_start(mybox)
 			mybox.show_all()
+			self.icon_view_container.hide_all()
 
 			# initialize lists for recording streams and icon cache
 			self.recording_streams = {}
@@ -242,7 +261,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 		# if some item is selected
 		if not iter == None:
-			path = self.sorted_list_store.convert_path_to_child_path(self.filtered_list_store.convert_path_to_child_path(model.get_path(iter)))
+			#path = self.sorted_list_store.convert_path_to_child_path(self.filtered_list_store.convert_path_to_child_path(model.get_path(iter)))
 			obj = model.get_value(iter,1)
 
 			if isinstance(obj,Feed):
@@ -304,7 +323,7 @@ class RadioBrowserSource(rb.StreamingSource):
 	""" tries to load icon from disk and if found it saves it in cache returns it """
 	def get_icon_pixbuf(self,filepath,return_value_not_found=None):
 		if os.path.exists(filepath):
-			width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
+			width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_BUTTON)
 			if filepath in self.icon_cache:
 				return self.icon_cache[filepath]
 			else:
@@ -688,33 +707,42 @@ class RadioBrowserSource(rb.StreamingSource):
 		rp.process.terminate()
 
 	def filter_entry_changed(self,gtk_entry):
-		self.filtered_list_store.refilter()
+		if self.filter_entry.get_text() == "":
+			self.tree_view_container.show_all()
+			self.icon_view_container.hide_all()
+		else:
+			self.tree_view_container.hide_all()
+			self.icon_view_container.show_all()
+
+		#self.filtered_list_store.refilter()
+		self.filtered_icon_view_store.refilter()
 		self.notify_status_changed()
 
 	def list_store_visible_func(self,model,iter):
 		# returns true if the row should be visible
 		if len(model) == 0:
 			return True
-		station = model.get_value(iter,1)
-		if station == None:
-			return True
+		obj = model.get_value(iter,1)
+		if isinstance(obj,RadioStation):
+			station = obj
+			try:
+				bitrate = int(station.bitrate)
+				min_bitrate = int(float(self.plugin.min_bitrate))
+				if bitrate < min_bitrate:
+					return False
+			except:
+				pass
 
-		try:
-			bitrate = int(station.bitrate)
-			min_bitrate = int(float(self.plugin.min_bitrate))
-			if bitrate < min_bitrate:
+			filter_string = self.filter_entry.get_text().lower()
+	
+			if filter_string == "":
+				return True
+			elif model.get_value(iter,0).lower().find(filter_string) >= 0:
+				return True
+			else:
 				return False
-		except:
-			pass
-
-		filter_string = self.filter_entry.get_text().lower()
-		
-		if filter_string == "":
-			return True
-		elif model.get_value(iter,0).lower().find(filter_string) >= 0:
-			return True
 		else:
-			return False
+			return True
 
 	def update_button_clicked(self):
 		if not self.updating:
@@ -854,6 +882,41 @@ class RadioBrowserSource(rb.StreamingSource):
 		yield FeedIcecast(self.cache_dir,self.update_download_status)
 		yield FeedBoard(self.cache_dir,self.update_download_status)
 
+	def get_stock_icon(self, name):
+		theme = gtk.icon_theme_get_default()
+		return theme.load_icon(name, 48, 0)
+
+	def load_icon_file(self,filepath,value_not_found):
+		icon = value_not_found
+		try:
+			icon = gtk.gdk.pixbuf_new_from_file_at_size(filepath,72,72)
+		except:
+			icon = value_not_found
+			#print "could not load icon : "+filepath
+		return icon
+
+	def get_station_icon(self,station):
+		# default icon
+		icon = self.load_icon_file(self.plugin.find_file("note.png"),None)
+
+		# icons for special feeds
+		if station.type == "Shoutcast":
+			icon = self.load_icon_file(self.plugin.find_file("shoutcast-logo.png"),icon)
+		if station.type == "Icecast":
+			icon = self.load_icon_file(self.plugin.find_file("xiph-logo.png"),icon)
+
+		# most special icons, if the station has one for itsself
+		if station.icon_src != "":
+			if station.icon_src is not None:
+				hash_src = hashlib.md5(station.icon_src).hexdigest()
+				filepath = os.path.join(self.icon_cache_dir, hash_src)
+				if os.path.exists(filepath):
+					icon = self.load_icon_file(filepath,icon)
+				else:
+					# load icon
+					self.icon_download_queue.put([filepath,station.icon_src])
+		return icon
+
 	def refill_list_worker(self):
 		print "refill list worker"
 		self.updating = True
@@ -861,7 +924,10 @@ class RadioBrowserSource(rb.StreamingSource):
 		self.sorted_list_store.reset_default_sort_func()
 
 		# delete old entries
-		#self.tree_store.clear()
+		gtk.gdk.threads_enter()
+		self.tree_store.clear()
+		self.icon_view_store.clear()
+		gtk.gdk.threads_leave()
 
 		for feed in self.engines():
 			try:
@@ -877,9 +943,18 @@ class RadioBrowserSource(rb.StreamingSource):
 				countries = {}
 				subcountries = {}
 
+				def short_name(name):
+					maxlen = 30
+					if len(name) > maxlen:
+						return name[0:maxlen-3]+"..."
+					else:
+						return name
+
+				gtk.gdk.threads_enter()
 				for station in entries:
 					self.load_status = "integrating into tree..."
-					gtk.gdk.threads_enter()
+					self.icon_view_store.append((short_name(station.server_name),station,self.get_station_icon(station)))
+
 					# by genre
 					if station.genre is not None:
 						for genre in station.genre.split(","):
@@ -898,9 +973,12 @@ class RadioBrowserSource(rb.StreamingSource):
 						self.tree_store.append(subcountries[station.country],(station.server_name,station))
 					else:
 						self.tree_store.append(countries[country_arr[0]],(station.server_name,station))
-					gtk.gdk.threads_leave()
-			except:
+				gtk.gdk.threads_leave()
+
+			except Exception,e:
 				print "error with source:"+feed.name()
+				print "error:"+str(e)
+				gtk.gdk.threads_leave()
 
 		# activate sorting
 		self.sorted_list_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
