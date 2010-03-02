@@ -797,19 +797,6 @@ class RadioBrowserSource(rb.StreamingSource):
 		player.play()
 		player.play_entry(self.entry,self)
 
-	def generic_play_uri(self,uri,title,record=False):
-		if uri.startswith("shoutcast:"):
-			# special handling for shoutcast
-			shoutcast_id = uri.split(":")[1];
-			shoutcast_uri = "http://www.shoutcast.com"+self.tunein+"?id="+shoutcast_id
-			self.download_shoutcast_playlist(shoutcast_uri,title,record)
-		else:
-			# presume its an icecast link
-			if record == True:
-				self.record_uri(uri,title)
-			else:
-				self.play_uri(uri,title)
-
 	def row_activated_handler(self,treeview,path,column):
 		myiter = self.tree_store.get_iter(self.sorted_list_store.convert_path_to_child_path(self.filtered_list_store.convert_path_to_child_path(path)))
 		
@@ -832,37 +819,6 @@ class RadioBrowserSource(rb.StreamingSource):
 					print "download genre "+title
 					handler_stations = ShoutcastHandler(self.tree_store,myiter)
 					self.refill_list_part(myiter,handler_stations,filename,"http://www.shoutcast.com/sbin/newxml.phtml?genre="+title,True,False)"""
-
-	def download_shoutcast_playlist(self,uri,title,record):
-		print "starting download: "+uri
-		self.hide_user()
-		playlist_loader = rb.Loader()
-		playlist_loader.get_url(uri,self.shoutcast_download_callback,uri,title,record)
-
-	def shoutcast_download_callback(self,data,uri,title,record):
-		if data == None:
-			self.download_try_no+=1
-			if self.download_try_no > self.download_try_max:
-				print "shoutcast download failed:"+uri
-				self.hide_user(False)
-			else:
-				self.notify_status_changed()
-				playlist_loader = rb.Loader()
-				playlist_loader.get_url(uri,self.shoutcast_download_callback,uri,title,record)
-		else:
-			self.hide_user(False)
-			print "shoutcast download OK:"+uri
-			lines = data.splitlines()
-			for line in lines:
-				if line.startswith("File"):
-					uri_single = line.split("=")[1];
-					print "playing uri:"+uri_single
-					if record == True:
-						self.record_uri(uri_single,title)
-					else:
-						self.play_uri(uri_single,title)
-					return
-			print "could not find 'File' entry"
 
 	def do_impl_delete_thyself(self):
 		print "not implemented"
