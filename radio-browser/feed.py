@@ -58,9 +58,8 @@ class Feed:
 			rfi = rf.query_info(gio.FILE_ATTRIBUTE_TIME_MODIFIED)
 			remote_mod = rfi.get_attribute_uint64(gio.FILE_ATTRIBUTE_TIME_MODIFIED)
 
-			print "Modification time:remote("+str(remote_mod)+" local("+str(local_mod)+")"
-
-			if remote_mod != local_mod:
+			if remote_mod >= local_mod+24*60*60:
+				print "Local file older than 1 day :remote("+str(remote_mod)+") local("+str(local_mod)+")"
 				# change date is different -> download
 				self.download()
 		except:
