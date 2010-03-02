@@ -78,6 +78,7 @@ class Feed:
 		for station in self.handler.entries:
 			for genre in station.genre.split(","):
 				list.append(genre)
+		return list
 
 	def entries(self):
 		self.update()
