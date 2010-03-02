@@ -37,6 +37,7 @@ from record_process import RecordProcess
 from feed import Feed
 from local_handler import FeedLocal
 from icecast_handler import FeedIcecast
+from shoutcast_handler import FeedShoutcast
 from board_handler import FeedBoard
 
 #TODO: should not be defined here, but I don't know where to get it from. HELP: much apreciated
@@ -292,10 +293,6 @@ class RadioBrowserSource(rb.StreamingSource):
 			add_label("Feed source",feed.getSource())
 
 			"""
-			if station == "Shoutcast":
-				add_label("Feed homepage","http://shoutcast.com/")
-				add_label("Feed source","http://www.shoutcast.com/sbin/newxml.phtml")
-
 			if station == "Bookmark":
 				add_label("Description","User saved bookmarks")
 				add_label("Feed source","local source")
@@ -899,6 +896,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		yield FeedLocal(self.cache_dir,self.update_download_status)
 		yield FeedIcecast(self.cache_dir,self.update_download_status)
 		yield FeedBoard(self.cache_dir,self.update_download_status)
+		yield FeedShoutcast(self.cache_dir,self.update_download_status)
 
 	def get_stock_icon(self, name):
 		theme = gtk.icon_theme_get_default()
