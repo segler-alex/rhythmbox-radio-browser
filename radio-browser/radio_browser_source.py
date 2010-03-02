@@ -373,6 +373,8 @@ class RadioBrowserSource(rb.StreamingSource):
 					icon = self.get_icon_pixbuf(self.plugin.find_file("shoutcast-logo.png"))
 				if station.type == "Icecast":
 					icon = self.get_icon_pixbuf(self.plugin.find_file("xiph-logo.png"))
+				if station.type == "Local":
+					icon = self.get_icon_pixbuf(self.plugin.find_file("local-logo.png"))
 
 				# most special icons, if the station has one for itsself
 				if station.icon_src != "":
@@ -908,6 +910,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		note_icon = self.load_icon_file(self.plugin.find_file("note.png"),None)
 		shoutcast_icon = self.load_icon_file(self.plugin.find_file("shoutcast-logo.png"),None)
 		xiph_icon = self.load_icon_file(self.plugin.find_file("xiph-logo.png"),None)
+		local_icon = self.load_icon_file(self.plugin.find_file("local-logo.png"),None)
 
 		for feed in self.engines():
 			try:
@@ -967,6 +970,8 @@ class RadioBrowserSource(rb.StreamingSource):
 						icon = shoutcast_icon
 					if station.type == "Icecast":
 						icon = xiph_icon
+					if station.type == "Local":
+						icon = local_icon
 					self.icon_view_store.append((short_name(station.server_name),station,self.get_station_icon(station,icon)))
 
 					# by genre
