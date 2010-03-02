@@ -934,7 +934,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		print "refill list worker"
 		self.updating = True
 		# deactivate sorting
-		self.sorted_list_store.reset_default_sort_func()
+		#self.sorted_list_store.reset_default_sort_func()
 
 		# delete old entries
 		gtk.gdk.threads_enter()
@@ -972,7 +972,8 @@ class RadioBrowserSource(rb.StreamingSource):
 				entries = feed.entries()
 
 				gtk.gdk.threads_enter()
-				self.load_status = "integrating feed '"+feed.name()+"' into tree..."
+				self.load_status = "integrating feed '"+feed.name()+"'("+str(len(entries))+" items) into tree..."
+				print self.load_status
 				self.notify_status_changed()
 				gtk.gdk.threads_leave()
 
@@ -983,8 +984,13 @@ class RadioBrowserSource(rb.StreamingSource):
 					else:
 						return name
 
+				self.load_total_size = len(entries)
+				self.load_current_size = 0
+
 				for station in entries:
+					self.load_current_size += 1
 					gtk.gdk.threads_enter()
+					self.notify_status_changed()
 
 					# default icon
 					icon = note_icon
@@ -1025,6 +1031,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		self.sorted_list_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
 		self.icon_view_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
 		self.updating = False
+		self.notify_status_changed()
 
 	def refill_list(self):
 		print "refill list"
