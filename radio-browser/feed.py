@@ -22,6 +22,9 @@ import xml.sax.handler
 from radio_station import RadioStation
 
 class Feed:
+	def __init__(self):
+		self.loaded = False
+
 	def getSource(self):
 		return self.uri
 
@@ -53,17 +56,23 @@ class Feed:
 			lf = gio.File(self.filename)
 			lfi = lf.query_info(gio.FILE_ATTRIBUTE_TIME_MODIFIED)
 			local_mod = lfi.get_attribute_uint64(gio.FILE_ATTRIBUTE_TIME_MODIFIED)
+		except:
+			print "could not load local file:"+self.filename
+			self.download()
+			return
 
+		try:
 			rf = gio.File(self.uri)
 			rfi = rf.query_info(gio.FILE_ATTRIBUTE_TIME_MODIFIED)
 			remote_mod = rfi.get_attribute_uint64(gio.FILE_ATTRIBUTE_TIME_MODIFIED)
-
-			if remote_mod >= local_mod+24*60*60 or remote_mod == 0:
-				print "Local file older than 1 day: remote("+str(remote_mod)+") local("+str(local_mod)+")"
-				# change date is different -> download
-				self.download()
 		except:
-			# file not found -> download
+			print "could not check remote file for modification time:"+self.uri
+			self.download()
+			return
+
+		if remote_mod >= local_mod+24*60*60 or remote_mod == 0:
+			print "Local file older than 1 day: remote("+str(remote_mod)+") local("+str(local_mod)+")"
+			# change date is different -> download
 			self.download()
 
 	def load(self):
@@ -74,13 +83,34 @@ class Feed:
 			print "parse failed of "+self.filename
 
 	def genres(self):
+		try:
+			self.loaded
+		except:
+			self.loaded = False
+
+		if not self.loaded:
+			self.update()
+			self.load()
+			self.loaded = True
+
 		list = []
 		for station in self.handler.entries:
-			for genre in station.genre.split(","):
-				list.append(genre)
+			if station.genre is not None:
+				for genre in station.genre.split(","):
+					tmp = genre.strip().lower()
+					if tmp not in list:
+						list.append(tmp)
 		return list
 
 	def entries(self):
-		self.update()
-		self.load()
+		try:
+			self.loaded
+		except:
+			self.loaded = False
+
+		if not self.loaded:
+			self.update()
+			self.load()
+			self.loaded = True
+
 		return self.handler.entries
