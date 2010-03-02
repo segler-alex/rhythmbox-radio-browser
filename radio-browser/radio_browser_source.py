@@ -161,7 +161,6 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			# create icon view
 			self.icon_view_store = gtk.ListStore(str,object,gtk.gdk.Pixbuf)
-			#self.icon_view_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
 			self.filtered_icon_view_store = self.icon_view_store.filter_new()
 			self.filtered_icon_view_store.set_visible_func(self.list_store_visible_func)
 			self.icon_view = gtk.IconView(self.filtered_icon_view_store)
@@ -903,15 +902,9 @@ class RadioBrowserSource(rb.StreamingSource):
 			#print "could not load icon : "+filepath
 		return icon
 
-	def get_station_icon(self,station):
+	def get_station_icon(self,station,default_icon):
 		# default icon
-		icon = self.load_icon_file(self.plugin.find_file("note.png"),None)
-
-		# icons for special feeds
-		if station.type == "Shoutcast":
-			icon = self.load_icon_file(self.plugin.find_file("shoutcast-logo.png"),icon)
-		if station.type == "Icecast":
-			icon = self.load_icon_file(self.plugin.find_file("xiph-logo.png"),icon)
+		icon = default_icon
 
 		# most special icons, if the station has one for itsself
 		if station.icon_src != "":
@@ -930,13 +923,17 @@ class RadioBrowserSource(rb.StreamingSource):
 		self.updating = True
 		# deactivate sorting
 		self.sorted_list_store.reset_default_sort_func()
-		#self.icon_view_store.set_sort_column_id(-1,gtk.SORT_ASCENDING)
 
 		# delete old entries
 		gtk.gdk.threads_enter()
 		self.tree_store.clear()
 		self.icon_view_store.clear()
 		gtk.gdk.threads_leave()
+
+		# preload most used icons
+		note_icon = self.load_icon_file(self.plugin.find_file("note.png"),None)
+		shoutcast_icon = self.load_icon_file(self.plugin.find_file("shoutcast-logo.png"),None)
+		xiph_icon = self.load_icon_file(self.plugin.find_file("xiph-logo.png"),None)
 
 		for feed in self.engines():
 			try:
@@ -964,7 +961,15 @@ class RadioBrowserSource(rb.StreamingSource):
 
 				for station in entries:
 					gtk.gdk.threads_enter()
-					self.icon_view_store.append((short_name(station.server_name),station,self.get_station_icon(station)))
+
+					# default icon
+					icon = note_icon
+					# icons for special feeds
+					if station.type == "Shoutcast":
+						icon = shoutcast_icon
+					if station.type == "Icecast":
+						icon = xiph_icon
+					self.icon_view_store.append((short_name(station.server_name),station,self.get_station_icon(station,icon)))
 
 					# by genre
 					if station.genre is not None:
@@ -994,6 +999,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 		# activate sorting
 		self.sorted_list_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
+		self.icon_view_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
 		self.updating = False
 
 	def refill_list(self):
