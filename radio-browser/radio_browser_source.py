@@ -943,6 +943,9 @@ class RadioBrowserSource(rb.StreamingSource):
 				entries = feed.entries()
 				current_iter = self.tree_store.append(None,(feed.name(),feed))
 
+				self.load_status = "integrating feed '"+feed.name()+"' into tree..."
+				self.notify_status_changed()
+
 				gtk.gdk.threads_enter()
 				genre_iter = self.tree_store.append(current_iter,(_("By Genres"),None))
 				country_iter = self.tree_store.append(current_iter,(_("By Country"),None))
@@ -960,8 +963,6 @@ class RadioBrowserSource(rb.StreamingSource):
 						return name
 
 				for station in entries:
-					self.load_status = "integrating into tree..."
-
 					gtk.gdk.threads_enter()
 					self.icon_view_store.append((short_name(station.server_name),station,self.get_station_icon(station)))
 
