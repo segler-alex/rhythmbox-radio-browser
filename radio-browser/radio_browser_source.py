@@ -53,8 +53,6 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	def __init__(self):
 		self.hasActivated = False
-		self.loadedFiles = []
-		self.createdGenres = {}
 		rb.StreamingSource.__init__(self,name="RadioBrowserPlugin")
 
 	def do_set_property(self, property, value):
@@ -223,6 +221,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 		rb.BrowserSource.do_impl_activate (self)
 
+	""" listener on double click in search view """
 	def on_item_activated_icon_view(self,widget,item):
 		model = widget.get_model()
 		title = model[item][0]
@@ -231,6 +230,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		url = self.station.getRealURL()
 		self.play_uri(url,title)
 
+	""" listener on selection change in search view """
 	def on_selection_changed_icon_view(self,widget):
 		model = widget.get_model()
 		items = widget.get_selected_items()
@@ -645,9 +645,6 @@ class RadioBrowserSource(rb.StreamingSource):
 	def clear_recently_handler(self,menuitem,filename,itemlist):
 		itemlist = {}
 		self.save_to_file(filename,itemlist.items())
-		# clear shortcut lists
-		self.loadedFiles = []
-		self.createdGenres = {}
 		# start filling again
 		self.refill_list()
 
@@ -656,9 +653,6 @@ class RadioBrowserSource(rb.StreamingSource):
 		os.unlink(filepath)
 		print "redownload "+filepath
 
-		# clear shortcut lists
-		self.loadedFiles = []
-		self.createdGenres = {}
 		# start filling again
 		self.refill_list()
 
@@ -774,9 +768,6 @@ class RadioBrowserSource(rb.StreamingSource):
 				if filename.endswith("xml"):
 					filepath = os.path.join(self.cache_dir, filename)
 					os.unlink(filepath)
-			# clear shortcut lists
-			self.loadedFiles = []
-			self.createdGenres = {}
 			# start filling again
 			self.refill_list()
 
@@ -803,8 +794,6 @@ class RadioBrowserSource(rb.StreamingSource):
 	def row_activated_handler(self,treeview,path,column):
 		model = treeview.get_model()
 		myiter = model.get_iter(path)
-		print "ENTER: "+model.get_value(myiter, 0)
-		#myiter = self.tree_store.get_iter(self.sorted_list_store.convert_path_to_child_path(self.filtered_list_store.convert_path_to_child_path(path)))
 		
 		title = model.get_value(myiter,0)
 		self.station = model.get_value(myiter,1)
@@ -873,7 +862,6 @@ class RadioBrowserSource(rb.StreamingSource):
 			icon = gtk.gdk.pixbuf_new_from_file_at_size(filepath,72,72)
 		except:
 			icon = value_not_found
-			#print "could not load icon : "+filepath
 		return icon
 
 	def get_station_icon(self,station,default_icon):
@@ -903,7 +891,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 		# delete old entries
 		self.tree_store.clear()
-		#self.icon_view_store.set_default_sort_func(None)
+		self.icon_view_store.set_default_sort_func(None)
 		self.icon_view_store.clear()
 
 		# preload most used icons

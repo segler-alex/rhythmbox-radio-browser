@@ -29,8 +29,6 @@ class ShoutcastRadioStation(RadioStation):
 			url = "http://www.shoutcast.com"+self.tunein+"?id="+self.listen_id
 			remote = gio.File(url)
 			data,datalen,tag = remote.load_contents()
-			print "data:"+data
-			print "datalen:"+str(datalen)
 
 			lines = data.splitlines()
 			for line in lines:
