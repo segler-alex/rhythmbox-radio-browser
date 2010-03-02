@@ -993,11 +993,12 @@ class RadioBrowserSource(rb.StreamingSource):
 				print "error:"+str(e)
 
 		# activate sorting
-		self.tree_view.set_model(self.sorted_list_store)
-		self.icon_view.set_model(self.filtered_icon_view_store)
-
 		self.sorted_list_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
 		self.icon_view_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
+
+		# connect model to view
+		self.tree_view.set_model(self.sorted_list_store)
+		self.icon_view.set_model(self.filtered_icon_view_store)
 
 		gtk.gdk.threads_enter()
 		self.updating = False
