@@ -146,18 +146,9 @@ class RadioBrowserSource(rb.StreamingSource):
 			column_bitrate.set_fixed_width(100)
 			self.tree_view.append_column(column_bitrate)"""
 
-			#column_song = gtk.TreeViewColumn("Current Song",gtk.CellRendererText(),text=3)
-			#column_song.set_resizable(True)
-			#column_song.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
-			#column_song.set_fixed_width(100)
-			#column_song.set_expand(True)
-			#self.tree_view.append_column(column_song)
-
 			# add some more listeners for tree view...
 			# - row double click
 			self.tree_view.connect("row-activated",self.row_activated_handler)
-			# - mouse click
-			self.tree_view.connect("button-press-event",self.button_press_handler)
 			# - selection change
 			self.tree_view.connect("cursor-changed",self.treeview_cursor_changed_handler)
 
@@ -224,11 +215,9 @@ class RadioBrowserSource(rb.StreamingSource):
 	""" listener on double click in search view """
 	def on_item_activated_icon_view(self,widget,item):
 		model = widget.get_model()
-		title = model[item][0]
-		self.station = model[item][1]
+		station = model[item][1]
 
-		url = self.station.getRealURL()
-		self.play_uri(url,title)
+		self.play_uri(station)
 
 	""" listener on selection change in search view """
 	def on_selection_changed_icon_view(self,widget):
@@ -392,44 +381,45 @@ class RadioBrowserSource(rb.StreamingSource):
 				cell.set_property("pixbuf",icon)
 
 	""" transmits station information to board """
-	def transmit_station(self):
-		params = urllib.urlencode({'action':'clicked','name': self.station.server_name,'url': self.station.getRealURL(),'source':self.station.type})
+	def transmit_station(self,station):
+		params = urllib.urlencode({'action':'clicked','name': station.server_name,'url': station.getRealURL(),'source':station.type})
 		f = urllib.urlopen(BOARD_ROOT+"?%s" % params)
 		f.read()
-		print "Transmit station '"+str(self.station.server_name)+"' OK"
+		print "Transmit station '"+str(station.server_name)+"' OK"
 
 	""" transmits title information to board """
-	def transmit_title(self,title):
+	"""def transmit_title(self,title):
 		params = urllib.urlencode({'action':'streaming','name': self.station.server_name,'url': self.station.getRealURL(),'source':self.station.type,'title':title})
 		f = urllib.urlopen(BOARD_ROOT+"?%s" % params)
 		f.read()
 		print "Transmit title '"+str(title)+"' OK"
-
+	"""
 	""" stream information listener """
 	def info_available(self,player,uri,field,value):
 		if field == RB_METADATA_FIELD_TITLE:
 			self.title = value
 			self.set_streaming_title(self.title)
-			transmit_thread = threading.Thread(target = self.transmit_title,args = (value,))
-			transmit_thread.setDaemon(True)
-			transmit_thread.start()
-			print "setting title to:"+value
+			#transmit_thread = threading.Thread(target = self.transmit_title,args = (value,))
+			#transmit_thread.setDaemon(True)
+			#transmit_thread.start()
+			#print "setting title to:"+value
            
 		elif field == RB_METADATA_FIELD_GENRE:
 			self.genre = value
 			## causes warning: RhythmDB-WARNING **: trying to sync properties of non-editable file
 			#self.shell.props.db.set(self.entry, rhythmdb.PROP_GENRE, value)
 			#self.shell.props.db.commit()
-			print "setting genre to:"+value
+			#print "setting genre to:"+value
 
 		elif field == RB_METADATA_FIELD_BITRATE:
 			## causes warning: RhythmDB-WARNING **: trying to sync properties of non-editable file
 			#self.shell.props.db.set(self.entry, rhythmdb.PROP_BITRATE, value/1000)
 			#self.shell.props.db.commit()
-			print "setting bitrate to:"+str(value/1000)
+			#print "setting bitrate to:"+str(value/1000)
+			pass
 
 		else:
-			print "unknwon info available ("+str(field)+"):"+str(value)
+			print "Server sent unknown info '"+str(field)+"':'"+str(value)+"'"
 
 #	def playing_changed (self, sp, playing):
 #		print "playing changed"
@@ -439,107 +429,6 @@ class RadioBrowserSource(rb.StreamingSource):
 
 #	def playing_song_property_changed (self, sp, uri, property, old, new):
 #		print "property changed "+str(new)
-
-	""" mouse button listener for treeview """
-	def button_press_handler(self,widget,event):
-		if event.button == 3:
-			x = int(event.x)
-			y = int(event.y)
-			selection = self.tree_view.get_path_at_pos(x, y)
-			# only display menu, if exactly one item is selected
-			if selection is not None:
-				path, col, cellx, celly = selection
-				self.tree_view.grab_focus()
-				self.tree_view.set_cursor(path, col, 0)
-				iter = self.tree_store.get_iter(self.sorted_list_store.convert_path_to_child_path(self.filtered_list_store.convert_path_to_child_path(path)))
-
-				title = self.tree_store.get_value(iter,0)
-				uri = self.tree_store.get_value(iter,4)
-				obj = self.tree_store.get_value(iter,5)
-
-				menu = gtk.Menu()
-
-				if uri == None:
-					filename = None
-					if self.tree_store.get_path(iter) == self.tree_store.get_path(self.tree_iter_local):
-						filename = "local.xml"
-
-					if self.tree_store.get_path(iter) == self.tree_store.get_path(self.tree_iter_icecast):
-						filename = "icecast.xml"
-
-					if self.tree_store.get_path(iter) == self.tree_store.get_path(self.tree_iter_shoutcast):
-						filename = "shoutcast-genres.xml"
-
-					if self.tree_store.get_path(iter) == self.tree_store.get_path(self.tree_iter_board):
-						filename = "board.xml"
-						additem = gtk.MenuItem("Post new station")
-						additem.connect("activate",self.post_new_station_handler)
-						menu.append(additem)
-
-#					if self.tree_store.is_ancestor(self.tree_iter_shoutcast,iter):
-#						filename = "shoutcast--"+title+".xml"
-
-					if filename is not None:
-						redownloaditem = gtk.MenuItem("Redownload")
-						redownloaditem.connect("activate",self.redownload_handler,filename)
-						menu.append(redownloaditem)
-					
-					if self.tree_store.get_path(iter) == self.tree_store.get_path(self.tree_iter_recently_played):
-						filename = "recently.save"
-						clearitem = gtk.MenuItem("Clear")
-						clearitem.connect("activate",self.clear_recently_handler,filename,self.recently_played)
-						menu.append(clearitem)
-
-					if self.tree_store.get_path(iter) == self.tree_store.get_path(self.tree_iter_bookmarks):
-						filename = "bookmarks.save"
-						clearitem = gtk.MenuItem("Clear")
-						clearitem.connect("activate",self.clear_recently_handler,filename,self.bookmarks)
-						menu.append(clearitem)
-
-					if filename is None:
-						return
-				else:
-					playitem = gtk.MenuItem("Play")
-					playitem.connect("activate",self.play_handler,False,uri,title)
-					menu.append(playitem)
-
-					if self.tree_store.is_ancestor(self.tree_iter_bookmarks,iter):
-						bookmarkitem = gtk.MenuItem("Delete bookmark")
-						bookmarkitem.connect("activate",self.delete_bookmark_handler,uri,iter)
-					else:
-						bookmarkitem = gtk.MenuItem("Bookmark")
-						bookmarkitem.connect("activate",self.bookmark_handler,uri,title)
-
-					menu.append(bookmarkitem)
-
-					if obj is not None:
-						if not obj.homepage == "":
-							homepageitem = gtk.MenuItem("Homepage")
-							homepageitem.connect("activate",self.homepage_handler,obj.homepage)
-							menu.append(homepageitem)
-						if obj.type == "Board":
-							voteitem = gtk.MenuItem("Vote! (You like this station)")
-							voteitem.connect("activate",self.vote_station,obj)
-							menu.append(voteitem)
-
-							voteitem = gtk.MenuItem("Mark as bad station (station does not work)")
-							voteitem.connect("activate",self.bad_station,obj)
-							menu.append(voteitem)
-
-					if not uri.startswith("mms:"):
-						try:
-							process = subprocess.Popen("streamripper",stdout=subprocess.PIPE)
-							process.communicate()
-							process.wait()
-						except(OSError):
-							print "streamripper not found"
-						else:
-							recorditem = gtk.MenuItem("Record")
-							recorditem.connect("activate",self.play_handler,True,uri,title)
-							menu.append(recorditem)
-
-				menu.show_all()
-				menu.popup(None,None,None,event.button,event.time)
 
 	""" vote for station on board """
 	def vote_station(self,menuitem,station):
@@ -639,41 +528,6 @@ class RadioBrowserSource(rb.StreamingSource):
 
 		dialog.destroy()
 
-	def homepage_handler(self,menuitem,homepage):
-		webbrowser.open(homepage)
-
-	def clear_recently_handler(self,menuitem,filename,itemlist):
-		itemlist = {}
-		self.save_to_file(filename,itemlist.items())
-		# start filling again
-		self.refill_list()
-
-	def reset_feed(self,filename):
-		filepath = os.path.join(self.cache_dir, filename)
-		os.unlink(filepath)
-		print "redownload "+filepath
-
-		# start filling again
-		self.refill_list()
-
-	def redownload_handler(self,menuitem,filename):
-		self.reset_feed(filename)
-
-	def play_handler(self,menuitem,record,uri,title):
-		self.generic_play_uri(uri,title,record)
-
-	def bookmark_handler(self,menuitem,uri,title):
-		if not self.bookmarks.has_key(uri):
-			self.bookmarks[uri] = title
-			self.tree_store.append(self.tree_iter_bookmarks,(title,None,None,None,uri,None))
-			self.save_to_file("bookmarks.save",self.bookmarks.items())
-
-	def delete_bookmark_handler(self,menuitem,uri,iter):
-		if self.bookmarks.has_key(uri):
-			del self.bookmarks[uri]
-			self.save_to_file("bookmarks.save",self.bookmarks.items())
-			self.tree_store.remove(iter)
-
 	def record_uri(self,uri,title):
 		self.add_recently_played(uri,title)
 		commandline = ["streamripper",uri,"-d",self.plugin.outputpath,"-r"]
@@ -721,6 +575,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		rp = self.recording_streams[uri]
 		rp.process.terminate()
 
+	""" listener for filter entry change """
 	def filter_entry_changed(self,gtk_entry):
 		if self.filter_entry.get_text() == "":
 			self.tree_view_container.show_all()
@@ -734,6 +589,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		self.icon_view.set_model(self.filtered_icon_view_store)
 		self.notify_status_changed()
 
+	""" callback for item filtering """
 	def list_store_visible_func(self,model,iter):
 		# returns true if the row should be visible
 		if len(model) == 0:
@@ -760,6 +616,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		else:
 			return True
 
+	""" handler for update toolbar button """
 	def update_button_clicked(self):
 		if not self.updating:
 			# delete cache files
@@ -771,80 +628,43 @@ class RadioBrowserSource(rb.StreamingSource):
 			# start filling again
 			self.refill_list()
 
-	def play_uri(self,uri,title):
-		transmit_thread = threading.Thread(target = self.transmit_station)
+	""" starts playback of the station """
+	def play_uri(self,station):
+		# transmit station click to station board (statistic) """
+		transmit_thread = threading.Thread(target = self.transmit_station,args = (station,))
 		transmit_thread.setDaemon(True)
 		transmit_thread.start()
-		#self.add_recently_played(uri,title)
+
+		# get player
 		player = self.shell.get_player()
 		player.stop()
 
-		self.entry = self.shell.props.db.entry_lookup_by_location(uri)
+		# create new entry to play
+		self.entry = self.shell.props.db.entry_lookup_by_location(station.getRealURL())
 		if self.entry == None:
 			#self.shell.props.db.entry_delete(self.entry)
 
-			self.entry = self.shell.props.db.entry_new(self.entry_type, uri)
-			self.shell.props.db.set(self.entry, rhythmdb.PROP_TITLE, title+" ("+uri+")")
+			self.entry = self.shell.props.db.entry_new(self.entry_type, station.getRealURL())
+			self.shell.props.db.set(self.entry, rhythmdb.PROP_TITLE, station.server_name+" ("+station.getRealURL()+")")
 			self.shell.props.db.commit()
 		#shell.load_uri(uri,False)
 
+		# start playback
 		player.play()
 		player.play_entry(self.entry,self)
 
+	""" handler for double clicks in tree view """
 	def row_activated_handler(self,treeview,path,column):
 		model = treeview.get_model()
 		myiter = model.get_iter(path)
 		
-		title = model.get_value(myiter,0)
-		self.station = model.get_value(myiter,1)
+		station = model.get_value(myiter,1)
 
-		if self.station is not None:
-			uri = self.station.getRealURL()
-			self.play_uri(uri,title)
-			"""else:
-				if self.tree_store.is_ancestor(self.tree_iter_shoutcast,myiter):
-					filename = "shoutcast--"+title+".xml"
-
-					if filename in self.loadedFiles:
-						self.loadedFiles.remove(filename)
-
-					filepath = os.path.join(self.cache_dir, filename)
-					if os.path.exists(filepath):
-						os.unlink(filepath)
-					print "download genre "+title
-					handler_stations = ShoutcastHandler(self.tree_store,myiter)
-					self.refill_list_part(myiter,handler_stations,filename,"http://www.shoutcast.com/sbin/newxml.phtml?genre="+title,True,False)"""
+		if station is not None:
+			self.play_uri(station)
 
 	def do_impl_delete_thyself(self):
 		print "not implemented"
-
-	def load_from_file(self,filename,tree_iter,itemlist):
-		itemlist.clear()
-		filepath = os.path.join(self.cache_dir, filename)
-		if os.path.exists(filepath):
-			f = open(filepath,"r")
-			lines = f.readlines()
-			for i in range(0,len(lines)/2):
-				title = lines[(i)*2].strip("\n")
-				uri = lines[(i)*2+1].strip("\n")
-
-				itemlist[uri] = title
-				self.tree_store.append(tree_iter,(title,None,None,None,uri,None))
-			f.close()
-
-	def save_to_file(self,filename,items):
-		filepath = os.path.join(self.cache_dir, filename)
-		f = open(filepath,"w")
-		for (key,value) in items:
-			f.write(value+"\n")
-			f.write(key+"\n")
-		f.close()
-
-	def add_recently_played(self,uri,title):
-		if not self.recently_played.has_key(uri):
-			self.recently_played[uri] = title
-			self.tree_store.append(self.tree_iter_recently_played,(title,None,None,None,uri,None))
-			self.save_to_file("recently.save",self.recently_played.items())
 
 	def engines(self):
 		yield FeedLocal(self.cache_dir,self.update_download_status)
