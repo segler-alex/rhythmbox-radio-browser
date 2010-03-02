@@ -78,7 +78,10 @@ class RadioBrowserSource(rb.StreamingSource):
 		self.load_current_size = current
 		self.load_total_size = total
 		self.load_status = "Loading : "+filename
+
+		gtk.gdk.threads_enter()
 		self.notify_status_changed()
+		gtk.gdk.threads_leave()
 
 	""" on source actiavation, e.g. double click on source or playing something in this source """
 	def do_impl_activate(self):
@@ -946,20 +949,32 @@ class RadioBrowserSource(rb.StreamingSource):
 
 		for feed in self.engines():
 			try:
-				entries = feed.entries()
+				# create main feed root item
 				current_iter = self.tree_store.append(None,(feed.name(),feed))
 
-				self.load_status = "integrating feed '"+feed.name()+"' into tree..."
-				self.notify_status_changed()
-
-				gtk.gdk.threads_enter()
-				genre_iter = self.tree_store.append(current_iter,(_("By Genres"),None))
-				country_iter = self.tree_store.append(current_iter,(_("By Country"),None))
-				gtk.gdk.threads_leave()
-
+				# initialize dicts for iters
 				genres = {}
 				countries = {}
 				subcountries = {}
+
+				# get genres
+				genres_list = feed.genres()
+
+				# add subitems for sorting
+				gtk.gdk.threads_enter()
+				genre_iter = self.tree_store.append(current_iter,(_("By Genres"),None))
+				country_iter = self.tree_store.append(current_iter,(_("By Country"),None))
+				for genre in genres_list:
+					genres[genre] = self.tree_store.append(genre_iter,(genre,None))
+				gtk.gdk.threads_leave()
+
+				# load entries
+				entries = feed.entries()
+
+				gtk.gdk.threads_enter()
+				self.load_status = "integrating feed '"+feed.name()+"' into tree..."
+				self.notify_status_changed()
+				gtk.gdk.threads_leave()
 
 				def short_name(name):
 					maxlen = 30
@@ -983,7 +998,7 @@ class RadioBrowserSource(rb.StreamingSource):
 					# by genre
 					if station.genre is not None:
 						for genre in station.genre.split(","):
-							genre = genre.strip(" ")
+							genre = genre.strip().lower()
 							if genre not in genres:
 								genres[genre] = self.tree_store.append(genre_iter,(genre,None))
 							self.tree_store.append(genres[genre],(station.server_name,station))

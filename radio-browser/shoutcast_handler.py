@@ -36,7 +36,8 @@ class ShoutcastHandler(xml.sax.handler.ContentHandler):
 			self.entry = RadioStation()
 			self.entry.type = "Shoutcast"
 			self.entry.server_name = attributes.get("name")
-			self.entry.genre = attributes.get("genre")
+			self.entry.genre = attributes.get("genre").lower()
+			self.entry.genre = ",".join(self.entry.genre.split(" "))
 			self.entry.current_song = attributes.get("ct")
 			self.entry.bitrate = attributes.get("br")
 			self.entry.listen_id = attributes.get("id")
@@ -82,3 +83,16 @@ class FeedShoutcast(Feed):
 					if tries >= 10:
 						break
 			self.load()
+
+	def genres(self):
+		if not os.path.isfile(self.filename):
+			self.download()
+
+		self.load()
+		return self.handler.genres
+
+	def entries(self):
+		#self.update()
+		#self.load()
+		return []
+		#self.handler.entries
