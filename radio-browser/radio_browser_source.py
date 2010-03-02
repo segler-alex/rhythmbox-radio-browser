@@ -320,11 +320,10 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			if os.path.exists(filepath) is False:
 				if src.lower().startswith("http://"):
-					print "downloading favicon: "+src
 					try:
 						urllib.urlretrieve(src,filepath)
 					except:
-						print "error while downloading favicon:"+src
+						pass
 
 			self.icon_download_queue.task_done()
 
@@ -339,7 +338,6 @@ class RadioBrowserSource(rb.StreamingSource):
 					icon = gtk.gdk.pixbuf_new_from_file_at_size(filepath,width,height)
 				except:
 					icon = return_value_not_found
-					print "could not load icon : "+filepath
 				self.icon_cache[filepath] = icon
 			return icon
 		return return_value_not_found
@@ -724,7 +722,6 @@ class RadioBrowserSource(rb.StreamingSource):
 			try:
 				gtk.gdk.threads_enter()
 				self.load_status = "loading feed '"+feed.name()+"'"
-				print self.load_status
 				self.notify_status_changed()
 				gtk.gdk.threads_leave()
 
@@ -750,7 +747,6 @@ class RadioBrowserSource(rb.StreamingSource):
 
 				gtk.gdk.threads_enter()
 				self.load_status = "integrating feed '"+feed.name()+"'("+str(len(entries))+" items) into tree..."
-				print self.load_status
 				self.notify_status_changed()
 				gtk.gdk.threads_leave()
 

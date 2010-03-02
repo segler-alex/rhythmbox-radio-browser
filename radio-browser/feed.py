@@ -42,7 +42,7 @@ class Feed:
 		try:
 			os.remove(self.filename)
 		except:
-			print "File unlink failed:"+self.filename
+			pass
 
 		remotefile = gio.File(self.uri)
 		localfile = gio.File(self.filename)
