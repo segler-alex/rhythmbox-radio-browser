@@ -161,13 +161,14 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			# create icon view
 			self.icon_view_store = gtk.ListStore(str,object,gtk.gdk.Pixbuf)
-			self.icon_view_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
+			#self.icon_view_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
 			self.filtered_icon_view_store = self.icon_view_store.filter_new()
 			self.filtered_icon_view_store.set_visible_func(self.list_store_visible_func)
 			self.icon_view = gtk.IconView(self.filtered_icon_view_store)
 			self.icon_view.set_text_column(0)
 			self.icon_view.set_pixbuf_column(2)
 			self.icon_view.set_item_width(150)
+			self.icon_view.connect("item-activated", self.on_item_activated_icon_view)
 
 			self.tree_view_container = gtk.ScrolledWindow()
 			self.tree_view_container.set_shadow_type(gtk.SHADOW_IN)
@@ -216,6 +217,14 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.refill_list()
 
 		rb.BrowserSource.do_impl_activate (self)
+
+	def on_item_activated_icon_view(self,widget,item):
+		model = widget.get_model()
+		title = model[item][0]
+		self.station = model[item][1]
+
+		url = self.station.getRealURL()
+		self.play_uri(url,title)
 
 	""" listener for selection changes """
 	def treeview_cursor_changed_handler(self,treeview):
@@ -372,14 +381,14 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	""" transmits station information to board """
 	def transmit_station(self):
-		params = urllib.urlencode({'action':'clicked','name': self.station.server_name,'url': self.station.real_url,'source':self.station.type})
+		params = urllib.urlencode({'action':'clicked','name': self.station.server_name,'url': self.station.getRealURL(),'source':self.station.type})
 		f = urllib.urlopen(BOARD_ROOT+"?%s" % params)
 		f.read()
 		print "Transmit station '"+str(self.station.server_name)+"' OK"
 
 	""" transmits title information to board """
 	def transmit_title(self,title):
-		params = urllib.urlencode({'action':'streaming','name': self.station.server_name,'url': self.station.real_url,'source':self.station.type,'title':title})
+		params = urllib.urlencode({'action':'streaming','name': self.station.server_name,'url': self.station.getRealURL(),'source':self.station.type,'title':title})
 		f = urllib.urlopen(BOARD_ROOT+"?%s" % params)
 		f.read()
 		print "Transmit title '"+str(title)+"' OK"
@@ -759,7 +768,6 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.refill_list()
 
 	def play_uri(self,uri,title):
-		self.station.real_url = uri
 		transmit_thread = threading.Thread(target = self.transmit_station)
 		transmit_thread.setDaemon(True)
 		transmit_thread.start()
@@ -922,6 +930,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		self.updating = True
 		# deactivate sorting
 		self.sorted_list_store.reset_default_sort_func()
+		#self.icon_view_store.set_sort_column_id(-1,gtk.SORT_ASCENDING)
 
 		# delete old entries
 		gtk.gdk.threads_enter()
@@ -950,9 +959,10 @@ class RadioBrowserSource(rb.StreamingSource):
 					else:
 						return name
 
-				gtk.gdk.threads_enter()
 				for station in entries:
 					self.load_status = "integrating into tree..."
+
+					gtk.gdk.threads_enter()
 					self.icon_view_store.append((short_name(station.server_name),station,self.get_station_icon(station)))
 
 					# by genre
@@ -973,7 +983,8 @@ class RadioBrowserSource(rb.StreamingSource):
 						self.tree_store.append(subcountries[station.country],(station.server_name,station))
 					else:
 						self.tree_store.append(countries[country_arr[0]],(station.server_name,station))
-				gtk.gdk.threads_leave()
+
+					gtk.gdk.threads_leave()
 
 			except Exception,e:
 				print "error with source:"+feed.name()
