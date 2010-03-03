@@ -321,11 +321,11 @@ class RadioBrowserSource(rb.StreamingSource):
 			if station.server_name not in data:
 				self.tree_store.append(self.bookmarks_iter,(station.server_name,station))
 				data[station.server_name] = station
+				widget.set_label("Unbookmark")
 			else:
 				iter = self.tree_store.iter_children(self.bookmarks_iter)
 				while True:
 					title = self.tree_store.get_value(iter,0)
-					print "title:"+title
 
 					if title == station.server_name:
 						self.tree_store.remove(iter)
@@ -335,6 +335,7 @@ class RadioBrowserSource(rb.StreamingSource):
 					if iter == None:
 						break
 				del data[station.server_name]
+				widget.set_label("Bookmark")
 			self.save_to_file(os.path.join(self.cache_dir,BOOKMARKS_FILENAME),data)
 
 		if isinstance(obj,RadioStation):
