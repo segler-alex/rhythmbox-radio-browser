@@ -1,0 +1,7 @@
+Changes since 1.8:
+==================
+* new view to display search(filter) results
+* rewrite of some parts -> more stability
+* new icon set
+* automatic update of some feeds(icecast, local), if local copy is at least 1 day older than server version
+* station click hitlist on http://segler.bplaced.net
