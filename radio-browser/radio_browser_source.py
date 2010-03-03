@@ -47,6 +47,7 @@ RB_METADATA_FIELD_GENRE = 4
 RB_METADATA_FIELD_BITRATE = 20
 BOARD_ROOT = "http://segler.bplaced.net/"
 RECENTLY_USED_FILENAME = "recently.bin"
+BOOKMARKS_FILENAME = "bookmarks.bin"
 
 class RadioBrowserSource(rb.StreamingSource):
 	__gproperties__ = {
@@ -182,7 +183,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			filterbox.pack_start(self.filter_entry)
 
 			self.record_box = gtk.VBox()
-			self.info_box = gtk.VBox()
+			self.info_box = gtk.HBox()
 
 			mybox = gtk.VBox()
 			mybox.pack_start(filterbox,False)
@@ -307,8 +308,60 @@ class RadioBrowserSource(rb.StreamingSource):
 			add_label("Votes",station.votes)
 			add_label("Negative votes",station.negativevotes)
 
+		button_box = gtk.VBox()
+
+		def button_play_handler(widget,station):
+			self.play_uri(station)
+			pass
+
+		def button_bookmark_handler(widget,station):
+			data = self.load_from_file(os.path.join(self.cache_dir,BOOKMARKS_FILENAME))
+			if data is None:
+				data = {}
+			if station.server_name not in data:
+				self.tree_store.append(self.bookmarks_iter,(station.server_name,station))
+				data[station.server_name] = station
+			else:
+				iter = self.tree_store.iter_children(self.bookmarks_iter)
+				while True:
+					title = self.tree_store.get_value(iter,0)
+					print "title:"+title
+
+					if title == station.server_name:
+						self.tree_store.remove(iter)
+						break
+
+					iter = self.tree_store.iter_next(iter)
+					if iter == None:
+						break
+				del data[station.server_name]
+			self.save_to_file(os.path.join(self.cache_dir,BOOKMARKS_FILENAME),data)
+
+		if isinstance(obj,RadioStation):
+			button = gtk.Button("Play")
+			button.connect("clicked", button_play_handler, obj)
+			button_box.pack_start(button,False)
+
+			button = gtk.Button("Record")
+			button_box.pack_start(button,False)
+
+			data = self.load_from_file(os.path.join(self.cache_dir,BOOKMARKS_FILENAME))
+			if data is None:
+				data = {}
+			if station.server_name not in data:
+				button = gtk.Button("Bookmark")
+			else:
+				button = gtk.Button("Unbookmark")
+			button.connect("clicked", button_bookmark_handler, obj)
+			button_box.pack_start(button,False)
+
+		sub_info_box = gtk.HBox()
+		sub_info_box.pack_start(info_container)
+		sub_info_box.pack_start(button_box,False)
+
 		decorated_info_box = gtk.Frame("Info box")
-		decorated_info_box.add(info_container)
+		decorated_info_box.add(sub_info_box)
+
 		self.info_box.pack_start(decorated_info_box)
 		self.info_box.show_all()
 
@@ -733,6 +786,14 @@ class RadioBrowserSource(rb.StreamingSource):
 			data = {}
 		for name,station in data.items():
 			self.tree_store.append(self.recently_iter,(name,station))
+
+		# add bookmarks
+		self.bookmarks_iter = self.tree_store.append(None,("Bookmark",None))
+		data = self.load_from_file(os.path.join(self.cache_dir,BOOKMARKS_FILENAME))
+		if data is None:
+			data = {}
+		for name,station in data.items():
+			self.tree_store.append(self.bookmarks_iter,(name,station))
 
 		for feed in self.engines():
 			try:
