@@ -336,9 +336,16 @@ class RadioBrowserSource(rb.StreamingSource):
 			button.connect("clicked", button_play_handler, obj)
 			button_box.pack_start(button,False)
 
-			button = gtk.Button("Record")
-			button.connect("clicked", button_record_handler, obj)
-			button_box.pack_start(button,False)
+			try:
+				process = subprocess.Popen("streamripper",stdout=subprocess.PIPE)
+				process.communicate()
+				process.wait()
+			except(OSError):
+				print "streamripper not found"
+			else:
+				button = gtk.Button("Record")
+				button.connect("clicked", button_record_handler, obj)
+				button_box.pack_start(button,False)
 
 			data = self.load_from_file(os.path.join(self.cache_dir,BOOKMARKS_FILENAME))
 			if data is None:
