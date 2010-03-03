@@ -28,6 +28,7 @@ import hashlib
 import urllib
 import webbrowser
 import Queue
+import pickle
 
 import xml.sax.saxutils
 
@@ -45,6 +46,7 @@ RB_METADATA_FIELD_TITLE = 0
 RB_METADATA_FIELD_GENRE = 4
 RB_METADATA_FIELD_BITRATE = 20
 BOARD_ROOT = "http://segler.bplaced.net/"
+RECENTLY_USED_FILENAME = "recently.bin"
 
 class RadioBrowserSource(rb.StreamingSource):
 	__gproperties__ = {
@@ -633,6 +635,15 @@ class RadioBrowserSource(rb.StreamingSource):
 		transmit_thread.setDaemon(True)
 		transmit_thread.start()
 
+		# add to recently played
+		data = self.load_from_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME))
+		if data is None:
+			data = {}
+		if station.server_name not in data:
+			self.tree_store.append(self.recently_iter,(station.server_name,station))
+			data[station.server_name] = station
+			self.save_to_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME),data)
+
 		# get player
 		player = self.shell.get_player()
 		player.stop()
@@ -717,6 +728,14 @@ class RadioBrowserSource(rb.StreamingSource):
 		shoutcast_icon = self.load_icon_file(self.plugin.find_file("shoutcast-logo.png"),None)
 		xiph_icon = self.load_icon_file(self.plugin.find_file("xiph-logo.png"),None)
 		local_icon = self.load_icon_file(self.plugin.find_file("local-logo.png"),None)
+
+		# add recently played list
+		self.recently_iter = self.tree_store.append(None,("Recently played",None))
+		data = self.load_from_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME))
+		if data is None:
+			data = {}
+		for name,station in data.items():
+			self.tree_store.append(self.recently_iter,(name,station))
 
 		for feed in self.engines():
 			try:
@@ -819,3 +838,23 @@ class RadioBrowserSource(rb.StreamingSource):
 		self.list_download_thread = threading.Thread(target = self.refill_list_worker)
 		self.list_download_thread.setDaemon(True)
 		self.list_download_thread.start()
+
+	def load_from_file(self,filename):
+		if not os.path.isfile(filename):
+			return None
+
+		try:
+			f = open(filename,"r")
+			p = pickle.Unpickler(f)
+			data = p.load()
+			f.close()
+			return data
+		except:
+			print "load file did not work:"+filename
+			return None
+
+	def save_to_file(self,filename,obj):
+		f = open(filename,"w")
+		p = pickle.Pickler(f)
+		p.dump(obj)
+		f.close()
