@@ -47,8 +47,12 @@ class Feed:
 		remotefile = gio.File(self.uri)
 		localfile = gio.File(self.filename)
 		
-		if not remotefile.copy(localfile,self.copy_callback):
+		try:
+			if not remotefile.copy(localfile,self.copy_callback):
+				print "download failed"
+		except:
 			print "download failed"
+			pass
 
 	# only download if necessary
 	def update(self):
