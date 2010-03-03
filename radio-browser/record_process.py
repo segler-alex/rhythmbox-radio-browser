@@ -16,6 +16,11 @@
 #    along with Radio-Browser-Plugin.  If not, see <http://www.gnu.org/licenses/>.
 
 import threading
+import gobject
+import subprocess
+import gtk
+
+import xml.sax.saxutils
 
 class RecordProcess(threading.Thread):
 	def __init__(self):

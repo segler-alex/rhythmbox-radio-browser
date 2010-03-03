@@ -284,15 +284,6 @@ class RadioBrowserSource(rb.StreamingSource):
 			add_label("Feed homepage",feed.getHomepage())
 			add_label("Feed source",feed.getSource())
 
-			"""
-			if station == "Bookmark":
-				add_label("Description","User saved bookmarks")
-				add_label("Feed source","local source")
-
-			if station == "Recently":
-				add_label("Description","Recently played streams")
-				add_label("Feed source","local source")"""
-
 		if isinstance(obj,RadioStation):
 			station = obj
 			add_label("Source feed",station.type)
@@ -337,6 +328,8 @@ class RadioBrowserSource(rb.StreamingSource):
 				del data[station.server_name]
 				widget.set_label("Bookmark")
 			self.save_to_file(os.path.join(self.cache_dir,BOOKMARKS_FILENAME),data)
+		def button_record_handler(widget,station):
+			self.record_uri(station)
 
 		if isinstance(obj,RadioStation):
 			button = gtk.Button("Play")
@@ -344,6 +337,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			button_box.pack_start(button,False)
 
 			button = gtk.Button("Record")
+			button.connect("clicked", button_record_handler, obj)
 			button_box.pack_start(button,False)
 
 			data = self.load_from_file(os.path.join(self.cache_dir,BOOKMARKS_FILENAME))
@@ -579,8 +573,9 @@ class RadioBrowserSource(rb.StreamingSource):
 
 		dialog.destroy()
 
-	def record_uri(self,uri,title):
-		self.add_recently_played(uri,title)
+	def record_uri(self,station):
+		uri = station.getRealURL()
+		title = station.server_name
 		commandline = ["streamripper",uri,"-d",self.plugin.outputpath,"-r"]
 		process = subprocess.Popen(commandline,stdout=subprocess.PIPE)
 
@@ -616,11 +611,11 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	def record_play_button_handler(self,button,uri):
 		rp = self.recording_streams[uri]
-		self.station = RadioStation()
-		self.station.server_name = rp.title
-		self.station.listen_url = uri
-		self.station.type = "local"
-		self.generic_play_uri("http://127.0.0.1:"+rp.relay_port,rp.title)
+		station = RadioStation()
+		station.server_name = rp.title
+		station.listen_url = "http://127.0.0.1:"+rp.relay_port
+		station.type = "local"
+		self.play_uri(station)
 
 	def record_stop_button_handler(self,button,uri):
 		rp = self.recording_streams[uri]
