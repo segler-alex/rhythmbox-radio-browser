@@ -155,10 +155,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.tree_view.connect("cursor-changed",self.treeview_cursor_changed_handler)
 
 			# create icon view
-			self.icon_view_store = gtk.ListStore(str,object,gtk.gdk.Pixbuf)
-			self.filtered_icon_view_store = self.icon_view_store.filter_new()
-			self.filtered_icon_view_store.set_visible_func(self.list_store_visible_func)
-			self.icon_view = gtk.IconView(self.filtered_icon_view_store)
+			self.icon_view = gtk.IconView()
 			self.icon_view.set_text_column(0)
 			self.icon_view.set_pixbuf_column(2)
 			self.icon_view.set_item_width(150)
@@ -716,11 +713,11 @@ class RadioBrowserSource(rb.StreamingSource):
 
 		self.updating = True
 		# deactivate sorting
+		self.icon_view_store = gtk.ListStore(str,object,gtk.gdk.Pixbuf)
 		self.sorted_list_store.reset_default_sort_func()
 
 		# delete old entries
 		self.tree_store.clear()
-		self.icon_view_store.set_default_sort_func(None)
 		self.icon_view_store.clear()
 
 		# preload most used icons
@@ -825,6 +822,9 @@ class RadioBrowserSource(rb.StreamingSource):
 		self.icon_view_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
 
 		# connect model to view
+		self.filtered_icon_view_store = self.icon_view_store.filter_new()
+		self.filtered_icon_view_store.set_visible_func(self.list_store_visible_func)
+
 		self.tree_view.set_model(self.sorted_list_store)
 		self.icon_view.set_model(self.filtered_icon_view_store)
 
