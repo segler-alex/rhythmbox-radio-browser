@@ -738,6 +738,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			try:
 				gtk.gdk.threads_enter()
 				self.load_status = "loading feed '"+feed.name()+"'"
+				self.load_total_size = 0
 				self.notify_status_changed()
 				gtk.gdk.threads_leave()
 
