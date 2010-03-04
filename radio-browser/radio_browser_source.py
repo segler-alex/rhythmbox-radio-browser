@@ -328,14 +328,26 @@ class RadioBrowserSource(rb.StreamingSource):
 				del data[station.server_name]
 				widget.set_label("Bookmark")
 			self.save_to_file(os.path.join(self.cache_dir,BOOKMARKS_FILENAME),data)
+
 		def button_record_handler(widget,station):
 			self.record_uri(station)
+
+		def button_redownload_handler(widget,feed):
+			feed.force_redownload()
+			self.refill_list()
+			pass
+
+		if isinstance(obj,Feed):
+			button = gtk.Button("Redownload")
+			button.connect("clicked", button_redownload_handler, obj)
+			button_box.pack_start(button,False)			
 
 		if isinstance(obj,RadioStation):
 			button = gtk.Button("Play")
 			button.connect("clicked", button_play_handler, obj)
 			button_box.pack_start(button,False)
 
+			# check for streamripper, before displaying record button
 			try:
 				process = subprocess.Popen("streamripper",stdout=subprocess.PIPE)
 				process.communicate()

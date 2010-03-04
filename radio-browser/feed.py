@@ -118,3 +118,12 @@ class Feed:
 			self.loaded = True
 
 		return self.handler.entries
+
+	def force_redownload(self):
+		self.handler.entries = []
+		self.loaded = False
+		try:
+			os.remove(self.filename)
+		except:
+			pass
+		pass
