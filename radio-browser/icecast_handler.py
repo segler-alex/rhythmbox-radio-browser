@@ -59,6 +59,7 @@ class IcecastHandler(xml.sax.handler.ContentHandler):
 
 class FeedIcecast(Feed):
 	def __init__(self,cache_dir,status_change_handler):
+		Feed.__init__(self)
 		print "init icecast feed"
 		self.handler = IcecastHandler()
 		self.cache_dir = cache_dir

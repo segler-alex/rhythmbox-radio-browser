@@ -39,6 +39,7 @@ from feed import Feed
 from local_handler import FeedLocal
 from icecast_handler import FeedIcecast
 from shoutcast_handler import FeedShoutcast
+from shoutcast_handler import ShoutcastRadioStation
 from board_handler import FeedBoard
 
 #TODO: should not be defined here, but I don't know where to get it from. HELP: much apreciated
@@ -732,10 +733,36 @@ class RadioBrowserSource(rb.StreamingSource):
 		model = treeview.get_model()
 		myiter = model.get_iter(path)
 		
-		station = model.get_value(myiter,1)
+		obj = model.get_value(myiter,1)
 
-		if station is not None:
-			self.play_uri(station)
+		if isinstance(obj,RadioStation):
+			station = obj
+			if station is not None:
+				self.play_uri(station)
+
+		if isinstance(obj,Feed):
+			feed = obj
+			transmit_thread = threading.Thread(target = self.download_feed,args = (feed,))
+			transmit_thread.setDaemon(True)
+			transmit_thread.start()
+
+	def download_feed(self,feed):
+		tryno = 0
+		self.updating = True
+		while True:
+			tryno += 1
+
+			gtk.gdk.threads_enter()
+			self.load_status = "downloading feed '"+feed.name()+"' from '"+feed.uri+"', Try no:"+str(tryno)
+			self.load_total_size = 0
+			self.notify_status_changed()
+			gtk.gdk.threads_leave()
+
+			if feed.download():
+				break
+			pass
+
+		self.refill_list()
 
 	def do_impl_delete_thyself(self):
 		print "not implemented"
@@ -774,6 +801,102 @@ class RadioBrowserSource(rb.StreamingSource):
 					self.icon_download_queue.put([filepath,station.icon_src])
 		return icon
 
+	def insert_feed(self,feed,parent):
+		# preload most used icons
+		note_icon = self.load_icon_file(self.plugin.find_file("note.png"),None)
+		shoutcast_icon = self.load_icon_file(self.plugin.find_file("shoutcast-logo.png"),None)
+		xiph_icon = self.load_icon_file(self.plugin.find_file("xiph-logo.png"),None)
+		local_icon = self.load_icon_file(self.plugin.find_file("local-logo.png"),None)
+
+		gtk.gdk.threads_enter()
+		self.load_status = "loading feed '"+feed.name()+"'"
+		self.load_total_size = 0
+		self.notify_status_changed()
+		gtk.gdk.threads_leave()
+
+		# create main feed root item
+		current_iter = self.tree_store.append(parent,(feed.name(),feed))
+
+		# initialize dicts for iters
+		genres = {}
+		countries = {}
+		subcountries = {}
+
+		# load entries
+		entries = feed.entries()
+
+		gtk.gdk.threads_enter()
+		self.load_status = "integrating feed '"+feed.name()+"'("+str(len(entries))+" items) into tree..."
+		if len(entries) > 0:
+			print self.load_status
+		self.notify_status_changed()
+		gtk.gdk.threads_leave()
+
+		def short_name(name):
+			maxlen = 50
+			if len(name) > maxlen:
+				return name[0:maxlen-3]+"..."
+			else:
+				return name
+
+		self.load_total_size = len(entries)
+		self.load_current_size = 0
+
+		for obj in entries:
+			if isinstance(obj,Feed):
+				sub_feed = obj
+				# add sub feed to treeview
+				self.insert_feed(sub_feed,current_iter)
+
+			elif isinstance(obj,RadioStation):
+				station = obj
+				# add subitems for sorting, if there are stations
+				if self.load_current_size == 0:
+					genre_iter = self.tree_store.append(current_iter,(_("By Genres"),None))
+					country_iter = self.tree_store.append(current_iter,(_("By Country"),None))
+
+				# display status info in statusbar
+				self.load_current_size += 1
+				gtk.gdk.threads_enter()
+				if self.load_current_size % 50 == 0:
+					self.notify_status_changed()
+				gtk.gdk.threads_leave()
+
+				# default icon
+				icon = note_icon
+				# icons for special feeds
+				if station.type == "Shoutcast":
+					icon = shoutcast_icon
+				if station.type == "Icecast":
+					icon = xiph_icon
+				if station.type == "Local":
+					icon = local_icon
+
+				# add new station to liststore of search-view too
+				self.icon_view_store.append((short_name(station.server_name),station,self.get_station_icon(station,icon)))
+
+				# add station to treeview, by genre
+				if station.genre is not None:
+					for genre in station.genre.split(","):
+						genre = genre.strip().lower()
+						if genre not in genres:
+							genres[genre] = self.tree_store.append(genre_iter,(genre,None))
+						self.tree_store.append(genres[genre],(station.server_name,station))
+
+				# add station to treeview, by country
+				country_arr = station.country.split("/")
+				if country_arr[0] not in countries:
+					countries[country_arr[0]] = self.tree_store.append(country_iter,(country_arr[0],None))
+				if len(country_arr) == 2:
+					if station.country not in subcountries:
+						subcountries[station.country] = self.tree_store.append(countries[country_arr[0]],(country_arr[1],None))
+					self.tree_store.append(subcountries[station.country],(station.server_name,station))
+				else:
+					self.tree_store.append(countries[country_arr[0]],(station.server_name,station))
+
+			else:
+				print "ERROR: unknown class type in feed"
+
 	def refill_list_worker(self):
 		print "refill list worker"
 		self.tree_view.set_model()
@@ -787,12 +910,6 @@ class RadioBrowserSource(rb.StreamingSource):
 		# delete old entries
 		self.tree_store.clear()
 		self.icon_view_store.clear()
-
-		# preload most used icons
-		note_icon = self.load_icon_file(self.plugin.find_file("note.png"),None)
-		shoutcast_icon = self.load_icon_file(self.plugin.find_file("shoutcast-logo.png"),None)
-		xiph_icon = self.load_icon_file(self.plugin.find_file("xiph-logo.png"),None)
-		local_icon = self.load_icon_file(self.plugin.find_file("local-logo.png"),None)
 
 		# add recently played list
 		self.recently_iter = self.tree_store.append(None,("Recently played",None))
@@ -812,84 +929,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 		for feed in self.engines():
 			try:
-				gtk.gdk.threads_enter()
-				self.load_status = "loading feed '"+feed.name()+"'"
-				self.load_total_size = 0
-				self.notify_status_changed()
-				gtk.gdk.threads_leave()
-
-				# create main feed root item
-				current_iter = self.tree_store.append(None,(feed.name(),feed))
-
-				# initialize dicts for iters
-				genres = {}
-				countries = {}
-				subcountries = {}
-
-				# get genres
-				genres_list = feed.genres()
-
-				# add subitems for sorting
-				genre_iter = self.tree_store.append(current_iter,(_("By Genres"),None))
-				country_iter = self.tree_store.append(current_iter,(_("By Country"),None))
-				for genre in genres_list:
-					genres[genre] = self.tree_store.append(genre_iter,(genre,None))
-
-				# load entries
-				entries = feed.entries()
-
-				gtk.gdk.threads_enter()
-				self.load_status = "integrating feed '"+feed.name()+"'("+str(len(entries))+" items) into tree..."
-				self.notify_status_changed()
-				gtk.gdk.threads_leave()
-
-				def short_name(name):
-					maxlen = 50
-					if len(name) > maxlen:
-						return name[0:maxlen-3]+"..."
-					else:
-						return name
-
-				self.load_total_size = len(entries)
-				self.load_current_size = 0
-
-				for station in entries:
-					self.load_current_size += 1
-					gtk.gdk.threads_enter()
-					if self.load_current_size % 50 == 0:
-						self.notify_status_changed()
-					gtk.gdk.threads_leave()
-
-					# default icon
-					icon = note_icon
-					# icons for special feeds
-					if station.type == "Shoutcast":
-						icon = shoutcast_icon
-					if station.type == "Icecast":
-						icon = xiph_icon
-					if station.type == "Local":
-						icon = local_icon
-					self.icon_view_store.append((short_name(station.server_name),station,self.get_station_icon(station,icon)))
-
-					# by genre
-					if station.genre is not None:
-						for genre in station.genre.split(","):
-							genre = genre.strip().lower()
-							if genre not in genres:
-								genres[genre] = self.tree_store.append(genre_iter,(genre,None))
-							self.tree_store.append(genres[genre],(station.server_name,station))
-
-					# by country
-					country_arr = station.country.split("/")
-					if country_arr[0] not in countries:
-						countries[country_arr[0]] = self.tree_store.append(country_iter,(country_arr[0],None))
-					if len(country_arr) == 2:
-						if station.country not in subcountries:
-							subcountries[station.country] = self.tree_store.append(countries[country_arr[0]],(country_arr[1],None))
-						self.tree_store.append(subcountries[station.country],(station.server_name,station))
-					else:
-						self.tree_store.append(countries[country_arr[0]],(station.server_name,station))
-
+				self.insert_feed(feed,None)
 			except Exception,e:
 				print "error with source:"+feed.name()
 				print "error:"+str(e)

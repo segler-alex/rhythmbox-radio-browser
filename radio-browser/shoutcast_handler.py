@@ -41,7 +41,7 @@ class ShoutcastRadioStation(RadioStation):
 class ShoutcastHandler(xml.sax.handler.ContentHandler):
 	def __init__(self):
 		self.genres = []
-		self.entries = {}
+		self.entries = []
  
 	def startElement(self, name, attributes):
 		if name == "genre":
@@ -64,10 +64,11 @@ class ShoutcastHandler(xml.sax.handler.ContentHandler):
 				self.entry.homepage = "http://shoutcast.com/directory/search_results.jsp?searchCrit=simple&s="+urllib.quote_plus(self.entry.server_name.replace("- [SHOUTcast.com]","").strip())
 			except:
 				self.entry.homepage = ""
-			self.entries[self.entry.server_name] = self.entry
+			self.entries.append(self.entry)
 
 class FeedShoutcast(Feed):
 	def __init__(self,cache_dir,status_change_handler):
+		Feed.__init__(self)
 		print "init shoutcast feed"
 		self.handler = ShoutcastHandler()
 		self.cache_dir = cache_dir
@@ -81,32 +82,7 @@ class FeedShoutcast(Feed):
 	def getHomepage(self):
 		return "http://shoutcast.com/"
 
-	def update(self):
-		self.status_change_handler(self.uri,0,0)
-		while not self.download():
-			pass
-		self.load()
-		genres = self.handler.genres
-
-		for i in range(0,len(genres)):
-			genre = genres[i]
-			self.uri = "http://www.shoutcast.com/sbin/newxml.phtml?genre="+genre
-			self.filename = os.path.join(self.cache_dir, "shoutcast-"+genre+".xml")
-			self.status_change_handler(self.uri,i,len(genres))
-			tries = 0
-			if not os.path.isfile(self.filename):
-				while not self.download():
-					tries += 1
-					if tries >= 10:
-						break
-			self.load()
-
 	def genres(self):
-		try:
-			self.loaded
-		except:
-			self.loaded = False
-
 		if not self.loaded:
 			if not os.path.isfile(self.filename):
 				self.download()
@@ -116,15 +92,28 @@ class FeedShoutcast(Feed):
 		return self.handler.genres
 
 	def entries(self):
-		#entrylist = []
+		entry_list = []
 		genres = self.genres()
 		for genre in genres:
-			filename = os.path.join(self.cache_dir, "shoutcast-"+genre+".xml")
-			try:
-				#self.handler = ShoutcastHandler()
-				xml.sax.parse(filename,self.handler)
-				#entrylist.extend(self.handler.entries)
-			except:
-				pass
+			entry = FeedSubShoutcast(self.cache_dir,self.status_change_handler,genre)
+			entry_list.append(entry)
 
-		return self.handler.entries.values()
+		return entry_list
+
+class FeedSubShoutcast(Feed):
+	def __init__(self,cache_dir,status_change_handler,genre):
+		Feed.__init__(self)
+		self.handler = ShoutcastHandler()
+		self.cache_dir = cache_dir
+		self.filename = os.path.join(self.cache_dir, "shoutcast-"+genre+".xml")
+		self.uri = "http://www.shoutcast.com/sbin/newxml.phtml?genre="+genre
+		self.status_change_handler = status_change_handler
+		self.genre = genre
+		self.setAutoDownload(False)
+		self.setUpdateChecking(False)
+
+	def name(self):
+		return "Shoutcast Genre "+self.genre
+
+	def getHomepage(self):
+		return "http://shoutcast.com/"

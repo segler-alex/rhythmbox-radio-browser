@@ -45,6 +45,7 @@ class BoardHandler(xml.sax.handler.ContentHandler):
 
 class FeedBoard(Feed):
 	def __init__(self,cache_dir,status_change_handler):
+		Feed.__init__(self)
 		print "init board feed"
 		self.handler = BoardHandler()
 		self.cache_dir = cache_dir

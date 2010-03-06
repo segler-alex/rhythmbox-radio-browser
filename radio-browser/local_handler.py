@@ -57,6 +57,7 @@ class LocalHandler(xml.sax.handler.ContentHandler):
 
 class FeedLocal(Feed):
 	def __init__(self,cache_dir,status_change_handler):
+		Feed.__init__(self)
 		print "init local feed"
 		self.handler = LocalHandler()
 		self.cache_dir = cache_dir

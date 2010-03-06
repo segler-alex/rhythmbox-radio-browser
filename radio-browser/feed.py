@@ -24,6 +24,8 @@ from radio_station import RadioStation
 class Feed:
 	def __init__(self):
 		self.loaded = False
+		self.AutoDownload = True
+		self.UpdateChecking = True
 
 	def getSource(self):
 		return self.uri
@@ -33,6 +35,12 @@ class Feed:
 
 	def getHomepage(self):
 		return ""
+
+	def setAutoDownload(self,autodownload):
+		self.AutoDownload = autodownload
+
+	def setUpdateChecking(self,updatechecking):
+		self.UpdateChecking = updatechecking
 
 	def copy_callback(self,current,total):
 		self.status_change_handler(self.uri,current,total)
@@ -50,9 +58,12 @@ class Feed:
 		try:
 			if not remotefile.copy(localfile,self.copy_callback):
 				print "download failed"
+				return False
 		except:
 			print "download failed"
+			return False
 			pass
+		return True
 
 	# only download if necessary
 	def update(self):
@@ -87,13 +98,14 @@ class Feed:
 			print "parse failed of "+self.filename
 
 	def genres(self):
-		try:
-			self.loaded
-		except:
-			self.loaded = False
+		if not os.path.isfile(self.filename) and not self.AutoDownload:
+			return []
 
 		if not self.loaded:
-			self.update()
+			if self.UpdateChecking:
+				self.update()
+			if not os.path.isfile(self.filename):
+				download()
 			self.load()
 			self.loaded = True
 
@@ -107,13 +119,14 @@ class Feed:
 		return list
 
 	def entries(self):
-		try:
-			self.loaded
-		except:
-			self.loaded = False
+		if not os.path.isfile(self.filename) and not self.AutoDownload:
+			return []
 
 		if not self.loaded:
-			self.update()
+			if self.UpdateChecking:
+				self.update()
+			if not os.path.isfile(self.filename):
+				download()
 			self.load()
 			self.loaded = True
 
