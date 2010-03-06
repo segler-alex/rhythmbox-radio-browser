@@ -707,11 +707,6 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	""" starts playback of the station """
 	def play_uri(self,station):
-		# transmit station click to station board (statistic) """
-		transmit_thread = threading.Thread(target = self.transmit_station,args = (station,))
-		transmit_thread.setDaemon(True)
-		transmit_thread.start()
-
 		# add to recently played
 		data = self.load_from_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME))
 		if data is None:
@@ -738,6 +733,11 @@ class RadioBrowserSource(rb.StreamingSource):
 		# start playback
 		player.play()
 		player.play_entry(self.entry,self)
+
+		# transmit station click to station board (statistic) """
+		transmit_thread = threading.Thread(target = self.transmit_station,args = (station,))
+		transmit_thread.setDaemon(True)
+		transmit_thread.start()
 
 	""" handler for double clicks in tree view """
 	def row_activated_handler(self,treeview,path,column):
