@@ -338,10 +338,21 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.refill_list()
 			pass
 
+		def button_download_handler(widget,feed):
+			transmit_thread = threading.Thread(target = self.download_feed,args = (feed,))
+			transmit_thread.setDaemon(True)
+			transmit_thread.start()
+			pass
+
 		if isinstance(obj,Feed):
-			button = gtk.Button("Redownload")
-			button.connect("clicked", button_redownload_handler, obj)
-			button_box.pack_start(button,False)			
+			feed = obj
+			if os.path.isfile(feed.filename):
+				button = gtk.Button("Redownload")
+				button.connect("clicked", button_redownload_handler, obj)
+			else:
+				button = gtk.Button("Download")
+				button.connect("clicked", button_download_handler, obj)
+			button_box.pack_start(button,False)
 
 		if isinstance(obj,RadioStation):
 			button = gtk.Button("Play")
