@@ -333,11 +333,6 @@ class RadioBrowserSource(rb.StreamingSource):
 		def button_record_handler(widget,station):
 			self.record_uri(station)
 
-		def button_redownload_handler(widget,feed):
-			feed.force_redownload()
-			self.refill_list()
-			pass
-
 		def button_download_handler(widget,feed):
 			transmit_thread = threading.Thread(target = self.download_feed,args = (feed,))
 			transmit_thread.setDaemon(True)
@@ -348,7 +343,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			feed = obj
 			if os.path.isfile(feed.filename):
 				button = gtk.Button("Redownload")
-				button.connect("clicked", button_redownload_handler, obj)
+				button.connect("clicked", button_download_handler, obj)
 			else:
 				button = gtk.Button("Download")
 				button.connect("clicked", button_download_handler, obj)
@@ -838,8 +833,6 @@ class RadioBrowserSource(rb.StreamingSource):
 
 		gtk.gdk.threads_enter()
 		self.load_status = "integrating feed '"+feed.name()+"'("+str(len(entries))+" items) into tree..."
-		if len(entries) > 0:
-			print self.load_status
 		self.notify_status_changed()
 		gtk.gdk.threads_leave()
 
