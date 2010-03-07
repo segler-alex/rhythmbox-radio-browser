@@ -827,6 +827,8 @@ class RadioBrowserSource(rb.StreamingSource):
 		genres = {}
 		countries = {}
 		subcountries = {}
+		streamtypes = {}
+		bitrates = {}
 
 		# load entries
 		entries = feed.entries()
@@ -858,6 +860,8 @@ class RadioBrowserSource(rb.StreamingSource):
 				if self.load_current_size == 0:
 					genre_iter = self.tree_store.append(current_iter,(_("By Genres"),None))
 					country_iter = self.tree_store.append(current_iter,(_("By Country"),None))
+					streamtype_iter = self.tree_store.append(current_iter,(_("By Streamtype"),None))
+					bitrate_iter = self.tree_store.append(current_iter,(_("By Bitrate"),None))
 
 				# display status info in statusbar
 				self.load_current_size += 1
@@ -878,6 +882,16 @@ class RadioBrowserSource(rb.StreamingSource):
 
 				# add new station to liststore of search-view too
 				self.icon_view_store.append((short_name(station.server_name),station,self.get_station_icon(station,icon)))
+
+				# add station to treeview, by streamtype
+				if station.server_type not in streamtypes:
+					streamtypes[station.server_type] = self.tree_store.append(streamtype_iter,(station.server_type,None))
+				self.tree_store.append(streamtypes[station.server_type],(station.server_name,station))
+
+				# add station to treeview, by bitrate
+				if station.bitrate not in bitrates:
+					bitrates[station.bitrate] = self.tree_store.append(bitrate_iter,(station.bitrate,None))
+				self.tree_store.append(bitrates[station.bitrate],(station.server_name,station))
 
 				# add station to treeview, by genre
 				if station.genre is not None:
