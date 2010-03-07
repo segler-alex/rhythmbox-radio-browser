@@ -43,8 +43,12 @@ class LocalHandler(xml.sax.handler.ContentHandler):
 			self.entry.genre = attributes.get("genre")
 			self.entry.listen_url = attributes.get("address")
 			self.entry.bitrate = attributes.get("bitrate")
+			if self.entry.bitrate is None:
+				self.entry.bitrate = ""
 			self.entry.homepage = attributes.get("homepage")
 			self.entry.icon_src = attributes.get("favicon")
+			if self.entry.icon_src is None:
+				self.entry.icon_src = ""
 			if self.current_category is not None:
 				self.entry.country = self.current_country+"/"+self.current_category
 			else:
