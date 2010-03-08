@@ -605,7 +605,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			filter_string = self.filter_entry.get_text().lower()
 			if filter_string != "":
-				if model.get_value(iter,0).lower().find(filter_string) < 0:
+				if station.server_name.lower().find(filter_string) < 0:
 					return False
 
 			filter_string = self.filter_entry_genre.get_text().lower()
