@@ -21,6 +21,24 @@ import xml.sax.handler
 
 from radio_station import RadioStation
 
+class FeedAction:
+	def __init__(self,feed,name,func):
+		self.feed = feed
+		self.name = name
+		self.func = func
+
+	def call():
+		self.func()
+
+class FeedStationAction:
+	def __init__(self,feed,name,func):
+		self.feed = feed
+		self.name = name
+		self.func = func
+
+	def call(station):
+		self.func(station)
+
 class Feed:
 	def __init__(self):
 		self.loaded = False
@@ -140,3 +158,11 @@ class Feed:
 		except:
 			pass
 		pass
+
+	def get_feed_actions(self):
+		actions = []
+		return actions
+
+	def get_station_actions(self):
+		actions = []
+		return actions
