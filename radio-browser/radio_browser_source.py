@@ -117,6 +117,18 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.filter_entry = gtk.Entry()
 			self.filter_entry.connect("changed",self.filter_entry_changed)
 
+			self.filter_entry_bitrate = gtk.SpinButton()
+			self.filter_entry_bitrate.set_range(32,512)
+			self.filter_entry_bitrate.set_value(64)
+			self.filter_entry_bitrate.set_increments(32,32)
+			self.filter_entry_bitrate.connect("changed",self.filter_entry_changed)
+
+			self.filter_entry_genre = gtk.Entry()
+			#cell = gtk.CellRendererText()
+			#self.filter_entry_genre.pack_start(cell, True)
+			#self.filter_entry_genre.add_attribute(cell, 'text', 0)
+			self.filter_entry_genre.connect("changed",self.filter_entry_changed)
+
 			self.tree_store = gtk.TreeStore(str,object)
 			self.sorted_list_store = gtk.TreeModelSort(self.tree_store)
 			#self.filtered_list_store = self.sorted_list_store.filter_new()
@@ -182,6 +194,10 @@ class RadioBrowserSource(rb.StreamingSource):
 			filterbox = gtk.HBox()
 			filterbox.pack_start(gtk.Label("Filter:"),False)
 			filterbox.pack_start(self.filter_entry)
+			filterbox.pack_start(gtk.Label("Genre:"),False)
+			filterbox.pack_start(self.filter_entry_genre,False)
+			filterbox.pack_start(gtk.Label("Bitrate:"),False)
+			filterbox.pack_start(self.filter_entry_bitrate,False)
 
 			self.record_box = gtk.VBox()
 			self.info_box = gtk.HBox()
@@ -649,7 +665,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	""" listener for filter entry change """
 	def filter_entry_changed(self,gtk_entry):
-		if self.filter_entry.get_text() == "":
+		if self.filter_entry.get_text() == "" and self.filter_entry_genre.get_text() == "":
 			self.tree_view_container.show_all()
 			self.icon_view_container.hide_all()
 		else:
@@ -671,20 +687,26 @@ class RadioBrowserSource(rb.StreamingSource):
 			station = obj
 			try:
 				bitrate = int(station.bitrate)
-				min_bitrate = int(float(self.plugin.min_bitrate))
+				min_bitrate = int(float(self.filter_entry_bitrate.get_value()))
 				if bitrate < min_bitrate:
 					return False
 			except:
 				pass
 
 			filter_string = self.filter_entry.get_text().lower()
-	
-			if filter_string == "":
-				return True
-			elif model.get_value(iter,0).lower().find(filter_string) >= 0:
-				return True
-			else:
-				return False
+			if filter_string != "":
+				if model.get_value(iter,0).lower().find(filter_string) < 0:
+					return False
+
+			filter_string = self.filter_entry_genre.get_text().lower()
+			if filter_string != "":
+				genre = station.genre
+				if genre is None:
+					genre = ""
+				if genre.lower().find(filter_string) < 0:
+					return False
+
+			return True
 		else:
 			return True
 
@@ -899,6 +921,7 @@ class RadioBrowserSource(rb.StreamingSource):
 						genre = genre.strip().lower()
 						if genre not in genres:
 							genres[genre] = self.tree_store.append(genre_iter,(genre,None))
+						self.genre_list[genre] = 1
 						self.tree_store.append(genres[genre],(station.server_name,station))
 
 				# add station to treeview, by country
@@ -919,6 +942,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		print "refill list worker"
 		self.tree_view.set_model()
 		self.icon_view.set_model()
+		#self.filter_entry_genre.set_model()
 
 		self.updating = True
 		# deactivate sorting
@@ -945,12 +969,25 @@ class RadioBrowserSource(rb.StreamingSource):
 		for name,station in data.items():
 			self.tree_store.append(self.bookmarks_iter,(name,station))
 
+		# initialize genre dict for genre filter combobox
+		self.genre_list = {}
+
 		for feed in self.engines():
 			try:
 				self.insert_feed(feed,None)
 			except Exception,e:
 				print "error with source:"+feed.name()
 				print "error:"+str(e)
+
+		self.genre_liststore = gtk.ListStore(gobject.TYPE_STRING)
+		self.genre_liststore.append(("",))
+		for key in self.genre_list.keys():
+			self.genre_liststore.append((key,))
+		self.genre_liststore.set_sort_column_id(0,gtk.SORT_ASCENDING)
+		completion = gtk.EntryCompletion()
+		completion.set_text_column(0)
+		completion.set_model(self.genre_liststore)
+		self.filter_entry_genre.set_completion(completion)
 
 		# activate sorting
 		self.sorted_list_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
