@@ -51,12 +51,17 @@ class RadioBrowserPlugin (rb.Plugin):
 			icon = gtk.gdk.pixbuf_new_from_file_at_size(filepath, width, height)
 			self.source.set_property( "icon",  icon)
 
+		self.actiongroup = gtk.ActionGroup('RadioBrowserActionGroup')
+
 		# add "update-all" action to the toolbar
 		action = gtk.Action('UpdateList', None, _("Update radio station list"), gtk.STOCK_GO_DOWN)
 		action.connect('activate', lambda a: shell.get_property("selected-source").update_button_clicked())
-		self.actiongroup = gtk.ActionGroup('RadioBrowserActionGroup')
 		self.actiongroup.add_action(action)
-	
+
+		action = gtk.Action('ClearIconCache', None, _("Clear icon cache"), gtk.STOCK_CLEAR)
+		action.connect('activate', lambda a: shell.get_property("selected-source").clear_iconcache_button_clicked())
+		self.actiongroup.add_action(action)
+
 		uim = shell.get_ui_manager ()
 		uim.insert_action_group (self.actiongroup)
 		uim.ensure_update()

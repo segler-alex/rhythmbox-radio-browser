@@ -66,7 +66,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	""" return list of actions that should be displayed in toolbar """
 	def do_impl_get_ui_actions(self):
-		return ["UpdateList"]
+		return ["UpdateList","ClearIconCache"]
 
 	def do_impl_get_status(self):
 		if self.updating:
@@ -631,6 +631,19 @@ class RadioBrowserSource(rb.StreamingSource):
 					os.unlink(filepath)
 			# start filling again
 			self.refill_list()
+
+	def clear_iconcache_button_clicked(self):
+		if not self.updating:
+			# delete cache files
+			files = os.listdir(self.icon_cache_dir)
+			for filename in files:
+				filepath = os.path.join(self.icon_cache_dir, filename)
+				os.unlink(filepath)
+			# delete internal cache
+			self.icon_cache = {}
+			# start filling again
+			self.refill_list()
+		pass
 
 	""" starts playback of the station """
 	def play_uri(self,station):
