@@ -5,3 +5,5 @@ Changes since 1.8:
 * new icon set
 * automatic update of some feeds(icecast, local), if local copy is at least 1 day older than server version
 * station click hitlist on http://segler.bplaced.net
+* new install scrypt, for per user install
+* special sorting (by bitrate, genre, streamtype, country) for each feed
