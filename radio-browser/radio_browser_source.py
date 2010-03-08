@@ -29,6 +29,7 @@ import urllib
 import webbrowser
 import Queue
 import pickle
+import datetime
 
 import xml.sax.saxutils
 
@@ -301,6 +302,13 @@ class RadioBrowserSource(rb.StreamingSource):
 			add_label("Feed homepage",feed.getHomepage())
 			add_label("Feed source",feed.getSource())
 
+			try:
+				t = os.path.getmtime(feed.filename)
+				timestr = datetime.datetime.fromtimestamp(t).strftime("%x %X")
+			except:
+				timestr = "No local copy"
+			add_label("Last update",timestr)
+
 		if isinstance(obj,RadioStation):
 			station = obj
 			add_label("Source feed",station.type)
@@ -516,104 +524,6 @@ class RadioBrowserSource(rb.StreamingSource):
 
 #	def playing_song_property_changed (self, sp, uri, property, old, new):
 #		print "property changed "+str(new)
-
-	""" vote for station on board """
-	def vote_station(self,menuitem,station):
-		message = gtk.MessageDialog(message_format="Vote for station",buttons=gtk.BUTTONS_YES_NO,type=gtk.MESSAGE_QUESTION)
-		message.format_secondary_text("Do you really want to vote for this station?")
-		response = message.run()
-		if response == gtk.RESPONSE_YES:
-			params = urllib.urlencode({'action': 'vote','id': station.id})
-			f = urllib.urlopen("http://segler.bplaced.net/?%s" % params)
-			f.read()
-			self.reset_feed("board.xml")
-		message.destroy()
-
-	""" mark station as bad on board """
-	def bad_station(self,menuitem,station):
-		message = gtk.MessageDialog(message_format="Mark station as bad",buttons=gtk.BUTTONS_YES_NO,type=gtk.MESSAGE_WARNING)
-		message.format_secondary_text("Do you really want to mark this radio station as bad?\n\nIt will eventually get deleted if enough people do that!\n\nMore information on that on the feeds homepage:\nhttp://segler.bplaced.net/")
-		response = message.run()
-		if response == gtk.RESPONSE_YES:
-			params = urllib.urlencode({'action': 'negativevote','id': station.id})
-			f = urllib.urlopen("http://segler.bplaced.net/?%s" % params)
-			f.read()
-			self.reset_feed("board.xml")
-		message.destroy()
-
-	""" post new station to board """
-	def post_new_station_handler(self,menuitem):
-		builder_file = self.plugin.find_file("prefs.ui")
-		builder = gtk.Builder()
-		builder.add_from_file(builder_file)
-		dialog = builder.get_object('post_station_dialog')
-
-		dialog.StationName = builder.get_object("StationName")
-		dialog.StationUrl = builder.get_object("StationURL")
-		dialog.StationHomepage = builder.get_object("StationHomepage")
-		dialog.StationFavicon = builder.get_object("StationFavicon")
-		dialog.StationLanguage = builder.get_object("StationLanguage")
-		dialog.StationCountry = builder.get_object("StationCountry")
-		dialog.StationTags = builder.get_object("StationTags")
-
-		LanguageList = gtk.ListStore(str)
-		for language in self.board_languages:
-			LanguageList.append([language])
-		dialog.StationLanguage.set_model(LanguageList)
-		dialog.StationLanguage.set_text_column(0)
-
-		CountryList = gtk.ListStore(str)
-		for country in self.board_countries:
-			CountryList.append([country])
-		dialog.StationCountry.set_model(CountryList)
-		dialog.StationCountry.set_text_column(0)
-
-		while True:
-			def show_message(message):
-				info_dialog = gtk.MessageDialog(parent=dialog,buttons=gtk.BUTTONS_OK,message_format=message)
-				info_dialog.run()
-				info_dialog.destroy()
-
-			print "test"
-			response = dialog.run()
-			if response == 1:
-				break
-			if response == 0:
-				Name = dialog.StationName.get_text().strip()
-				URL = dialog.StationUrl.get_text().strip()
-				Homepage = dialog.StationHomepage.get_text().strip()
-				Favicon = dialog.StationFavicon.get_text().strip()
-				Tags = dialog.StationTags.get_text().strip()
-				Country = dialog.StationCountry.get_child().get_text().strip()
-				Language = dialog.StationLanguage.get_child().get_text().strip()
-
-				if Name == "" or URL == "":
-					show_message("Name and URL are necessary")
-					continue
-
-				if not (URL.lower().startswith("http://") or URL.lower().startswith("mms://")):
-					show_message("URL needs to start with http:// or mms://")
-					continue
-
-				if Homepage != "":
-					if not Homepage.lower().startswith("http://"):
-						show_message("Homepage URL needs to start with http://")
-						continue
-
-				if Favicon != "":
-					if not Favicon.lower().startswith("http://"):
-						show_message("Favicon URL needs to start with http://")
-						continue
-				
-				params = urllib.urlencode({'action': 'add','name': Name, 'url': URL, 'homepage': Homepage,'favicon': Favicon, 'tags': Tags,'language': Language, 'country':Country})
-				f = urllib.urlopen("http://segler.bplaced.net/?%s" % params)
-				f.read()
-
-				self.reset_feed("board.xml")
-				show_message("Station posted")
-				break
-
-		dialog.destroy()
 
 	def record_uri(self,station):
 		uri = station.getRealURL()
