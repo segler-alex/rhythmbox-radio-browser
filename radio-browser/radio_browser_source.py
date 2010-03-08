@@ -363,15 +363,23 @@ class RadioBrowserSource(rb.StreamingSource):
 			transmit_thread.start()
 			pass
 
+		def button_action_handler(widget,feedaction):
+			feedaction.call()
+
 		if isinstance(obj,Feed):
 			feed = obj
 			if os.path.isfile(feed.filename):
 				button = gtk.Button("Redownload")
-				button.connect("clicked", button_download_handler, obj)
+				button.connect("clicked", button_download_handler, feed)
 			else:
 				button = gtk.Button("Download")
-				button.connect("clicked", button_download_handler, obj)
+				button.connect("clicked", button_download_handler, feed)
 			button_box.pack_start(button,False)
+
+			for action in feed.get_feed_actions():
+				button = gtk.Button(action.name)
+				button.connect("clicked",button_action_handler,action)
+				button_box.pack_start(button,False)
 
 		if isinstance(obj,RadioStation):
 			button = gtk.Button("Play")

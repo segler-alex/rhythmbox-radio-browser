@@ -84,7 +84,7 @@ class FeedBoard(Feed):
 		message.destroy()
 
 	""" post new station to board """
-	def post_new_station_handler(self):
+	def post_new_station(self):
 		builder_file = self.plugin.find_file("prefs.ui")
 		builder = gtk.Builder()
 		builder.add_from_file(builder_file)

@@ -27,7 +27,7 @@ class FeedAction:
 		self.name = name
 		self.func = func
 
-	def call():
+	def call(self):
 		self.func()
 
 class FeedStationAction:
@@ -36,7 +36,7 @@ class FeedStationAction:
 		self.name = name
 		self.func = func
 
-	def call(station):
+	def call(self,station):
 		self.func(station)
 
 class Feed:
