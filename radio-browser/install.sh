@@ -2,7 +2,7 @@
 
 DESTDIR=~/.gnome2/rhythmbox/plugins/radio-browser
 
-install -d DESTDIR
+install -d $DESTDIR
 cp *.py $DESTDIR
 cp *.png $DESTDIR
 cp prefs.ui $DESTDIR
