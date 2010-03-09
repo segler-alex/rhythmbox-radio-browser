@@ -729,7 +729,9 @@ class RadioBrowserSource(rb.StreamingSource):
 		self.refill_list()
 
 	def do_impl_delete_thyself(self):
-		print "not implemented"
+		# kill all running records
+		for uri in self.recording_streams.keys():
+			self.recording_streams[uri].process.terminate()
 
 	def engines(self):
 		yield FeedLocal(self.cache_dir,self.update_download_status)
