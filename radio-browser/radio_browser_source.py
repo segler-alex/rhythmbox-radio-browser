@@ -535,6 +535,11 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	def record_uri(self,station):
 		uri = station.getRealURL()
+
+		# do not record the same stream twice
+		if uri in self.recording_streams:
+			return
+
 		title = station.server_name
 		commandline = ["streamripper",uri,"-d",self.plugin.outputpath,"-r"]
 		process = subprocess.Popen(commandline,stdout=subprocess.PIPE)
