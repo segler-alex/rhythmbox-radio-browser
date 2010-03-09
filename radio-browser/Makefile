@@ -7,9 +7,7 @@ clean:
 
 install:
 	install -d $(DESTDIR)$(SUBDIR)
-	install radio-browser.py $(DESTDIR)$(SUBDIR)
-	install radio-browser.rb-plugin $(DESTDIR)$(SUBDIR)
-	install prefs.ui $(DESTDIR)$(SUBDIR)
-	install xiph-logo.png $(DESTDIR)$(SUBDIR)
-	install shoutcast-logo.ico $(DESTDIR)$(SUBDIR)
-	install clef.png $(DESTDIR)$(SUBDIR)
+	install -m 644 *.py $(DESTDIR)$(SUBDIR)
+	install -m 644 *.png $(DESTDIR)$(SUBDIR)
+	install -m 644 radio-browser.rb-plugin $(DESTDIR)$(SUBDIR)
+	install -m 644 prefs.ui $(DESTDIR)$(SUBDIR)
