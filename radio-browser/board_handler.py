@@ -18,6 +18,7 @@
 import os
 import gio
 import urllib
+import gtk
 import xml.sax.handler
 
 from radio_station import RadioStation
@@ -28,6 +29,8 @@ from feed import FeedStationAction
 class BoardHandler(xml.sax.handler.ContentHandler):
 	def __init__(self):
 		self.entries = []
+		self.languages = []
+		self.countries = []
  
 	def startElement(self, name, attributes):
 		if name == "station":
@@ -45,6 +48,11 @@ class BoardHandler(xml.sax.handler.ContentHandler):
 			self.entry.homepage = attributes.get("homepage")
 			self.entry.icon_src = attributes.get("favicon")
 			self.entries.append(self.entry)
+
+			if self.entry.country.title() not in self.countries:
+				self.countries.append(self.entry.country.title())
+			if self.entry.language.title() not in self.languages:
+				self.languages.append(self.entry.language.title())
 
 class FeedBoard(Feed):
 	def __init__(self,cache_dir,status_change_handler):
@@ -84,8 +92,8 @@ class FeedBoard(Feed):
 		message.destroy()
 
 	""" post new station to board """
-	def post_new_station(self):
-		builder_file = self.plugin.find_file("prefs.ui")
+	def post_new_station(self,source):
+		builder_file = source.plugin.find_file("prefs.ui")
 		builder = gtk.Builder()
 		builder.add_from_file(builder_file)
 		dialog = builder.get_object('post_station_dialog')
@@ -99,14 +107,16 @@ class FeedBoard(Feed):
 		dialog.StationTags = builder.get_object("StationTags")
 
 		LanguageList = gtk.ListStore(str)
-		for language in self.board_languages:
+		for language in self.handler.languages:
 			LanguageList.append([language])
+		LanguageList.set_sort_column_id(0,gtk.SORT_ASCENDING)
 		dialog.StationLanguage.set_model(LanguageList)
 		dialog.StationLanguage.set_text_column(0)
 
 		CountryList = gtk.ListStore(str)
-		for country in self.board_countries:
+		for country in self.handler.countries:
 			CountryList.append([country])
+		CountryList.set_sort_column_id(0,gtk.SORT_ASCENDING)
 		dialog.StationCountry.set_model(CountryList)
 		dialog.StationCountry.set_text_column(0)
 
@@ -116,7 +126,6 @@ class FeedBoard(Feed):
 				info_dialog.run()
 				info_dialog.destroy()
 
-			print "test"
 			response = dialog.run()
 			if response == 1:
 				break
@@ -151,8 +160,8 @@ class FeedBoard(Feed):
 				f = urllib.urlopen("http://segler.bplaced.net/?%s" % params)
 				f.read()
 
-				self.reset_feed("board.xml")
 				show_message("Station posted")
+				source.refill_list()
 				break
 
 		dialog.destroy()

@@ -364,7 +364,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			pass
 
 		def button_action_handler(widget,feedaction):
-			feedaction.call()
+			feedaction.call(self)
 
 		if isinstance(obj,Feed):
 			feed = obj

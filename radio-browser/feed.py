@@ -27,8 +27,8 @@ class FeedAction:
 		self.name = name
 		self.func = func
 
-	def call(self):
-		self.func()
+	def call(self,source):
+		self.func(source)
 
 class FeedStationAction:
 	def __init__(self,feed,name,func):
