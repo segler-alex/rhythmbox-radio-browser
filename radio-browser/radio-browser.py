@@ -20,6 +20,7 @@ import rhythmdb
 import gobject
 import gconf
 import gtk
+from gettext import *
 
 from radio_browser_source import RadioBrowserSource
 
@@ -34,6 +35,9 @@ class RadioBrowserPlugin (rb.Plugin):
 
 	""" on plugin activation """
 	def activate(self, shell):
+		# Get the translation file
+		install('radio-browser')
+
 		# register this source in rhythmbox
 		db = shell.props.db
 		entry_type = db.entry_register_type("RadioBrowserEntryType")
@@ -99,6 +103,7 @@ class RadioBrowserPlugin (rb.Plugin):
 		if not dialog:
 			builder_file = self.find_file("prefs.ui")
 			builder = gtk.Builder()
+			builder.set_translation_domain("radio-browser")
 			builder.add_from_file(builder_file)
 			dialog = builder.get_object('radio_browser_prefs')
 			dialog.connect("response",self.dialog_response)
