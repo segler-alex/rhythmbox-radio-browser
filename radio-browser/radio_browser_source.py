@@ -363,8 +363,11 @@ class RadioBrowserSource(rb.StreamingSource):
 			transmit_thread.start()
 			pass
 
-		def button_action_handler(widget,feedaction):
-			feedaction.call(self)
+		def button_action_handler(widget,action):
+			action.call(self)
+
+		def button_station_action_handler(widget,action,station):
+			action.call(self,station)
 
 		if isinstance(obj,Feed):
 			feed = obj
@@ -407,6 +410,13 @@ class RadioBrowserSource(rb.StreamingSource):
 				button = gtk.Button("Unbookmark")
 			button.connect("clicked", button_bookmark_handler, obj)
 			button_box.pack_start(button,False)
+
+			if station.type in self.station_actions.keys():
+				actions = self.station_actions[station.type]
+				for action in actions:
+					button = gtk.Button(action.name)
+					button.connect("clicked", button_station_action_handler, action,obj)
+					button_box.pack_start(button,False)
 
 		sub_info_box = gtk.HBox()
 		sub_info_box.pack_start(info_container)
@@ -878,6 +888,9 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	def refill_list_worker(self):
 		print "refill list worker"
+
+		self.station_actions = {}
+
 		self.tree_view.set_model()
 		self.icon_view.set_model()
 		#self.filter_entry_genre.set_model()
@@ -912,6 +925,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 		for feed in self.engines():
 			try:
+				self.station_actions[feed.name()] = feed.get_station_actions()
 				self.insert_feed(feed,None)
 			except Exception,e:
 				print "error with source:"+feed.name()

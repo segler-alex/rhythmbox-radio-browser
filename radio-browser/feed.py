@@ -36,8 +36,8 @@ class FeedStationAction:
 		self.name = name
 		self.func = func
 
-	def call(self,station):
-		self.func(station)
+	def call(self,source,station):
+		self.func(source,station)
 
 class Feed:
 	def __init__(self):

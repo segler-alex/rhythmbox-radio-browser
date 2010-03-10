@@ -68,7 +68,7 @@ class FeedBoard(Feed):
 		return "Board"
 
 	""" vote for station on board """
-	def vote_station(self,station):
+	def vote_station(self,source,station):
 		message = gtk.MessageDialog(message_format="Vote for station",buttons=gtk.BUTTONS_YES_NO,type=gtk.MESSAGE_QUESTION)
 		message.format_secondary_text("Do you really want to vote for this station?")
 		response = message.run()
@@ -76,11 +76,11 @@ class FeedBoard(Feed):
 			params = urllib.urlencode({'action': 'vote','id': station.id})
 			f = urllib.urlopen("http://segler.bplaced.net/?%s" % params)
 			f.read()
-			self.reset_feed("board.xml")
+			source.refill_list()
 		message.destroy()
 
 	""" mark station as bad on board """
-	def bad_station(self,station):
+	def bad_station(self,source,station):
 		message = gtk.MessageDialog(message_format="Mark station as bad",buttons=gtk.BUTTONS_YES_NO,type=gtk.MESSAGE_WARNING)
 		message.format_secondary_text("Do you really want to mark this radio station as bad?\n\nIt will eventually get deleted if enough people do that!\n\nMore information on that on the feeds homepage:\nhttp://segler.bplaced.net/")
 		response = message.run()
@@ -88,7 +88,7 @@ class FeedBoard(Feed):
 			params = urllib.urlencode({'action': 'negativevote','id': station.id})
 			f = urllib.urlopen("http://segler.bplaced.net/?%s" % params)
 			f.read()
-			self.reset_feed("board.xml")
+			source.refill_list()
 		message.destroy()
 
 	""" post new station to board """
