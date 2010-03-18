@@ -3,7 +3,7 @@ SUBDIR=/usr/lib/rhythmbox/plugins/radio-browser/
 
 all:
 clean:
-	- rm radio-browser.pyc
+	- rm *.pyc
 
 install:
 	install -d $(DESTDIR)$(SUBDIR)
