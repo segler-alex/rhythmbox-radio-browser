@@ -763,7 +763,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			transmit_thread.start()
 
 	def download_feed(self,feed):
-		tryno = 2
+		tryno = 0
 		self.updating = True
 		while True:
 			tryno += 1
