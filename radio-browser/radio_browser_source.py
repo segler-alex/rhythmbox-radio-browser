@@ -80,7 +80,7 @@ class RadioBrowserSource(rb.StreamingSource):
 	def update_download_status(self,filename,current, total):
 		self.load_current_size = current
 		self.load_total_size = total
-		self.load_status = "Loading : "+filename
+		self.load_status = _("Loading")+" : "+filename
 
 		gtk.gdk.threads_enter()
 		self.notify_status_changed()
@@ -138,7 +138,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			# create the view
 			column_title = gtk.TreeViewColumn()#"Title",gtk.CellRendererText(),text=0)
-			column_title.set_title("Title")
+			column_title.set_title(_("Title"))
 			renderer = gtk.CellRendererPixbuf()
 			column_title.pack_start(renderer, expand=False)
 			column_title.set_cell_data_func(renderer,self.model_data_func,"image")
@@ -193,11 +193,11 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.view.pack_start(self.icon_view_container)
 
 			filterbox = gtk.HBox()
-			filterbox.pack_start(gtk.Label("Filter:"),False)
+			filterbox.pack_start(gtk.Label(_("Filter")+":"),False)
 			filterbox.pack_start(self.filter_entry)
-			filterbox.pack_start(gtk.Label("Genre:"),False)
+			filterbox.pack_start(gtk.Label(_("Genre")+":"),False)
 			filterbox.pack_start(self.filter_entry_genre,False)
-			filterbox.pack_start(gtk.Label("Bitrate:"),False)
+			filterbox.pack_start(gtk.Label(_("Bitrate")+":"),False)
 			filterbox.pack_start(self.filter_entry_bitrate,False)
 
 			self.record_box = gtk.VBox()
@@ -296,33 +296,33 @@ class RadioBrowserSource(rb.StreamingSource):
 
 		if isinstance(obj,Feed):
 			feed = obj
-			add_label("Entry type","Feed")
+			add_label(_("Entry type"),_("Feed"))
 
-			add_label("Description",feed.getDescription(),False)
-			add_label("Feed homepage",feed.getHomepage())
-			add_label("Feed source",feed.getSource())
+			add_label(_("Description"),feed.getDescription(),False)
+			add_label(_("Feed homepage"),feed.getHomepage())
+			add_label(_("Feed source"),feed.getSource())
 
 			try:
 				t = os.path.getmtime(feed.filename)
 				timestr = datetime.datetime.fromtimestamp(t).strftime("%x %X")
 			except:
-				timestr = "No local copy"
-			add_label("Last update",timestr)
+				timestr = _("No local copy")
+			add_label(_("Last update"),timestr)
 
 		if isinstance(obj,RadioStation):
 			station = obj
-			add_label("Source feed",station.type)
-			add_label("Name",station.server_name)
-			add_label("Tags",station.genre)
-			add_label("Bitrate",station.bitrate)
-			add_label("Server type",station.server_type)
-			add_label("Homepage",station.homepage)
-			add_label("Current song (on last refresh)",station.current_song)
-			add_label("Current listeners",station.listeners)
-			add_label("Language",station.language)
-			add_label("Country",station.country)
-			add_label("Votes",station.votes)
-			add_label("Negative votes",station.negativevotes)
+			add_label(_("Source feed"),station.type)
+			add_label(_("Name"),station.server_name)
+			add_label(_("Tags"),station.genre)
+			add_label(_("Bitrate"),station.bitrate)
+			add_label(_("Server type"),station.server_type)
+			add_label(_("Homepage"),station.homepage)
+			add_label(_("Current song (on last refresh)"),station.current_song)
+			add_label(_("Current listeners"),station.listeners)
+			add_label(_("Language"),station.language)
+			add_label(_("Country"),station.country)
+			add_label(_("Votes"),station.votes)
+			add_label(_("Negative votes"),station.negativevotes)
 
 		button_box = gtk.VBox()
 
@@ -337,7 +337,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			if station.server_name not in data:
 				self.tree_store.append(self.bookmarks_iter,(station.server_name,station))
 				data[station.server_name] = station
-				widget.set_label("Unbookmark")
+				widget.set_label(_("Unbookmark"))
 			else:
 				iter = self.tree_store.iter_children(self.bookmarks_iter)
 				while True:
@@ -351,7 +351,7 @@ class RadioBrowserSource(rb.StreamingSource):
 					if iter == None:
 						break
 				del data[station.server_name]
-				widget.set_label("Bookmark")
+				widget.set_label(_("Bookmark"))
 			self.save_to_file(os.path.join(self.cache_dir,BOOKMARKS_FILENAME),data)
 
 		def button_record_handler(widget,station):
@@ -372,10 +372,10 @@ class RadioBrowserSource(rb.StreamingSource):
 		if isinstance(obj,Feed):
 			feed = obj
 			if os.path.isfile(feed.filename):
-				button = gtk.Button("Redownload")
+				button = gtk.Button(_("Redownload"))
 				button.connect("clicked", button_download_handler, feed)
 			else:
-				button = gtk.Button("Download")
+				button = gtk.Button(_("Download"))
 				button.connect("clicked", button_download_handler, feed)
 			button_box.pack_start(button,False)
 
@@ -385,7 +385,7 @@ class RadioBrowserSource(rb.StreamingSource):
 				button_box.pack_start(button,False)
 
 		if isinstance(obj,RadioStation):
-			button = gtk.Button("Play")
+			button = gtk.Button(_("Play"))
 			button.connect("clicked", button_play_handler, obj)
 			button_box.pack_start(button,False)
 
@@ -397,7 +397,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			except(OSError):
 				print "streamripper not found"
 			else:
-				button = gtk.Button("Record")
+				button = gtk.Button(_("Record"))
 				button.connect("clicked", button_record_handler, obj)
 				button_box.pack_start(button,False)
 
@@ -405,9 +405,9 @@ class RadioBrowserSource(rb.StreamingSource):
 			if data is None:
 				data = {}
 			if station.server_name not in data:
-				button = gtk.Button("Bookmark")
+				button = gtk.Button(_("Bookmark"))
 			else:
-				button = gtk.Button("Unbookmark")
+				button = gtk.Button(_("Unbookmark"))
 			button.connect("clicked", button_bookmark_handler, obj)
 			button_box.pack_start(button,False)
 
@@ -566,7 +566,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		box = gtk.HBox()
 		box.pack_start(left)
 		box.pack_start(right,False)
-		decorated_box = gtk.Frame("Ripping stream")
+		decorated_box = gtk.Frame(_("Ripping stream"))
 		decorated_box.add(box)
 
 		rp = RecordProcess()
@@ -695,7 +695,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			tryno += 1
 
 			gtk.gdk.threads_enter()
-			self.load_status = "downloading station information '"+station.server_name+"', Try no:"+str(tryno)
+			self.load_status = _("downloading station information")+" '"+station.server_name+"', "+_("Try no")+":"+str(tryno)
 			self.load_total_size = 0
 			self.notify_status_changed()
 			gtk.gdk.threads_leave()
@@ -707,8 +707,8 @@ class RadioBrowserSource(rb.StreamingSource):
 				self.load_status = ""
 				self.updating = False
 				self.notify_status_changed()
-				message = gtk.MessageDialog(message_format="Could not download station information",buttons=gtk.BUTTONS_OK,type=gtk.MESSAGE_ERROR)
-				message.format_secondary_text("Could not download station information from shoutcast directory server. Please try again later.")
+				message = gtk.MessageDialog(message_format=_("Could not download station information"),buttons=gtk.BUTTONS_OK,type=gtk.MESSAGE_ERROR)
+				message.format_secondary_text(_("Could not download station information from shoutcast directory server. Please try again later."))
 				response = message.run()
 				message.destroy()
 				gtk.gdk.threads_leave()
@@ -769,7 +769,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			tryno += 1
 
 			gtk.gdk.threads_enter()
-			self.load_status = "downloading feed '"+feed.name()+"' from '"+feed.uri+"', Try no:"+str(tryno)
+			self.load_status = _("downloading feed")+" '"+feed.name()+"' "+_("from")+" '"+feed.uri+"', "+_("Try no")+":"+str(tryno)
 			self.load_total_size = 0
 			self.notify_status_changed()
 			gtk.gdk.threads_leave()
@@ -782,8 +782,8 @@ class RadioBrowserSource(rb.StreamingSource):
 				self.load_status = ""
 				self.updating = False
 				self.notify_status_changed()
-				message = gtk.MessageDialog(message_format="Mark station as bad",buttons=gtk.BUTTONS_OK,type=gtk.MESSAGE_ERROR)
-				message.format_secondary_text("Could not download feed. Please try again later.")
+				message = gtk.MessageDialog(message_format=_("Feed download failed"),buttons=gtk.BUTTONS_OK,type=gtk.MESSAGE_ERROR)
+				message.format_secondary_text(_("Could not download feed. Please try again later."))
 				response = message.run()
 				message.destroy()
 				gtk.gdk.threads_leave()
@@ -838,7 +838,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		local_icon = self.load_icon_file(self.plugin.find_file("local-logo.png"),None)
 
 		gtk.gdk.threads_enter()
-		self.load_status = "loading feed '"+feed.name()+"'"
+		self.load_status = _("loading feed")+" '"+feed.name()+"'"
 		self.load_total_size = 0
 		self.notify_status_changed()
 		gtk.gdk.threads_leave()
@@ -857,7 +857,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		entries = feed.entries()
 
 		gtk.gdk.threads_enter()
-		self.load_status = "integrating feed '"+feed.name()+"'("+str(len(entries))+" items) into tree..."
+		self.load_status = _("integrating feed")+" '"+feed.name()+"'("+str(len(entries))+" items)"+_("into tree")+"..."
 		self.notify_status_changed()
 		gtk.gdk.threads_leave()
 
@@ -958,7 +958,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		self.icon_view_store.clear()
 
 		# add recently played list
-		self.recently_iter = self.tree_store.append(None,("Recently played",None))
+		self.recently_iter = self.tree_store.append(None,(_("Recently played"),None))
 		data = self.load_from_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME))
 		if data is None:
 			data = {}
@@ -966,7 +966,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.tree_store.append(self.recently_iter,(name,station))
 
 		# add bookmarks
-		self.bookmarks_iter = self.tree_store.append(None,("Bookmark",None))
+		self.bookmarks_iter = self.tree_store.append(None,(_("Bookmarks"),None))
 		data = self.load_from_file(os.path.join(self.cache_dir,BOOKMARKS_FILENAME))
 		if data is None:
 			data = {}
