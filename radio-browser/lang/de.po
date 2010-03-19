@@ -1,0 +1,113 @@
+# German Translation for rhythmbox-radio-browser plugin
+# Copyright (C) 2010, segler_alex <segler_alex@web.de>
+# This file is distributed under the same license as the rhythmbox-radio-browser package.
+# segler_alex <segler_alex@web.de>, 2010
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: rhythmbox-radio-browser VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-03-10 02:25+0100\n"
+"PO-Revision-Date: 2010-03-10 02:25+0100\n"
+"Last-Translator: segler_alex <segler_alex@web.de>\n"
+"Language-Team: German <segler_alex@web.de>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: radio_browser_source.py:78
+msgid "Nothing"
+msgstr "Nichts"
+
+#: radio_browser_source.py:831
+msgid "By Genres"
+msgstr "Nach Genre"
+
+#: radio_browser_source.py:832
+msgid "By Country"
+msgstr "Nach Ländern"
+
+#: radio_browser_source.py:833
+msgid "By Streamtype"
+msgstr "Nach Streamtyp"
+
+#: radio_browser_source.py:834
+msgid "By Bitrate"
+msgstr "Nach Bitrate"
+
+#: prefs.ui:48
+msgid "Trys to download file:"
+msgstr ""
+
+#: prefs.ui:55
+msgid "Minimal bitrate of streams:"
+msgstr ""
+
+#: prefs.ui:65
+msgid "Streamripper output path:"
+msgstr ""
+
+#: prefs.ui:143
+msgid "Post new Station"
+msgstr ""
+
+#: prefs.ui:161
+msgid "Tags"
+msgstr ""
+
+#: prefs.ui:171
+msgid "Language"
+msgstr "Sprache"
+
+#: prefs.ui:181
+msgid "Country"
+msgstr "Land"
+
+#: prefs.ui:191
+msgid "Favicon URL"
+msgstr ""
+
+#: prefs.ui:201
+msgid "Homepage URL"
+msgstr ""
+
+#: prefs.ui:211
+msgid "URL"
+msgstr ""
+
+#: prefs.ui:221
+msgid "Name"
+msgstr ""
+
+#: prefs.ui:244
+msgid "Classical Jazz Talk"
+msgstr "Klassik Jazz Sprache"
+
+#: prefs.ui:256
+msgid "Esperanto"
+msgstr ""
+
+#: prefs.ui:268
+msgid "Utopia"
+msgstr ""
+
+#: prefs.ui:280
+msgid "http://very.cool.site/favicon.ico"
+msgstr ""
+
+#: prefs.ui:292
+msgid "http://very.cool.site"
+msgstr ""
+
+#: prefs.ui:304
+msgid "http://listen.to.my/station.pls"
+msgstr ""
+
+#: prefs.ui:316
+msgid "My Station"
+msgstr "Meine Radiostation"
+
+#: prefs.ui:402
+msgid "Examples"
+msgstr "Beispiele"
