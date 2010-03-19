@@ -8,3 +8,5 @@ Changes since 1.8:
 * new install scrypt, for per user install
 * special sorting (by bitrate, genre, streamtype, country) for each feed
 * removed right click in tree in favour of buttons in infobox
+* added german translation
+* more error dialogs
