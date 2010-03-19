@@ -25,16 +25,19 @@ from feed import Feed
 class ShoutcastRadioStation(RadioStation):
 	def getRealURL(self):
 		if self.listen_url == "":
-			# download from "http://www.shoutcast.com"+self.tunein+"?id="+shoutcast_id
-			url = "http://www.shoutcast.com"+self.tunein+"?id="+self.listen_id
-			remote = gio.File(url)
-			data,datalen,tag = remote.load_contents()
+			try:
+				# download from "http://www.shoutcast.com"+self.tunein+"?id="+shoutcast_id
+				url = "http://www.shoutcast.com"+self.tunein+"?id="+self.listen_id
+				remote = gio.File(url)
+				data,datalen,tag = remote.load_contents()
 
-			lines = data.splitlines()
-			for line in lines:
-				if line.startswith("File"):
-					self.listen_url = line.split("=")[1];
-					print "playing uri:"+self.listen_url
+				lines = data.splitlines()
+				for line in lines:
+					if line.startswith("File"):
+						self.listen_url = line.split("=")[1];
+						print "playing uri:"+self.listen_url
+			except:
+				return None
 			
 		return self.listen_url
 

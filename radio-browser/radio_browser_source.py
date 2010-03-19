@@ -670,6 +670,15 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	""" starts playback of the station """
 	def play_uri(self,station):
+		play_thread = threading.Thread(target = self.play_uri_,args = (station,))
+		play_thread.setDaemon(True)
+		play_thread.start()
+
+	def play_uri_(self,station):
+		# do not play while downloading
+		if self.updating:
+			return
+
 		# add to recently played
 		data = self.load_from_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME))
 		if data is None:
@@ -678,6 +687,37 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.tree_store.append(self.recently_iter,(station.server_name,station))
 			data[station.server_name] = station
 			self.save_to_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME),data)
+
+		# try downloading station information
+		tryno = 0
+		self.updating = True
+		while True:
+			tryno += 1
+
+			gtk.gdk.threads_enter()
+			self.load_status = "downloading station information '"+station.server_name+"', Try no:"+str(tryno)
+			self.load_total_size = 0
+			self.notify_status_changed()
+			gtk.gdk.threads_leave()
+
+			if station.getRealURL() is not None:
+				break
+			if tryno >= float(self.plugin.download_trys):
+				gtk.gdk.threads_enter()
+				self.load_status = ""
+				self.updating = False
+				self.notify_status_changed()
+				message = gtk.MessageDialog(message_format="Could not download station information",buttons=gtk.BUTTONS_OK,type=gtk.MESSAGE_ERROR)
+				message.format_secondary_text("Could not download station information from shoutcast directory server. Please try again later.")
+				response = message.run()
+				message.destroy()
+				gtk.gdk.threads_leave()
+				return
+
+		gtk.gdk.threads_enter()
+		self.load_status = ""
+		self.updating = False
+		self.notify_status_changed()
 
 		# get player
 		player = self.shell.get_player()
@@ -696,6 +736,8 @@ class RadioBrowserSource(rb.StreamingSource):
 		# start playback
 		player.play()
 		player.play_entry(self.entry,self)
+
+		gtk.gdk.threads_leave()
 
 		# transmit station click to station board (statistic) """
 		transmit_thread = threading.Thread(target = self.transmit_station,args = (station,))
@@ -721,7 +763,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			transmit_thread.start()
 
 	def download_feed(self,feed):
-		tryno = 0
+		tryno = 2
 		self.updating = True
 		while True:
 			tryno += 1
@@ -734,7 +776,18 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			if feed.download():
 				break
-			pass
+
+			if tryno >= float(self.plugin.download_trys):
+				gtk.gdk.threads_enter()
+				self.load_status = ""
+				self.updating = False
+				self.notify_status_changed()
+				message = gtk.MessageDialog(message_format="Mark station as bad",buttons=gtk.BUTTONS_OK,type=gtk.MESSAGE_ERROR)
+				message.format_secondary_text("Could not download feed. Please try again later.")
+				response = message.run()
+				message.destroy()
+				gtk.gdk.threads_leave()
+				return
 
 		self.refill_list()
 
