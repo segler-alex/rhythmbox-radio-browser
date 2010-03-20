@@ -15,6 +15,8 @@ install:
 	install -d $(DESTDIR)$(LOCALEDIR)de/LC_MESSAGES
 	install -d $(DESTDIR)$(LOCALEDIR)fr/LC_MESSAGES
 	install -d $(DESTDIR)$(LOCALEDIR)es/LC_MESSAGES
+	install -d $(DESTDIR)$(LOCALEDIR)it/LC_MESSAGES
 	msgfmt -c lang/de.po -o $(DESTDIR)$(LOCALEDIR)de/LC_MESSAGES/radio-browser.mo
 	msgfmt -c lang/fr.po -o $(DESTDIR)$(LOCALEDIR)fr/LC_MESSAGES/radio-browser.mo
 	msgfmt -c lang/es.po -o $(DESTDIR)$(LOCALEDIR)es/LC_MESSAGES/radio-browser.mo
+	msgfmt -c lang/it.po -o $(DESTDIR)$(LOCALEDIR)it/LC_MESSAGES/radio-browser.mo
