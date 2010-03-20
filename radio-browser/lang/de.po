@@ -228,14 +228,12 @@ msgid "Server"
 msgstr ""
 
 #: record_process.py:55
-#, fuzzy
 msgid "Stream"
-msgstr "Nach Streamtyp"
+msgstr "Stream"
 
 #: record_process.py:56
-#, fuzzy
 msgid "Current song"
-msgstr "Aktuelle Zuhörer"
+msgstr "Aktueller Song"
 
 #: record_process.py:58
 msgid "Relay port"
