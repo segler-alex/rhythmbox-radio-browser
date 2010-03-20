@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the rhythmbox-radio-browser package.
 # segler_alex <segler_alex@web.de>, 2010
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox-radio-browser VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-10 02:25+0100\n"
+"POT-Creation-Date: 2010-03-20 11:16+0100\n"
 "PO-Revision-Date: 2010-03-10 02:25+0100\n"
 "Last-Translator: segler_alex <segler_alex@web.de>\n"
 "Language-Team: German <segler_alex@web.de>\n"
@@ -27,66 +26,6 @@ msgstr "Erneuere Radiostationsliste"
 #: radio-browser.py:65
 msgid "Clear icon cache"
 msgstr "Lösche Icon Zwischenspeicher"
-
-#: prefs.ui:48
-msgid "Trys to download file:"
-msgstr ""
-
-#: prefs.ui:55
-msgid "Minimal bitrate of streams:"
-msgstr ""
-
-#: prefs.ui:65
-msgid "Streamripper output path:"
-msgstr ""
-
-#: prefs.ui:143
-msgid "Post new Station"
-msgstr ""
-
-#: prefs.ui:191
-msgid "Favicon URL"
-msgstr ""
-
-#: prefs.ui:201
-msgid "Homepage URL"
-msgstr ""
-
-#: prefs.ui:211
-msgid "URL"
-msgstr ""
-
-#: prefs.ui:244
-msgid "Classical Jazz Talk"
-msgstr "Klassik Jazz Sprache"
-
-#: prefs.ui:256
-msgid "Esperanto"
-msgstr ""
-
-#: prefs.ui:268
-msgid "Utopia"
-msgstr ""
-
-#: prefs.ui:280
-msgid "http://very.cool.site/favicon.ico"
-msgstr ""
-
-#: prefs.ui:292
-msgid "http://very.cool.site"
-msgstr ""
-
-#: prefs.ui:304
-msgid "http://listen.to.my/station.pls"
-msgstr ""
-
-#: prefs.ui:316
-msgid "My Station"
-msgstr "Meine Radiostation"
-
-#: prefs.ui:402
-msgid "Examples"
-msgstr "Beispiele"
 
 #: radio_browser_source.py:78
 msgid "Nothing"
@@ -109,6 +48,7 @@ msgid "Genre"
 msgstr "Genre"
 
 #: radio_browser_source.py:200 radio_browser_source.py:317
+#: record_process.py:57
 msgid "Bitrate"
 msgstr "Bitrate"
 
@@ -182,7 +122,7 @@ msgstr "Stimmen"
 
 #: radio_browser_source.py:325
 msgid "Negative votes"
-msgstr ""
+msgstr "Negative Stimmen"
 
 #: radio_browser_source.py:340 radio_browser_source.py:410
 msgid "Unbookmark"
@@ -210,7 +150,7 @@ msgstr "Aufnehmen"
 
 #: radio_browser_source.py:569
 msgid "Ripping stream"
-msgstr ""
+msgstr "Speichere Stream"
 
 #: radio_browser_source.py:698
 msgid "downloading station information"
@@ -244,7 +184,8 @@ msgstr "Quellendownload fehlgeschlagen"
 
 #: radio_browser_source.py:786
 msgid "Could not download feed. Please try again later."
-msgstr "Konnte Quelle nicht herunterladen. Bitte versuchen sie es später noch einmal."
+msgstr ""
+"Konnte Quelle nicht herunterladen. Bitte versuchen sie es später noch einmal."
 
 #: radio_browser_source.py:841
 msgid "loading feed"
@@ -281,3 +222,21 @@ msgstr "Kürzlich gehört"
 #: radio_browser_source.py:969
 msgid "Bookmarks"
 msgstr "Lesezeichen"
+
+#: record_process.py:54
+msgid "Server"
+msgstr ""
+
+#: record_process.py:55
+#, fuzzy
+msgid "Stream"
+msgstr "Nach Streamtyp"
+
+#: record_process.py:56
+#, fuzzy
+msgid "Current song"
+msgstr "Aktuelle Zuhörer"
+
+#: record_process.py:58
+msgid "Relay port"
+msgstr "Horcht auf Port"
