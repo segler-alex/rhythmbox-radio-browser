@@ -51,11 +51,11 @@ class RecordProcess(threading.Thread):
 		for widget in self.info_box.get_children():
 			self.info_box.remove(widget)
 
-		add_label("Server",self.server_name)
-		add_label("Stream",self.stream_name)
-		add_label("Current song",self.song_info)
-		add_label("Bitrate",self.bitrate)
-		add_label("Relay port",str(self.relay_port))
+		add_label(_("Server"),self.server_name)
+		add_label(_("Stream"),self.stream_name)
+		add_label(_("Current song"),self.song_info)
+		add_label(_("Bitrate"),self.bitrate)
+		add_label(_("Relay port"),str(self.relay_port))
 
 		self.info_box.show_all()
 
