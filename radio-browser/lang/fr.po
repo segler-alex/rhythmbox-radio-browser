@@ -10,7 +10,7 @@ msgstr ""
 "POT-Creation-Date: 2010-03-10 02:25+0100\n"
 "PO-Revision-Date: 2010-03-10 02:25+0100\n"
 "Last-Translator: segler_alex <segler_alex@web.de>\n"
-"Language-Team: German <segler_alex@web.de>\n"
+"Language-Team: French <segler_alex@web.de>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -57,7 +57,7 @@ msgstr "URL"
 
 #: prefs.ui:244
 msgid "Classical Jazz Talk"
-msgstr "Discussion sur le jazz classique"
+msgstr "Discussion Jazz Classique"
 
 #: prefs.ui:256
 msgid "Esperanto"
@@ -89,7 +89,7 @@ msgstr "Exemples"
 
 #: radio_browser_source.py:78
 msgid "Nothing"
-msgstr "Rien"
+msgstr "Aucune action"
 
 #: radio_browser_source.py:83
 msgid "Loading"
@@ -141,7 +141,7 @@ msgstr "Dernière mise-à-jour"
 
 #: radio_browser_source.py:314
 msgid "Source feed"
-msgstr ""
+msgstr "Alimentation du flux"
 
 #: radio_browser_source.py:315
 msgid "Name"
@@ -161,7 +161,7 @@ msgstr "Page d'accueil"
 
 #: radio_browser_source.py:320
 msgid "Current song (on last refresh)"
-msgstr "Chanson actuelle"
+msgstr "Chanson actuelle (dernière MÀJ)"
 
 #: radio_browser_source.py:321
 msgid "Current listeners"
