@@ -871,13 +871,16 @@ class RadioBrowserSource(rb.StreamingSource):
 		self.load_total_size = len(entries)
 		self.load_current_size = 0
 
+		stations_count = 0
+
 		for obj in entries:
 			if isinstance(obj,Feed):
 				sub_feed = obj
 				# add sub feed to treeview
-				self.insert_feed(sub_feed,current_iter)
+				stations_count += self.insert_feed(sub_feed,current_iter)
 
 			elif isinstance(obj,RadioStation):
+				stations_count += 1
 				station = obj
 				# add subitems for sorting, if there are stations
 				if self.load_current_size == 0:
@@ -938,6 +941,9 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			else:
 				print "ERROR: unknown class type in feed"
+
+		self.tree_store.set_value(current_iter,0,feed.name()+" ("+str(stations_count)+")")
+		return stations_count
 
 	def refill_list_worker(self):
 		print "refill list worker"
