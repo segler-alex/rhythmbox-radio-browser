@@ -547,6 +547,13 @@ class RadioBrowserSource(rb.StreamingSource):
 #		print "property changed "+str(new)
 
 	def record_uri(self,station):
+		def short_name(name):
+			maxlen = 30
+			if len(name) > maxlen:
+				return name[0:maxlen-3]+"..."
+			else:
+				return name
+
 		uri = station.getRealURL()
 
 		# do not record the same stream twice
@@ -554,7 +561,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			if self.recording_streams[uri].process.poll() is None:
 				return
 		self.recording_streams[uri] = RecordProcess(station,self.plugin.outputpath)
-		self.notebook.append_page(self.recording_streams[uri],gtk.Label(station.server_name))
+		self.notebook.append_page(self.recording_streams[uri],gtk.Label(short_name(station.server_name)))
 		self.recording_streams[uri].start()
 		self.notebook.set_current_page(self.notebook.page_num(self.recording_streams[uri]))
 
