@@ -164,6 +164,10 @@ class RecordProcess(threading.Thread,gtk.VBox):
 		print "thread closed"
 		self.get_parent().remove(self)
 
+	def stop(self):
+		if self.process.poll() is None:
+			self.process.terminate()
+
 	def record_play_button_handler(self,button,uri):
 		rp = self.recording_streams[uri]
 		station = RadioStation()
