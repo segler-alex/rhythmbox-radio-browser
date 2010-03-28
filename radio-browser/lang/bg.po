@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
+
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -159,7 +159,7 @@ msgstr "Сваляне на информация за станцията"
 
 #: radio_browser_source.py:698 radio_browser_source.py:772
 msgid "Try no"
-msgstr ""
+msgstr "Опит номер"
 
 #: radio_browser_source.py:710
 msgid "Could not download station information"
