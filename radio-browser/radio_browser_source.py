@@ -550,7 +550,8 @@ class RadioBrowserSource(rb.StreamingSource):
 
 		# do not record the same stream twice
 		if uri in self.recording_streams:
-			return
+			if self.recording_streams[uri].process.poll() is None:
+				return
 		self.recording_streams[uri] = RecordProcess(station,self.plugin.outputpath)
 		self.notebook.append_page(self.recording_streams[uri],gtk.Label(station.server_name))
 		self.recording_streams[uri].start()
