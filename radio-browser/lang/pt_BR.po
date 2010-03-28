@@ -1,0 +1,242 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: <eug.alfe@gmail.com>\n"
+"POT-Creation-Date: 2010-03-20 11:16+0100\n"
+"PO-Revision-Date: 2010-03-28 02:15+0100\n"
+"Last-Translator: Eugênio F. <eug.alfe@gmail.com>\n"
+"Language: Brazilian Portuguese\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: radio-browser.py:46
+msgid "Radio browser"
+msgstr "Radio browser"
+
+#: radio-browser.py:61
+msgid "Update radio station list"
+msgstr "Atualizar lista de estações de rádio"
+
+#: radio-browser.py:65
+msgid "Clear icon cache"
+msgstr "Limpar ícones da cache"
+
+#: radio_browser_source.py:78
+msgid "Nothing"
+msgstr "Nada"
+
+#: radio_browser_source.py:83
+msgid "Loading"
+msgstr "Carregando"
+
+#: radio_browser_source.py:141
+msgid "Title"
+msgstr "Título"
+
+#: radio_browser_source.py:196
+msgid "Filter"
+msgstr "Filtro"
+
+#: radio_browser_source.py:198
+msgid "Genre"
+msgstr "Gênero"
+
+#: radio_browser_source.py:200 radio_browser_source.py:317
+#: record_process.py:57
+msgid "Bitrate"
+msgstr "Bitrate"
+
+#: radio_browser_source.py:299
+msgid "Entry type"
+msgstr "Tipo de entrada"
+
+#: radio_browser_source.py:299
+msgid "Feed"
+msgstr "Feed"
+
+#: radio_browser_source.py:301
+msgid "Description"
+msgstr "Descrição"
+
+#: radio_browser_source.py:302
+msgid "Feed homepage"
+msgstr "Página do Feed"
+
+#: radio_browser_source.py:303
+msgid "Feed source"
+msgstr "Caminho do Feed"
+
+#: radio_browser_source.py:309
+msgid "No local copy"
+msgstr "Nenhuma cópia local"
+
+#: radio_browser_source.py:310
+msgid "Last update"
+msgstr "Última Atualização"
+
+#: radio_browser_source.py:314
+msgid "Source feed"
+msgstr "Fonte"
+
+#: radio_browser_source.py:315
+msgid "Name"
+msgstr "Nome"
+
+#: radio_browser_source.py:316
+msgid "Tags"
+msgstr "Tags"
+
+#: radio_browser_source.py:318
+msgid "Server type"
+msgstr "Tipo de Servidor"
+
+#: radio_browser_source.py:319
+msgid "Homepage"
+msgstr "Homepage"
+
+#: radio_browser_source.py:320
+msgid "Current song (on last refresh)"
+msgstr "Música atual (da última atualização)"
+
+#: radio_browser_source.py:321
+msgid "Current listeners"
+msgstr "Ouvintes atuais"
+
+#: radio_browser_source.py:322
+msgid "Language"
+msgstr "Língua"
+
+#: radio_browser_source.py:323
+msgid "Country"
+msgstr "País"
+
+#: radio_browser_source.py:324
+msgid "Votes"
+msgstr "Votos"
+
+#: radio_browser_source.py:325
+msgid "Negative votes"
+msgstr "Votos Negativos"
+
+#: radio_browser_source.py:340 radio_browser_source.py:410
+msgid "Unbookmark"
+msgstr "Desmarcar"
+
+#: radio_browser_source.py:354 radio_browser_source.py:408
+msgid "Bookmark"
+msgstr "Marcar"
+
+#: radio_browser_source.py:375
+msgid "Redownload"
+msgstr "Redownload"
+
+#: radio_browser_source.py:378
+msgid "Download"
+msgstr "Download"
+
+#: radio_browser_source.py:388
+msgid "Play"
+msgstr "Tocar"
+
+#: radio_browser_source.py:400
+msgid "Record"
+msgstr "Gravar"
+
+#: radio_browser_source.py:569
+msgid "Ripping stream"
+msgstr "Rippando stream"
+
+#: radio_browser_source.py:698
+msgid "downloading station information"
+msgstr "baixando informações da estação"
+
+#: radio_browser_source.py:698 radio_browser_source.py:772
+msgid "Try no"
+msgstr ""
+
+#: radio_browser_source.py:710
+msgid "Could not download station information"
+msgstr "Incapaz de baixar informação da estação"
+
+#: radio_browser_source.py:711
+msgid ""
+"Could not download station information from shoutcast directory server. "
+"Please try again later."
+msgstr "" 
+"Incapaz de baixar informações deste diretório de servidores. "
+"Por favor tente mais tarde."
+
+#: radio_browser_source.py:772
+msgid "downloading feed"
+msgstr "baixando feed"
+
+#: radio_browser_source.py:772
+msgid "from"
+msgstr "de"
+
+#: radio_browser_source.py:785
+msgid "Feed download failed"
+msgstr "Falha ao baixar o feed"
+
+#: radio_browser_source.py:786
+msgid "Could not download feed. Please try again later."
+msgstr "Incapaz de baixar o feed. Por favor tente depois."
+
+#: radio_browser_source.py:841
+msgid "loading feed"
+msgstr "carregando feed"
+
+#: radio_browser_source.py:860
+msgid "integrating feed"
+msgstr "integrando feed"
+
+#: radio_browser_source.py:860
+msgid "into tree"
+msgstr "dentro da árvore"
+
+#: radio_browser_source.py:884
+msgid "By Genres"
+msgstr "Por Gêneros"
+
+#: radio_browser_source.py:885
+msgid "By Country"
+msgstr "Por País"
+
+#: radio_browser_source.py:886
+msgid "By Streamtype"
+msgstr "Por Streamtype"
+
+#: radio_browser_source.py:887
+msgid "By Bitrate"
+msgstr "Por Bitrate"
+
+#: radio_browser_source.py:961
+msgid "Recently played"
+msgstr "Tocado recentemente"
+
+#: radio_browser_source.py:969
+msgid "Bookmarks"
+msgstr "Marcadores"
+
+#: record_process.py:54
+msgid "Server"
+msgstr "Servidor"
+
+#: record_process.py:55
+msgid "Stream"
+msgstr "Stream"
+
+#: record_process.py:56
+msgid "Current song"
+msgstr "Música atual"
+
+#: record_process.py:58
+msgid "Relay port"
+msgstr "Porta"
+
