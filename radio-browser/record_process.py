@@ -109,6 +109,8 @@ class RecordProcess(threading.Thread,gtk.VBox):
 		add_label(_("Server"),self.server_name)
 		add_label(_("Stream"),self.stream_name)
 		add_label(_("Current song"),self.song_info)
+		playing_time = datetime.now()-self.song_start
+		add_label(_("Playing time"),str(playing_time.seconds/60)+":"+str(playing_time.seconds%60))
 		add_label(_("Filesize"),self.filesize)
 		add_label(_("Bitrate"),self.bitrate)
 		add_label(_("Relay port"),str(self.relay_port))
