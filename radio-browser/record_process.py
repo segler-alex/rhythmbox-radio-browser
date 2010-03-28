@@ -47,8 +47,8 @@ class RecordProcess(threading.Thread,gtk.VBox):
 		self.process = subprocess.Popen(commandline,stdout=subprocess.PIPE)
 
 		# infobox
-		left = gtk.VBox()
-		left.pack_start(gtk.Label(title))
+		left = gtk.Table(12,2)
+		left.set_col_spacing(0,10)
 		self.info_box = left
 
 		right = gtk.VBox()
@@ -93,15 +93,24 @@ class RecordProcess(threading.Thread,gtk.VBox):
 		self.show_all()
 
 	def set_info_box(self):
+		self.added_lines = 0
 		def add_label(title,value):
 			if not value == "":
 				label = gtk.Label()
 				if value.startswith("http://"):
-					label.set_markup("<b>"+xml.sax.saxutils.escape(title)+"</b>:<a href='"+xml.sax.saxutils.escape(value)+"'>"+value+"</a>")
+					label.set_markup("<a href='"+xml.sax.saxutils.escape(value)+"'>"+value+"</a>")
 				else:
-					label.set_markup("<b>"+xml.sax.saxutils.escape(title)+"</b>:"+xml.sax.saxutils.escape(value))
+					label.set_markup(xml.sax.saxutils.escape(value))
 				label.set_selectable(True)
-				self.info_box.pack_start(label)		
+				label.set_alignment(0, 0)
+
+				title_label = gtk.Label()
+				title_label.set_alignment(1, 0)
+				title_label.set_markup("<b>"+xml.sax.saxutils.escape(title)+"</b>")
+
+				self.info_box.attach(title_label,0,1,self.added_lines,self.added_lines+1)
+				self.info_box.attach(label,1,2,self.added_lines,self.added_lines+1)
+				self.added_lines += 1
 
 		for widget in self.info_box.get_children():
 			self.info_box.remove(widget)
