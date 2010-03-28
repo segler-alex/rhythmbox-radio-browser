@@ -38,8 +38,10 @@ class ShoutcastRadioStation(RadioStation):
 						print "playing uri:"+self.listen_url
 			except:
 				return None
-			
-		return self.listen_url
+		if self.listen_url == "":
+			return None
+		else:
+			return self.listen_url
 
 class ShoutcastHandler(xml.sax.handler.ContentHandler):
 	def __init__(self):
