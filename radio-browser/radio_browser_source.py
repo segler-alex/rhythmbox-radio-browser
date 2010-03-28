@@ -209,6 +209,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			self.notebook = gtk.Notebook()
 			self.notebook.append_page(stations_box,gtk.Label(_("Radiostation list")))
+			self.notebook.set_scrollable(True)
 
 			self.pack_start(self.notebook)
 			self.notebook.show_all()
