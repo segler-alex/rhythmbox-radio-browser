@@ -19,23 +19,78 @@ import threading
 import gobject
 import subprocess
 import gtk
+from datetime import datetime
 
 import xml.sax.saxutils
 
-class RecordProcess(threading.Thread):
-	def __init__(self):
+from radio_station import RadioStation
+
+class RecordProcess(threading.Thread,gtk.VBox):
+	def __init__(self,station,outputpath):
+		# init base classes
 		threading.Thread.__init__(self)
-		self.process = None # subprocess
-		self.box = None # GUI Box
-		self.info_box = None
-		self.relay_port = None # port for listening to the recorded stream
-		self.title = None
-		self.uri = None
-		self.thread = None
-		self.song_info = ""
+		gtk.VBox.__init__(self)
+
+		# make shortcuts
+		title = station.server_name
+		uri = station.getRealURL()
+		self.relay_port = ""
 		self.server_name = ""
-		self.stream_name = ""
 		self.bitrate = ""
+		self.song_info = ""
+		self.stream_name = ""
+		self.filesize = ""
+		self.song_start = datetime.now()
+
+		# prepare streamripper
+		commandline = ["streamripper",uri,"-d",outputpath,"-r"]
+		self.process = subprocess.Popen(commandline,stdout=subprocess.PIPE)
+
+		# infobox
+		left = gtk.VBox()
+		left.pack_start(gtk.Label(title))
+		self.info_box = left
+
+		right = gtk.VBox()
+		play_button = gtk.Button(stock=gtk.STOCK_MEDIA_PLAY,label="")
+		right.pack_start(play_button)
+		stop_button = gtk.Button(stock=gtk.STOCK_STOP,label="")
+		right.pack_start(stop_button)
+
+		box = gtk.HBox()
+		box.pack_start(left)
+		box.pack_start(right,False)
+		decorated_box = gtk.Frame(_("Ripping stream"))
+		decorated_box.add(box)
+
+		play_button.connect("clicked",self.record_play_button_handler,uri)
+		stop_button.connect("clicked",self.record_stop_button_handler)
+		
+		# song list
+		self.songlist = gtk.TreeView()
+		self.songlist_store = gtk.ListStore(str,str,str)
+		self.songlist.set_model(self.songlist_store)
+
+		column_time = gtk.TreeViewColumn(_("Time"),gtk.CellRendererText(),text=0)
+#		column_time.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+		self.songlist.append_column(column_time)
+
+		column_title = gtk.TreeViewColumn(_("Title"),gtk.CellRendererText(),text=1)
+#		column_title.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+		self.songlist.append_column(column_title)
+
+		column_size = gtk.TreeViewColumn(_("Filesize"),gtk.CellRendererText(),text=2)
+#		column_title.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+		self.songlist.append_column(column_size)
+
+		tree_view_container = gtk.ScrolledWindow()
+		tree_view_container.set_shadow_type(gtk.SHADOW_IN)
+		tree_view_container.add(self.songlist)
+		tree_view_container.set_property("hscrollbar-policy", gtk.POLICY_AUTOMATIC)
+
+		self.pack_start(decorated_box,False)
+		self.pack_start(tree_view_container)
+		self.show_all()
 
 	def set_info_box(self):
 		def add_label(title,value):
@@ -54,6 +109,7 @@ class RecordProcess(threading.Thread):
 		add_label(_("Server"),self.server_name)
 		add_label(_("Stream"),self.stream_name)
 		add_label(_("Current song"),self.song_info)
+		add_label(_("Filesize"),self.filesize)
 		add_label(_("Bitrate"),self.bitrate)
 		add_label(_("Relay port"),str(self.relay_port))
 
@@ -92,8 +148,27 @@ class RecordProcess(threading.Thread):
 			if line.startswith("declared bitrate"):
 				self.bitrate = line.split(":")[1].strip()
 			if line.startswith("[ripping") or line.startswith("[skipping"):
-				self.song_info = line[17:]
+				song = line[17:len(line)-10]
+				# add old song to list, after recording title changed to new song
+				if self.song_info != song:
+					if self.song_info != "":
+						self.songlist_store.append((str(self.song_start),self.song_info,self.filesize))
+					self.song_info = song
+					self.song_start = datetime.now()
+				self.filesize = line[len(line)-8:len(line)-1].strip()
+
 			gobject.idle_add(self.set_info_box)
 
 		print "thread closed"
-		self.box.get_parent().remove(self.box)
+		self.get_parent().remove(self)
+
+	def record_play_button_handler(self,button,uri):
+		rp = self.recording_streams[uri]
+		station = RadioStation()
+		station.server_name = rp.title
+		station.listen_url = "http://127.0.0.1:"+rp.relay_port
+		station.type = "local"
+		#self.play_uri(station)
+
+	def record_stop_button_handler(self,button):
+		self.process.terminate()

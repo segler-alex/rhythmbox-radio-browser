@@ -200,17 +200,18 @@ class RadioBrowserSource(rb.StreamingSource):
 			filterbox.pack_start(gtk.Label(_("Bitrate")+":"),False)
 			filterbox.pack_start(self.filter_entry_bitrate,False)
 
-			self.record_box = gtk.VBox()
 			self.info_box = gtk.HBox()
 
-			mybox = gtk.VBox()
-			mybox.pack_start(filterbox,False)
-			mybox.pack_start(self.view)
-			mybox.pack_start(self.info_box,False)
-			mybox.pack_start(self.record_box,False)
+			stations_box = gtk.VBox()
+			stations_box.pack_start(filterbox,False)
+			stations_box.pack_start(self.view)
+			stations_box.pack_start(self.info_box,False)
 
-			self.pack_start(mybox)
-			mybox.show_all()
+			self.notebook = gtk.Notebook()
+			self.notebook.append_page(stations_box,gtk.Label(_("Radiostation list")))
+
+			self.pack_start(self.notebook)
+			self.notebook.show_all()
 			self.icon_view_container.hide_all()
 
 			# initialize lists for recording streams and icon cache
@@ -549,52 +550,10 @@ class RadioBrowserSource(rb.StreamingSource):
 		# do not record the same stream twice
 		if uri in self.recording_streams:
 			return
-
-		title = station.server_name
-		commandline = ["streamripper",uri,"-d",self.plugin.outputpath,"-r"]
-		process = subprocess.Popen(commandline,stdout=subprocess.PIPE)
-
-		left = gtk.VBox()
-		left.pack_start(gtk.Label(title))
-
-		right = gtk.VBox()
-		play_button = gtk.Button(stock=gtk.STOCK_MEDIA_PLAY,label="")
-		right.pack_start(play_button)
-		stop_button = gtk.Button(stock=gtk.STOCK_STOP,label="")
-		right.pack_start(stop_button)
-
-		box = gtk.HBox()
-		box.pack_start(left)
-		box.pack_start(right,False)
-		decorated_box = gtk.Frame(_("Ripping stream"))
-		decorated_box.add(box)
-
-		rp = RecordProcess()
-		rp.process = process
-		rp.title = title
-		rp.uri = uri
-		rp.box = decorated_box
-		rp.info_box = left
-		self.recording_streams[uri] = rp
-		rp.start()
-
-		play_button.connect("clicked",self.record_play_button_handler,uri)
-		stop_button.connect("clicked",self.record_stop_button_handler,uri)
-		
-		self.record_box.pack_start(decorated_box)
-		self.record_box.show_all()
-
-	def record_play_button_handler(self,button,uri):
-		rp = self.recording_streams[uri]
-		station = RadioStation()
-		station.server_name = rp.title
-		station.listen_url = "http://127.0.0.1:"+rp.relay_port
-		station.type = "local"
-		self.play_uri(station)
-
-	def record_stop_button_handler(self,button,uri):
-		rp = self.recording_streams[uri]
-		rp.process.terminate()
+		self.recording_streams[uri] = RecordProcess(station,self.plugin.outputpath)
+		self.notebook.append_page(self.recording_streams[uri],gtk.Label(station.server_name))
+		self.recording_streams[uri].start()
+		self.notebook.set_current_page(self.notebook.page_num(self.recording_streams[uri]))
 
 	""" listener for filter entry change """
 	def filter_entry_changed(self,gtk_entry):
