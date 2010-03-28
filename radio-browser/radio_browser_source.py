@@ -325,6 +325,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			add_label(_("Country"),station.country)
 			add_label(_("Votes"),station.votes)
 			add_label(_("Negative votes"),station.negativevotes)
+			add_label(_("Stream URL"),station.listen_url)
 
 		button_box = gtk.VBox()
 
@@ -690,7 +691,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			#self.shell.props.db.entry_delete(self.entry)
 
 			self.entry = self.shell.props.db.entry_new(self.entry_type, station.getRealURL())
-			self.shell.props.db.set(self.entry, rhythmdb.PROP_TITLE, station.server_name+" ("+station.getRealURL()+")")
+			self.shell.props.db.set(self.entry, rhythmdb.PROP_TITLE, station.server_name)
 			self.shell.props.db.commit()
 		#shell.load_uri(uri,False)
 
