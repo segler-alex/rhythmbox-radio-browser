@@ -35,7 +35,7 @@ class ConfigDialog (gtk.Dialog):
 
 		self.add_button(gtk.STOCK_CLOSE,gtk.RESPONSE_CLOSE)
 
-		table = gtk.Table(2,2)
+		table = gtk.Table(3,2)
 
 		table.attach(gtk.Label(_("Trys to download file")),0,1,0,1)
 		table.attach(gtk.Label(_("Streamripper output path")),0,1,1,2)
@@ -52,13 +52,27 @@ class ConfigDialog (gtk.Dialog):
 		self.entry_outputpath.connect("changed",self.outputpath_changed)
 		table.attach(self.entry_outputpath,1,2,1,2)
 
+		file_browser_button = gtk.Button(_("Browser"))
+		file_browser_button.connect("clicked",self.on_file_browser)
+		table.attach(file_browser_button,2,3,1,2)
+
 		self.get_content_area().pack_start(table)
 
 		self.set_title(_("Radio Browser Configuration"))
-		self.set_size_request(380, 100)
+		self.set_size_request(420, 100)
 		self.set_resizable(False)
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.show_all()
+
+	def on_file_browser(self,button):
+		filew = gtk.FileChooserDialog("File selection",action=gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER,buttons=(gtk.STOCK_CANCEL,
+                                          gtk.RESPONSE_REJECT,
+                                          gtk.STOCK_OK,
+                                          gtk.RESPONSE_OK))
+		filew.set_filename(self.plugin.outputpath)
+		if filew.run() == gtk.RESPONSE_OK:
+			self.entry_outputpath.set_text(filew.get_filename())
+		filew.destroy()
 
 	""" immediately change gconf values in config dialog after user changed download trys """
 	def download_trys_changed(self,spin):
