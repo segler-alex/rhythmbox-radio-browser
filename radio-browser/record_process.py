@@ -43,7 +43,7 @@ class RecordProcess(threading.Thread,gtk.VBox):
 		self.song_start = datetime.now()
 
 		# prepare streamripper
-		commandline = ["streamripper",uri,"-d",outputpath,"-r"]
+		commandline = ["streamripper",uri,"-d",outputpath,"-r","-o","larger"]
 		self.process = subprocess.Popen(commandline,stdout=subprocess.PIPE)
 
 		# infobox
