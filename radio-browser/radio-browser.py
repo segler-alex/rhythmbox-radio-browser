@@ -25,9 +25,50 @@ from gettext import *
 from radio_browser_source import RadioBrowserSource
 
 gconf_keys = {'download_trys' : '/apps/rhythmbox/plugins/radio-browser/download_trys',
-	'min_bitrate': '/apps/rhythmbox/plugins/radio-browser/min_bitrate',
 	'outputpath': '/apps/rhythmbox/plugins/radio-browser/streamripper_outputpath'
 	}
+
+class ConfigDialog (gtk.Dialog):
+	def __init__(self,plugin):
+		super(ConfigDialog,self).__init__()
+		self.plugin = plugin
+
+		self.add_button(gtk.STOCK_CLOSE,gtk.RESPONSE_CLOSE)
+
+		table = gtk.Table(2,2)
+
+		table.attach(gtk.Label(_("Trys to download file")),0,1,0,1)
+		table.attach(gtk.Label(_("Streamripper output path")),0,1,1,2)
+
+		self.spin_download_trys = gtk.SpinButton()
+		#self.spin_download_trys.set_range(1,10)
+		self.spin_download_trys.set_adjustment(gtk.Adjustment(value=1,lower=1,upper=10,step_incr=1))
+		self.spin_download_trys.set_value(float(self.plugin.download_trys))
+		self.spin_download_trys.connect("changed",self.download_trys_changed)
+		table.attach(self.spin_download_trys,1,2,0,1)
+
+		self.entry_outputpath = gtk.Entry()
+		self.entry_outputpath.set_text(self.plugin.outputpath)
+		self.entry_outputpath.connect("changed",self.outputpath_changed)
+		table.attach(self.entry_outputpath,1,2,1,2)
+
+		self.get_content_area().pack_start(table)
+
+		self.set_title(_("Radio Browser Configuration"))
+		self.set_size_request(380, 100)
+		self.set_resizable(False)
+		self.set_position(gtk.WIN_POS_CENTER)
+		self.show_all()
+
+	""" immediately change gconf values in config dialog after user changed download trys """
+	def download_trys_changed(self,spin):
+		self.plugin.download_trys = str(self.spin_download_trys.get_value())
+		gconf.client_get_default().set_string(gconf_keys['download_trys'], self.plugin.download_trys)
+
+	""" immediately change gconf values in config dialog after user changed recorded music output directory """
+	def outputpath_changed(self,entry):
+		self.plugin.outputpath = self.entry_outputpath.get_text()
+		gconf.client_get_default().set_string(gconf_keys['outputpath'], self.plugin.outputpath)
 
 class RadioBrowserPlugin (rb.Plugin):
 	def __init__(self):
@@ -76,11 +117,6 @@ class RadioBrowserPlugin (rb.Plugin):
 			self.download_trys = "3"
 		gconf.client_get_default().set_string(gconf_keys['download_trys'], self.download_trys)
 
-		self.min_bitrate = gconf.client_get_default().get_string(gconf_keys['min_bitrate'])
-		if not self.min_bitrate:
-			self.min_bitrate = "96"
-		gconf.client_get_default().set_string(gconf_keys['min_bitrate'], self.min_bitrate)
-
 		# set the output path of recorded music to xdg standard directory for music
 		self.outputpath = gconf.client_get_default().get_string(gconf_keys['outputpath'])
 		if not self.outputpath:
@@ -101,43 +137,14 @@ class RadioBrowserPlugin (rb.Plugin):
 	""" build plugin configuration dialog """
 	def create_configure_dialog(self, dialog=None):
 		if not dialog:
-			builder_file = self.find_file("prefs.ui")
-			builder = gtk.Builder()
-			builder.set_translation_domain("radio-browser")
-			builder.add_from_file(builder_file)
-			dialog = builder.get_object('radio_browser_prefs')
+			dialog = ConfigDialog(self)
 			dialog.connect("response",self.dialog_response)
-			self.spin_download_trys = builder.get_object('SpinButton_DownloadTrys')
-			self.spin_download_trys.connect("changed",self.download_trys_changed)
-			self.spin_min_bitrate = builder.get_object('SpinButton_Bitrate')
-			self.spin_min_bitrate.connect("changed",self.download_bitrate_changed)
-			self.entry_outputpath = builder.get_object('Entry_OutputPath')
-			self.entry_outputpath.connect("changed",self.outputpath_changed)
-
-			self.spin_download_trys.set_value(float(self.download_trys))
-			self.spin_min_bitrate.set_value(float(self.min_bitrate))
-			self.entry_outputpath.set_text(self.outputpath)
 
 		dialog.present()
 		return dialog
 
 	def dialog_response(self,dialog,response):
 		dialog.hide()
-
-	""" immediately change gconf values in config dialog after user changed download trys """
-	def download_trys_changed(self,spin):
-		self.download_trys = str(self.spin_download_trys.get_value())
-		gconf.client_get_default().set_string(gconf_keys['download_trys'], self.download_trys)
-
-	""" immediately change gconf values in config dialog after user changed minimal bitrate """
-	def download_bitrate_changed(self,spin):
-		self.min_bitrate = str(self.spin_min_bitrate.get_value())
-		gconf.client_get_default().set_string(gconf_keys['min_bitrate'], self.min_bitrate)
-
-	""" immediately change gconf values in config dialog after user changed recorded music output directory """
-	def outputpath_changed(self,entry):
-		self.outputpath = self.entry_outputpath.get_text()
-		gconf.client_get_default().set_string(gconf_keys['outputpath'], self.outputpath)
 
 	""" on plugin deactivation """
 	def deactivate(self, shell):
