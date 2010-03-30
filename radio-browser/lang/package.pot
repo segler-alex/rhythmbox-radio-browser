@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-30 01:46+0200\n"
+"POT-Creation-Date: 2010-03-30 02:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,21 +16,85 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: board_handler.py:72 board_handler.py:176
+#: board_handler.py:62 board_handler.py:108 board_handler.py:216
+msgid "Post new station"
+msgstr ""
+
+#: board_handler.py:69
+msgid "Examples"
+msgstr ""
+
+#: board_handler.py:71 radio_browser_source.py:317
+msgid "Name"
+msgstr ""
+
+#: board_handler.py:74
+msgid "My Station"
+msgstr ""
+
+#: board_handler.py:76
+msgid "URL"
+msgstr ""
+
+#: board_handler.py:79
+msgid "http://listen.to.my/station.pls"
+msgstr ""
+
+#: board_handler.py:81
+msgid "Homepage URL"
+msgstr ""
+
+#: board_handler.py:84
+msgid "http://very.cool.site"
+msgstr ""
+
+#: board_handler.py:86
+msgid "Favicon URL"
+msgstr ""
+
+#: board_handler.py:89
+msgid "http://very.cool.site/favicon.ico"
+msgstr ""
+
+#: board_handler.py:91 radio_browser_source.py:325
+msgid "Country"
+msgstr ""
+
+#: board_handler.py:94
+msgid "Utopia"
+msgstr ""
+
+#: board_handler.py:96 radio_browser_source.py:324
+msgid "Language"
+msgstr ""
+
+#: board_handler.py:99
+msgid "Esperanto"
+msgstr ""
+
+#: board_handler.py:101 radio_browser_source.py:318
+msgid "Tags"
+msgstr ""
+
+#: board_handler.py:104
+msgid "Classical Jazz Talk"
+msgstr ""
+
+#: board_handler.py:128 board_handler.py:221
 msgid "Vote for station"
 msgstr ""
 
-#: board_handler.py:73
+#: board_handler.py:129
 msgid ""
 "Do you really want to vote for this station? It means, that you like it, and "
 "you want more people to know, that this is a good station."
 msgstr ""
 
-#: board_handler.py:84
+#: board_handler.py:140
 msgid "Mark station as broken"
 msgstr ""
 
-#: board_handler.py:85
+#: board_handler.py:141
 msgid ""
 "Do you really want to mark this radio station as broken?\n"
 "\n"
@@ -40,31 +104,27 @@ msgid ""
 "http://segler.bplaced.net/"
 msgstr ""
 
-#: board_handler.py:142
+#: board_handler.py:187
 msgid "Name and URL are necessary"
 msgstr ""
 
-#: board_handler.py:146
+#: board_handler.py:191
 msgid "URL needs to start with http:// or mms://"
 msgstr ""
 
-#: board_handler.py:151
+#: board_handler.py:196
 msgid "Homepage URL needs to start with http://"
 msgstr ""
 
-#: board_handler.py:156
+#: board_handler.py:201
 msgid "Favicon URL needs to start with http://"
 msgstr ""
 
-#: board_handler.py:163
+#: board_handler.py:208
 msgid "Station successfully posted"
 msgstr ""
 
-#: board_handler.py:171
-msgid "Post new station"
-msgstr ""
-
-#: board_handler.py:177
+#: board_handler.py:222
 msgid "Station is broken"
 msgstr ""
 
@@ -157,14 +217,6 @@ msgstr ""
 msgid "Source feed"
 msgstr ""
 
-#: radio_browser_source.py:317
-msgid "Name"
-msgstr ""
-
-#: radio_browser_source.py:318
-msgid "Tags"
-msgstr ""
-
 #: radio_browser_source.py:320
 msgid "Server type"
 msgstr ""
@@ -179,14 +231,6 @@ msgstr ""
 
 #: radio_browser_source.py:323
 msgid "Current listeners"
-msgstr ""
-
-#: radio_browser_source.py:324
-msgid "Language"
-msgstr ""
-
-#: radio_browser_source.py:325
-msgid "Country"
 msgstr ""
 
 #: radio_browser_source.py:326
