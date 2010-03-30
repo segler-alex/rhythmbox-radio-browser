@@ -560,7 +560,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		if uri in self.recording_streams:
 			if self.recording_streams[uri].process.poll() is None:
 				return
-		self.recording_streams[uri] = RecordProcess(station,self.plugin.outputpath)
+		self.recording_streams[uri] = RecordProcess(station,self.plugin.outputpath,self.play_uri)
 		self.notebook.append_page(self.recording_streams[uri],gtk.Label(short_name(station.server_name)))
 		self.recording_streams[uri].start()
 		self.notebook.set_current_page(self.notebook.page_num(self.recording_streams[uri]))

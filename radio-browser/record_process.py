@@ -26,7 +26,7 @@ import xml.sax.saxutils
 from radio_station import RadioStation
 
 class RecordProcess(threading.Thread,gtk.VBox):
-	def __init__(self,station,outputpath):
+	def __init__(self,station,outputpath,play_cb):
 		# init base classes
 		threading.Thread.__init__(self)
 		gtk.VBox.__init__(self)
@@ -41,6 +41,7 @@ class RecordProcess(threading.Thread,gtk.VBox):
 		self.stream_name = ""
 		self.filesize = ""
 		self.song_start = datetime.now()
+		self.play_cb = play_cb
 
 		# prepare streamripper
 		commandline = ["streamripper",uri,"-d",outputpath,"-r","-o","larger"]
@@ -178,12 +179,11 @@ class RecordProcess(threading.Thread,gtk.VBox):
 			self.process.terminate()
 
 	def record_play_button_handler(self,button,uri):
-		rp = self.recording_streams[uri]
 		station = RadioStation()
-		station.server_name = rp.title
-		station.listen_url = "http://127.0.0.1:"+rp.relay_port
+		station.server_name = self.stream_name
+		station.listen_url = "http://127.0.0.1:"+self.relay_port
 		station.type = "local"
-		#self.play_uri(station)
+		self.play_cb(station)
 
 	def record_stop_button_handler(self,button):
 		self.process.terminate()
