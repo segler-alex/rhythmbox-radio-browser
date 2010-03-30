@@ -54,6 +54,62 @@ class BoardHandler(xml.sax.handler.ContentHandler):
 			if self.entry.language.title() not in self.languages:
 				self.languages.append(self.entry.language.title())
 
+class PostStationDialog(gtk.Dialog):
+	def __init__(self):
+		super(PostStationDialog,self).__init__()
+
+		title_label = gtk.Label()
+		title_label.set_markup("<span size='xx-large'>"+_("Post new station")+"</span>")
+		self.get_content_area().pack_start(title_label)
+		self.add_button(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL)
+		self.add_button(gtk.STOCK_OK,gtk.RESPONSE_OK)
+
+		table = gtk.Table(3,8)
+
+		table.attach(gtk.Label(_("Examples")),2,3,0,1)
+
+		table.attach(gtk.Label(_("Name")),0,1,1,2)
+		self.StationName = gtk.Entry()
+		table.attach(self.StationName,1,2,1,2)
+		table.attach(gtk.Label(_("My Station")),2,3,1,2)
+
+		table.attach(gtk.Label(_("URL")),0,1,2,3)
+		self.StationUrl = gtk.Entry()
+		table.attach(self.StationUrl,1,2,2,3)
+		table.attach(gtk.Label(_("http://listen.to.my/station.pls")),2,3,2,3)
+
+		table.attach(gtk.Label(_("Homepage URL")),0,1,3,4)
+		self.StationHomepage = gtk.Entry()
+		table.attach(self.StationHomepage,1,2,3,4)
+		table.attach(gtk.Label(_("http://very.cool.site")),2,3,3,4)
+
+		table.attach(gtk.Label(_("Favicon URL")),0,1,4,5)
+		self.StationFavicon = gtk.Entry()
+		table.attach(self.StationFavicon,1,2,4,5)
+		table.attach(gtk.Label(_("http://very.cool.site/favicon.ico")),2,3,4,5)
+
+		table.attach(gtk.Label(_("Country")),0,1,5,6)
+		self.StationCountry = gtk.ComboBoxEntry()
+		table.attach(self.StationCountry,1,2,5,6)
+		table.attach(gtk.Label(_("Utopia")),2,3,5,6)
+
+		table.attach(gtk.Label(_("Language")),0,1,6,7)
+		self.StationLanguage = gtk.ComboBoxEntry()
+		table.attach(self.StationLanguage,1,2,6,7)
+		table.attach(gtk.Label(_("Esperanto")),2,3,6,7)
+
+		table.attach(gtk.Label(_("Tags")),0,1,7,8)
+		self.StationTags = gtk.Entry()
+		table.attach(self.StationTags,1,2,7,8)
+		table.attach(gtk.Label(_("Classical Jazz Talk")),2,3,7,8)
+
+		self.get_content_area().pack_start(table,False)
+
+		self.set_title(_("Post new station"))
+		self.set_resizable(False)
+		self.set_position(gtk.WIN_POS_CENTER)
+		self.show_all()
+
 class FeedBoard(Feed):
 	def __init__(self,cache_dir,status_change_handler):
 		Feed.__init__(self)
@@ -93,18 +149,7 @@ class FeedBoard(Feed):
 
 	""" post new station to board """
 	def post_new_station(self,source):
-		builder_file = source.plugin.find_file("prefs.ui")
-		builder = gtk.Builder()
-		builder.add_from_file(builder_file)
-		dialog = builder.get_object('post_station_dialog')
-
-		dialog.StationName = builder.get_object("StationName")
-		dialog.StationUrl = builder.get_object("StationURL")
-		dialog.StationHomepage = builder.get_object("StationHomepage")
-		dialog.StationFavicon = builder.get_object("StationFavicon")
-		dialog.StationLanguage = builder.get_object("StationLanguage")
-		dialog.StationCountry = builder.get_object("StationCountry")
-		dialog.StationTags = builder.get_object("StationTags")
+		dialog = PostStationDialog()
 
 		LanguageList = gtk.ListStore(str)
 		for language in self.handler.languages:
@@ -127,9 +172,9 @@ class FeedBoard(Feed):
 				info_dialog.destroy()
 
 			response = dialog.run()
-			if response == 1:
+			if response == gtk.RESPONSE_CANCEL:
 				break
-			if response == 0:
+			if response == gtk.RESPONSE_OK:
 				Name = dialog.StationName.get_text().strip()
 				URL = dialog.StationUrl.get_text().strip()
 				Homepage = dialog.StationHomepage.get_text().strip()
