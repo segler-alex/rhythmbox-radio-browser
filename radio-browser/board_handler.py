@@ -59,7 +59,7 @@ class PostStationDialog(gtk.Dialog):
 		super(PostStationDialog,self).__init__()
 
 		title_label = gtk.Label()
-		title_label.set_markup("<span size='xx-large'>"+_("Post new station")+"</span>")
+		title_label.set_markup("<span font='20.0'>"+_("Post new station")+"</span>")
 		self.get_content_area().pack_start(title_label)
 		self.add_button(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL)
 		self.add_button(gtk.STOCK_OK,gtk.RESPONSE_OK)
