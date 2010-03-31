@@ -59,7 +59,6 @@ class ConfigDialog (gtk.Dialog):
 		self.get_content_area().pack_start(table)
 
 		self.set_title(_("Radio Browser Configuration"))
-		self.set_size_request(420, 100)
 		self.set_resizable(False)
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.show_all()
