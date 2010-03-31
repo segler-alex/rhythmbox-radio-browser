@@ -1,3 +1,11 @@
+Changes since 1.9:
+==================
+* more translations
+* recording streams creates a new tab for each recording
+* recently played entries get removed after a configurable time
+* streamripper overwrites the older file if the newer one with the same title is bigger
+* display station count in each subtree
+
 Changes since 1.8:
 ==================
 * new view to display search(filter) results
