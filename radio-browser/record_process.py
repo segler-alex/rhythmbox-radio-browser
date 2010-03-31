@@ -164,7 +164,7 @@ class RecordProcess(threading.Thread,gtk.VBox):
 				# add old song to list, after recording title changed to new song
 				if self.song_info != song:
 					if self.song_info != "":
-						self.songlist_store.append((str(self.song_start),self.song_info,self.filesize))
+						self.songlist_store.append((str(self.song_start.strftime("%x %X")),self.song_info,self.filesize))
 					self.song_info = song
 					self.song_start = datetime.now()
 				self.filesize = line[len(line)-8:len(line)-1].strip()
