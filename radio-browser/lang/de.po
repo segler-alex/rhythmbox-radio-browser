@@ -141,7 +141,7 @@ msgstr "Anzahl der Downloadversuche"
 
 #: radio-browser.py:42
 msgid "Recently played removal time(days)"
-msgstr ""
+msgstr "Löschzeit von 'Zuletzt gehört' (in Tagen)"
 
 #: radio-browser.py:43
 msgid "Streamripper output path"
