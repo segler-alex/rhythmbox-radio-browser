@@ -138,7 +138,7 @@ class FeedBoard(Feed):
 	""" mark station as bad on board """
 	def bad_station(self,source,station):
 		message = gtk.MessageDialog(message_format=_("Mark station as broken"),buttons=gtk.BUTTONS_YES_NO,type=gtk.MESSAGE_WARNING)
-		message.format_secondary_text(_("Do you really want to mark this radio station as broken?\n\nIt will eventually get deleted if enough people do that!\n\nMore information on that on the feeds homepage:\nhttp://segler.bplaced.net/"))
+		message.format_secondary_text(_("Do you really want to mark this radio station as broken? It will eventually get deleted if enough people do that! More information on that on the feeds homepage: http://segler.bplaced.net/"))
 		response = message.run()
 		if response == gtk.RESPONSE_YES:
 			params = urllib.urlencode({'action': 'negativevote','id': station.id})
