@@ -9,15 +9,15 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-03-31 03:57+0200\n"
 "PO-Revision-Date: 2010-03-10 02:25+0100\n"
-"Last-Translator: segler_alex <segler_alex@web.de>\n"
-"Language-Team: French <segler_alex@web.de>\n"
+"Last-Translator: segler_alex <nicolas.collart@videotron.ca>\n"
+"Language-Team: French <nicolas.collart@videotron.ca>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: board_handler.py:62 board_handler.py:108 board_handler.py:216
 msgid "Post new station"
-msgstr ""
+msgstr "Publier nouvelle station"
 
 #: board_handler.py:69
 msgid "Examples"
@@ -81,17 +81,19 @@ msgstr "Discussion Jazz Classique"
 
 #: board_handler.py:128 board_handler.py:221
 msgid "Vote for station"
-msgstr ""
+msgstr "Voter pour cette station"
 
 #: board_handler.py:129
 msgid ""
 "Do you really want to vote for this station? It means, that you like it, and "
 "you want more people to know, that this is a good station."
 msgstr ""
+"Voulez-vous réellement voter pour cette station? Cela veut dire"
+"que vous voulez que plus de gens l'écoute et la connaisse."
 
 #: board_handler.py:140
 msgid "Mark station as broken"
-msgstr ""
+msgstr "Marquer cette station comme non-fonctionnelle"
 
 #: board_handler.py:141
 msgid ""
@@ -102,34 +104,40 @@ msgid ""
 "More information on that on the feeds homepage:\n"
 "http://segler.bplaced.net/"
 msgstr ""
+"Voulez-vous réellement marquer cette station comme non-fonctionnelle?\n"
+"\n"
+"Elle sera éventuellement supprimée si d'autres personnes la reportent!\n"
+"\n"
+"Plus d'informations sur la page d'accueil des flux:\n"
+"http://segler.bplaced.net/"
 
 #: board_handler.py:187
 msgid "Name and URL are necessary"
-msgstr ""
+msgstr "Le nom et l'URL sont nécessaires"
 
 #: board_handler.py:191
 msgid "URL needs to start with http:// or mms://"
-msgstr ""
+msgstr "L'URL doit débuter par http:// ou mms://"
 
 #: board_handler.py:196
 msgid "Homepage URL needs to start with http://"
-msgstr ""
+msgstr "L'URL de la page d'accueil doit débuter par http://"
 
 #: board_handler.py:201
 msgid "Favicon URL needs to start with http://"
-msgstr ""
+msgstr "L'URL de la favicon doit débuter par http://"
 
 #: board_handler.py:208
 msgid "Station successfully posted"
-msgstr ""
+msgstr "Station publiée avec succès"
 
 #: board_handler.py:222
 msgid "Station is broken"
-msgstr ""
+msgstr "Station non fonctionnelle"
 
 #: radio-browser.py:41
 msgid "Trys to download file"
-msgstr ""
+msgstr "Essais pour télécharger le fichier"
 
 #: radio-browser.py:42
 msgid "Recently played removal time(days)"
@@ -137,15 +145,15 @@ msgstr ""
 
 #: radio-browser.py:43
 msgid "Streamripper output path"
-msgstr ""
+msgstr "Répertoire d'extraction Streamripper"
 
 #: radio-browser.py:62
 msgid "Browser"
-msgstr ""
+msgstr "Navigateur"
 
 #: radio-browser.py:68
 msgid "Radio Browser Configuration"
-msgstr ""
+msgstr "Configuration du navigateur radio"
 
 #: radio-browser.py:112
 msgid "Radio browser"
@@ -186,7 +194,7 @@ msgstr "Débit"
 
 #: radio_browser_source.py:212
 msgid "Radiostation list"
-msgstr ""
+msgstr "Liste des stations radio"
 
 #: radio_browser_source.py:302
 msgid "Entry type"
@@ -246,7 +254,7 @@ msgstr "Votes négatifs"
 
 #: radio_browser_source.py:329
 msgid "Stream URL"
-msgstr ""
+msgstr "URL du flux"
 
 #: radio_browser_source.py:344 radio_browser_source.py:414
 msgid "Unbookmark"
@@ -278,7 +286,7 @@ msgstr "téléchargement des informations de la station"
 
 #: radio_browser_source.py:669 radio_browser_source.py:743
 msgid "Try"
-msgstr ""
+msgstr "Essai"
 
 #: radio_browser_source.py:681
 msgid "Could not download station information"
@@ -289,8 +297,8 @@ msgid ""
 "Could not download station information from shoutcast directory server. "
 "Please try again later."
 msgstr ""
-"Ne peut télécharger l'information de la station depuis le serveur "
-"ShoutcastVeuilez réessayer plus tard."
+"Ne peut télécharger l'information de la station depuis le serveur Shoutcast"
+"Veuilez réessayer plus tard."
 
 #: radio_browser_source.py:743
 msgid "downloading feed"
@@ -338,7 +346,7 @@ msgstr "Par débit"
 
 #: radio_browser_source.py:938
 msgid "Recently played"
-msgstr "Récemment joué"
+msgstr "Récemment écouté"
 
 #: radio_browser_source.py:950
 msgid "Bookmarks"
@@ -350,31 +358,31 @@ msgstr "Extraction du flux"
 
 #: record_process.py:75
 msgid "Time"
-msgstr ""
+msgstr "Temps"
 
 #: record_process.py:83 record_process.py:124
 msgid "Filesize"
-msgstr ""
+msgstr "Taille du fichier"
 
 #: record_process.py:119
 msgid "Server"
-msgstr ""
+msgstr "Serveur"
 
 #: record_process.py:120
 msgid "Stream"
-msgstr ""
+msgstr "Flux"
 
 #: record_process.py:121
 msgid "Current song"
-msgstr ""
+msgstr "Chanson actuelle"
 
 #: record_process.py:123
 msgid "Playing time"
-msgstr ""
+msgstr "Temps de lecture"
 
 #: record_process.py:126
 msgid "Relay port"
-msgstr ""
+msgstr "Port de relais"
 
 #~ msgid "Trys to download file:"
 #~ msgstr "Nombre d'essais de téléchargements:"
