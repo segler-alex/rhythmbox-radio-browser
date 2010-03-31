@@ -941,7 +941,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			data = {}
 		dataNew = {}
 		for name,station in data.items():
-			if datetime.datetime.now()-station.PlayTime <= datetime.timedelta(days=7):
+			if datetime.datetime.now()-station.PlayTime <= datetime.timedelta(days=float(self.plugin.recently_played_purge_days)):
 				self.tree_store.append(self.recently_iter,(name,station))
 				dataNew[name] = station
 		self.save_to_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME),dataNew)

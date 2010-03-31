@@ -25,7 +25,8 @@ from gettext import *
 from radio_browser_source import RadioBrowserSource
 
 gconf_keys = {'download_trys' : '/apps/rhythmbox/plugins/radio-browser/download_trys',
-	'outputpath': '/apps/rhythmbox/plugins/radio-browser/streamripper_outputpath'
+	'outputpath': '/apps/rhythmbox/plugins/radio-browser/streamripper_outputpath',
+	'recently_played_purge_days': '/apps/rhythmbox/plugins/radio-browser/recently_played_purge_days'
 	}
 
 class ConfigDialog (gtk.Dialog):
@@ -35,26 +36,32 @@ class ConfigDialog (gtk.Dialog):
 
 		self.add_button(gtk.STOCK_CLOSE,gtk.RESPONSE_CLOSE)
 
-		table = gtk.Table(3,2)
+		table = gtk.Table(3,3)
 
 		table.attach(gtk.Label(_("Trys to download file")),0,1,0,1)
-		table.attach(gtk.Label(_("Streamripper output path")),0,1,1,2)
+		table.attach(gtk.Label(_("Recently played removal time(days)")),0,1,1,2)
+		table.attach(gtk.Label(_("Streamripper output path")),0,1,2,3)
 
 		self.spin_download_trys = gtk.SpinButton()
-		#self.spin_download_trys.set_range(1,10)
 		self.spin_download_trys.set_adjustment(gtk.Adjustment(value=1,lower=1,upper=10,step_incr=1))
 		self.spin_download_trys.set_value(float(self.plugin.download_trys))
 		self.spin_download_trys.connect("changed",self.download_trys_changed)
 		table.attach(self.spin_download_trys,1,2,0,1)
 
+		self.spin_removaltime = gtk.SpinButton()
+		self.spin_removaltime.set_adjustment(gtk.Adjustment(value=1,lower=1,upper=7,step_incr=1))
+		self.spin_removaltime.set_value(float(self.plugin.recently_played_purge_days))
+		self.spin_removaltime.connect("changed",self.removaltime_changed)
+		table.attach(self.spin_removaltime,1,2,1,2)
+
 		self.entry_outputpath = gtk.Entry()
 		self.entry_outputpath.set_text(self.plugin.outputpath)
 		self.entry_outputpath.connect("changed",self.outputpath_changed)
-		table.attach(self.entry_outputpath,1,2,1,2)
+		table.attach(self.entry_outputpath,1,2,2,3)
 
 		file_browser_button = gtk.Button(_("Browser"))
 		file_browser_button.connect("clicked",self.on_file_browser)
-		table.attach(file_browser_button,2,3,1,2)
+		table.attach(file_browser_button,2,3,2,3)
 
 		self.get_content_area().pack_start(table)
 
@@ -77,6 +84,11 @@ class ConfigDialog (gtk.Dialog):
 	def download_trys_changed(self,spin):
 		self.plugin.download_trys = str(self.spin_download_trys.get_value())
 		gconf.client_get_default().set_string(gconf_keys['download_trys'], self.plugin.download_trys)
+
+	""" immediately change gconf values in config dialog after user changed removal days """
+	def removaltime_changed(self,spin):
+		self.plugin.recently_played_purge_days = str(self.spin_removaltime.get_value())
+		gconf.client_get_default().set_string(gconf_keys['recently_played_purge_days'], self.plugin.recently_played_purge_days)
 
 	""" immediately change gconf values in config dialog after user changed recorded music output directory """
 	def outputpath_changed(self,entry):
@@ -129,6 +141,11 @@ class RadioBrowserPlugin (rb.Plugin):
 		if not self.download_trys:
 			self.download_trys = "3"
 		gconf.client_get_default().set_string(gconf_keys['download_trys'], self.download_trys)
+
+		self.recently_played_purge_days = gconf.client_get_default().get_string(gconf_keys['recently_played_purge_days'])
+		if not self.recently_played_purge_days:
+			self.recently_played_purge_days = "3"
+		gconf.client_get_default().set_string(gconf_keys['recently_played_purge_days'], self.recently_played_purge_days)
 
 		# set the output path of recorded music to xdg standard directory for music
 		self.outputpath = gconf.client_get_default().get_string(gconf_keys['outputpath'])
