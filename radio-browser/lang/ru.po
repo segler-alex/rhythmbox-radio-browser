@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-31 03:57+0200\n"
+"POT-Creation-Date: 2010-03-31 05:54+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -17,11 +17,11 @@ msgstr ""
 
 #: board_handler.py:62 board_handler.py:108 board_handler.py:216
 msgid "Post new station"
-msgstr ""
+msgstr "Добавить новую станцию"
 
 #: board_handler.py:69
 msgid "Examples"
-msgstr ""
+msgstr "Примеры"
 
 #: board_handler.py:71 radio_browser_source.py:318
 msgid "Name"
@@ -29,31 +29,31 @@ msgstr "Название"
 
 #: board_handler.py:74
 msgid "My Station"
-msgstr ""
+msgstr "Моя станция"
 
 #: board_handler.py:76
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: board_handler.py:79
 msgid "http://listen.to.my/station.pls"
-msgstr ""
+msgstr "http://listen.to.my/station.pls"
 
 #: board_handler.py:81
 msgid "Homepage URL"
-msgstr ""
+msgstr "Домашний адрес"
 
 #: board_handler.py:84
 msgid "http://very.cool.site"
-msgstr ""
+msgstr "http://very.cool.site"
 
 #: board_handler.py:86
 msgid "Favicon URL"
-msgstr ""
+msgstr "Путь иконки (favicon)"
 
 #: board_handler.py:89
 msgid "http://very.cool.site/favicon.ico"
-msgstr ""
+msgstr "http://very.cool.site/favicon.ico"
 
 #: board_handler.py:91 radio_browser_source.py:326
 msgid "Country"
@@ -69,7 +69,7 @@ msgstr "Язык"
 
 #: board_handler.py:99
 msgid "Esperanto"
-msgstr ""
+msgstr "Esperanto"
 
 #: board_handler.py:101 radio_browser_source.py:319
 msgid "Tags"
@@ -81,55 +81,58 @@ msgstr ""
 
 #: board_handler.py:128 board_handler.py:221
 msgid "Vote for station"
-msgstr ""
+msgstr "Проголосовать за станцию"
 
 #: board_handler.py:129
 msgid ""
 "Do you really want to vote for this station? It means, that you like it, and "
 "you want more people to know, that this is a good station."
 msgstr ""
+"Вы действительно хотите проголосать за станцию? Это значит, что вам она "
+"нравится, и Вы хотите сообщить другим людям, что это хорошая станция."
 
 #: board_handler.py:140
 msgid "Mark station as broken"
-msgstr ""
+msgstr "Пометить станцию как неработающую"
 
 #: board_handler.py:141
 msgid ""
-"Do you really want to mark this radio station as broken?\n"
-"\n"
-"It will eventually get deleted if enough people do that!\n"
-"\n"
-"More information on that on the feeds homepage:\n"
-"http://segler.bplaced.net/"
+"Do you really want to mark this radio station as broken? It will eventually "
+"get deleted if enough people do that! More information on that on the feeds "
+"homepage: http://segler.bplaced.net/"
 msgstr ""
+"Вы действительно хотите пометить станцию как неработающую?"
+"Со временем она будет удалена, если достаточно людей отметят ее!"
+"Более подробную информацию об этом можно узнать на сайте:"
+"http://segler.bplaced.net/"
 
 #: board_handler.py:187
 msgid "Name and URL are necessary"
-msgstr ""
+msgstr "Имя и путь обязательны"
 
 #: board_handler.py:191
 msgid "URL needs to start with http:// or mms://"
-msgstr ""
+msgstr "Путь должен начинаться с http:// или mms://"
 
 #: board_handler.py:196
 msgid "Homepage URL needs to start with http://"
-msgstr ""
+msgstr "Домашний адрес должен начинаться с http://"
 
 #: board_handler.py:201
 msgid "Favicon URL needs to start with http://"
-msgstr ""
+msgstr "Путь к иконке (favicon)"
 
 #: board_handler.py:208
 msgid "Station successfully posted"
-msgstr ""
+msgstr "Станция добавлена"
 
 #: board_handler.py:222
 msgid "Station is broken"
-msgstr ""
+msgstr "Станция не работает"
 
 #: radio-browser.py:41
 msgid "Trys to download file"
-msgstr ""
+msgstr "Попытка скачать файл"
 
 #: radio-browser.py:42
 msgid "Recently played removal time(days)"
@@ -137,15 +140,15 @@ msgstr ""
 
 #: radio-browser.py:43
 msgid "Streamripper output path"
-msgstr ""
+msgstr "Путь к выходному файлу"
 
 #: radio-browser.py:62
 msgid "Browser"
-msgstr ""
+msgstr "Браузер"
 
 #: radio-browser.py:68
 msgid "Radio Browser Configuration"
-msgstr ""
+msgstr "Настройки Радио Браузера"
 
 #: radio-browser.py:112
 msgid "Radio browser"
@@ -186,7 +189,7 @@ msgstr "Битрейт"
 
 #: radio_browser_source.py:212
 msgid "Radiostation list"
-msgstr ""
+msgstr "Список станций"
 
 #: radio_browser_source.py:302
 msgid "Entry type"
@@ -246,7 +249,7 @@ msgstr "Отрицательные отзывы"
 
 #: radio_browser_source.py:329
 msgid "Stream URL"
-msgstr ""
+msgstr "Путь потока"
 
 #: radio_browser_source.py:344 radio_browser_source.py:414
 msgid "Unbookmark"
@@ -278,7 +281,7 @@ msgstr "скачивание информации о станции"
 
 #: radio_browser_source.py:669 radio_browser_source.py:743
 msgid "Try"
-msgstr ""
+msgstr "Попытка"
 
 #: radio_browser_source.py:681
 msgid "Could not download station information"
@@ -350,11 +353,11 @@ msgstr "Захват потока"
 
 #: record_process.py:75
 msgid "Time"
-msgstr ""
+msgstr "Время"
 
 #: record_process.py:83 record_process.py:124
 msgid "Filesize"
-msgstr ""
+msgstr "Размер файла"
 
 #: record_process.py:119
 msgid "Server"
@@ -375,6 +378,3 @@ msgstr ""
 #: record_process.py:126
 msgid "Relay port"
 msgstr "Порт"
-
-#~ msgid "Try no"
-#~ msgstr "Попытка"
