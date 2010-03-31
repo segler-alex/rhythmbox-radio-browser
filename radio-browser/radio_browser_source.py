@@ -740,7 +740,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			tryno += 1
 
 			gtk.gdk.threads_enter()
-			self.load_status = _("downloading feed")+" '"+feed.name()+"' "+_("from")+" '"+feed.uri+"', "+_("Try")+":"+str(tryno)
+			self.load_status = _("downloading feed")+" '"+feed.name()+"' "+_("from")+" '"+feed.uri+"', "+_("Try")+":"+str(tryno)+"/"+str(math.trunc(float(self.plugin.download_trys)))
 			self.load_total_size = 0
 			self.notify_status_changed()
 			gtk.gdk.threads_leave()
