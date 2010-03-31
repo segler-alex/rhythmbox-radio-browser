@@ -49,7 +49,7 @@ RB_METADATA_FIELD_TITLE = 0
 RB_METADATA_FIELD_GENRE = 4
 RB_METADATA_FIELD_BITRATE = 20
 BOARD_ROOT = "http://segler.bplaced.net/"
-RECENTLY_USED_FILENAME = "recently.bin"
+RECENTLY_USED_FILENAME = "recently2.bin"
 BOOKMARKS_FILENAME = "bookmarks.bin"
 
 class RadioBrowserSource(rb.StreamingSource):
@@ -656,6 +656,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		if station.server_name not in data:
 			self.tree_store.append(self.recently_iter,(station.server_name,station))
 			data[station.server_name] = station
+			data[station.server_name].PlayTime = datetime.datetime.now()
 			self.save_to_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME),data)
 
 		# try downloading station information
@@ -938,8 +939,12 @@ class RadioBrowserSource(rb.StreamingSource):
 		data = self.load_from_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME))
 		if data is None:
 			data = {}
+		dataNew = {}
 		for name,station in data.items():
-			self.tree_store.append(self.recently_iter,(name,station))
+			if datetime.datetime.now()-station.PlayTime <= datetime.timedelta(days=7):
+				self.tree_store.append(self.recently_iter,(name,station))
+				dataNew[name] = station
+		self.save_to_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME),dataNew)
 
 		# add bookmarks
 		self.bookmarks_iter = self.tree_store.append(None,(_("Bookmarks"),None))
