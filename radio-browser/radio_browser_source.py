@@ -30,6 +30,7 @@ import webbrowser
 import Queue
 import pickle
 import datetime
+import math
 
 import xml.sax.saxutils
 
@@ -664,7 +665,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			tryno += 1
 
 			gtk.gdk.threads_enter()
-			self.load_status = _("downloading station information")+" '"+station.server_name+"', "+_("Try no")+":"+str(tryno)
+			self.load_status = _("downloading station information")+" '"+station.server_name+"', "+_("Try")+":"+str(tryno)+"/"+str(math.trunc(float(self.plugin.download_trys)))
 			self.load_total_size = 0
 			self.notify_status_changed()
 			gtk.gdk.threads_leave()
