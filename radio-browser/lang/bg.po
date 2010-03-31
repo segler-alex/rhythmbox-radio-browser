@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-20 11:16+0100\n"
+"POT-Creation-Date: 2010-03-31 03:57+0200\n"
 "PO-Revision-Date: 2010-03-23 18:05+0200\n"
 "Last-Translator: Emilio Savov <emiliosavov@gmail.com>\n"
 "Language-Team: Bulgarian <LL@li.org>\n"
@@ -16,226 +15,366 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: radio-browser.py:46
-msgid "Radio browser"
-msgstr "Радио браузър"
+#: board_handler.py:62 board_handler.py:108 board_handler.py:216
+msgid "Post new station"
+msgstr ""
 
-#: radio-browser.py:61
-msgid "Update radio station list"
-msgstr "Обновяване на радио листата"
+#: board_handler.py:69
+msgid "Examples"
+msgstr ""
 
-#: radio-browser.py:65
-msgid "Clear icon cache"
-msgstr "Изчистване на кеш на иконите"
-
-#: radio_browser_source.py:78
-msgid "Nothing"
-msgstr "Нищо"
-
-#: radio_browser_source.py:83
-msgid "Loading"
-msgstr "Зареждане"
-
-#: radio_browser_source.py:141
-msgid "Title"
-msgstr "Заглавие"
-
-#: radio_browser_source.py:196
-msgid "Filter"
-msgstr "Филтър"
-
-#: radio_browser_source.py:198
-msgid "Genre"
-msgstr "Стил"
-
-#: radio_browser_source.py:200 radio_browser_source.py:317
-#: record_process.py:57
-msgid "Bitrate"
-msgstr "Битрейт"
-
-#: radio_browser_source.py:299
-msgid "Entry type"
-msgstr "Тип на вписването"
-
-#: radio_browser_source.py:299
-msgid "Feed"
-msgstr "Хранилище"
-
-#: radio_browser_source.py:301
-msgid "Description"
-msgstr "Описание"
-
-#: radio_browser_source.py:302
-msgid "Feed homepage"
-msgstr "Страница на хранилището"
-
-#: radio_browser_source.py:303
-msgid "Feed source"
-msgstr "Хранилище на източника"
-
-#: radio_browser_source.py:309
-msgid "No local copy"
-msgstr "Няма локално копие"
-
-#: radio_browser_source.py:310
-msgid "Last update"
-msgstr "Последено обновяване"
-
-#: radio_browser_source.py:314
-msgid "Source feed"
-msgstr "Източник на хранилището"
-
-#: radio_browser_source.py:315
+#: board_handler.py:71 radio_browser_source.py:318
 msgid "Name"
 msgstr "Име"
 
-#: radio_browser_source.py:316
-msgid "Tags"
-msgstr "Етикет"
+#: board_handler.py:74
+msgid "My Station"
+msgstr ""
 
-#: radio_browser_source.py:318
-msgid "Server type"
-msgstr "Тип на сървъра"
+#: board_handler.py:76
+msgid "URL"
+msgstr ""
 
-#: radio_browser_source.py:319
-msgid "Homepage"
-msgstr "Официален сайт"
+#: board_handler.py:79
+msgid "http://listen.to.my/station.pls"
+msgstr ""
 
-#: radio_browser_source.py:320
-msgid "Current song (on last refresh)"
-msgstr "Текуща песен (при последното опресняване)"
+#: board_handler.py:81
+msgid "Homepage URL"
+msgstr ""
 
-#: radio_browser_source.py:321
-msgid "Current listeners"
-msgstr "Текущи слушатели"
+#: board_handler.py:84
+msgid "http://very.cool.site"
+msgstr ""
 
-#: radio_browser_source.py:322
-msgid "Language"
-msgstr "Език"
+#: board_handler.py:86
+msgid "Favicon URL"
+msgstr ""
 
-#: radio_browser_source.py:323
+#: board_handler.py:89
+msgid "http://very.cool.site/favicon.ico"
+msgstr ""
+
+#: board_handler.py:91 radio_browser_source.py:326
 msgid "Country"
 msgstr "Държава"
 
+#: board_handler.py:94
+msgid "Utopia"
+msgstr ""
+
+#: board_handler.py:96 radio_browser_source.py:325
+msgid "Language"
+msgstr "Език"
+
+#: board_handler.py:99
+msgid "Esperanto"
+msgstr ""
+
+#: board_handler.py:101 radio_browser_source.py:319
+msgid "Tags"
+msgstr "Етикет"
+
+#: board_handler.py:104
+msgid "Classical Jazz Talk"
+msgstr ""
+
+#: board_handler.py:128 board_handler.py:221
+msgid "Vote for station"
+msgstr ""
+
+#: board_handler.py:129
+msgid ""
+"Do you really want to vote for this station? It means, that you like it, and "
+"you want more people to know, that this is a good station."
+msgstr ""
+
+#: board_handler.py:140
+msgid "Mark station as broken"
+msgstr ""
+
+#: board_handler.py:141
+msgid ""
+"Do you really want to mark this radio station as broken?\n"
+"\n"
+"It will eventually get deleted if enough people do that!\n"
+"\n"
+"More information on that on the feeds homepage:\n"
+"http://segler.bplaced.net/"
+msgstr ""
+
+#: board_handler.py:187
+msgid "Name and URL are necessary"
+msgstr ""
+
+#: board_handler.py:191
+msgid "URL needs to start with http:// or mms://"
+msgstr ""
+
+#: board_handler.py:196
+msgid "Homepage URL needs to start with http://"
+msgstr ""
+
+#: board_handler.py:201
+msgid "Favicon URL needs to start with http://"
+msgstr ""
+
+#: board_handler.py:208
+msgid "Station successfully posted"
+msgstr ""
+
+#: board_handler.py:222
+msgid "Station is broken"
+msgstr ""
+
+#: radio-browser.py:41
+msgid "Trys to download file"
+msgstr ""
+
+#: radio-browser.py:42
+msgid "Recently played removal time(days)"
+msgstr ""
+
+#: radio-browser.py:43
+msgid "Streamripper output path"
+msgstr ""
+
+#: radio-browser.py:62
+msgid "Browser"
+msgstr ""
+
+#: radio-browser.py:68
+msgid "Radio Browser Configuration"
+msgstr ""
+
+#: radio-browser.py:112
+msgid "Radio browser"
+msgstr "Радио браузър"
+
+#: radio-browser.py:127
+msgid "Update radio station list"
+msgstr "Обновяване на радио листата"
+
+#: radio-browser.py:131
+msgid "Clear icon cache"
+msgstr "Изчистване на кеш на иконите"
+
+#: radio_browser_source.py:79
+msgid "Nothing"
+msgstr "Нищо"
+
+#: radio_browser_source.py:84
+msgid "Loading"
+msgstr "Зареждане"
+
+#: radio_browser_source.py:142 record_process.py:79
+msgid "Title"
+msgstr "Заглавие"
+
+#: radio_browser_source.py:197
+msgid "Filter"
+msgstr "Филтър"
+
+#: radio_browser_source.py:199
+msgid "Genre"
+msgstr "Стил"
+
+#: radio_browser_source.py:201 radio_browser_source.py:320
+#: record_process.py:125
+msgid "Bitrate"
+msgstr "Битрейт"
+
+#: radio_browser_source.py:212
+msgid "Radiostation list"
+msgstr ""
+
+#: radio_browser_source.py:302
+msgid "Entry type"
+msgstr "Тип на вписването"
+
+#: radio_browser_source.py:302
+msgid "Feed"
+msgstr "Хранилище"
+
+#: radio_browser_source.py:304
+msgid "Description"
+msgstr "Описание"
+
+#: radio_browser_source.py:305
+msgid "Feed homepage"
+msgstr "Страница на хранилището"
+
+#: radio_browser_source.py:306
+msgid "Feed source"
+msgstr "Хранилище на източника"
+
+#: radio_browser_source.py:312
+msgid "No local copy"
+msgstr "Няма локално копие"
+
+#: radio_browser_source.py:313
+msgid "Last update"
+msgstr "Последено обновяване"
+
+#: radio_browser_source.py:317
+msgid "Source feed"
+msgstr "Източник на хранилището"
+
+#: radio_browser_source.py:321
+msgid "Server type"
+msgstr "Тип на сървъра"
+
+#: radio_browser_source.py:322
+msgid "Homepage"
+msgstr "Официален сайт"
+
+#: radio_browser_source.py:323
+msgid "Current song (on last refresh)"
+msgstr "Текуща песен (при последното опресняване)"
+
 #: radio_browser_source.py:324
+msgid "Current listeners"
+msgstr "Текущи слушатели"
+
+#: radio_browser_source.py:327
 msgid "Votes"
 msgstr "Брой гласове"
 
-#: radio_browser_source.py:325
+#: radio_browser_source.py:328
 msgid "Negative votes"
 msgstr "Негативни гласове"
 
-#: radio_browser_source.py:340 radio_browser_source.py:410
+#: radio_browser_source.py:329
+msgid "Stream URL"
+msgstr ""
+
+#: radio_browser_source.py:344 radio_browser_source.py:414
 msgid "Unbookmark"
 msgstr "Премахни от Отметки"
 
-#: radio_browser_source.py:354 radio_browser_source.py:408
+#: radio_browser_source.py:358 radio_browser_source.py:412
 msgid "Bookmark"
 msgstr "Постави в Отметки"
 
-#: radio_browser_source.py:375
+#: radio_browser_source.py:379
 msgid "Redownload"
 msgstr "Свали отново"
 
-#: radio_browser_source.py:378
+#: radio_browser_source.py:382
 msgid "Download"
 msgstr "Свали"
 
-#: radio_browser_source.py:388
+#: radio_browser_source.py:392
 msgid "Play"
 msgstr "Възпроизвеждане"
 
-#: radio_browser_source.py:400
+#: radio_browser_source.py:404
 msgid "Record"
 msgstr "Запис"
 
-#: radio_browser_source.py:569
-msgid "Ripping stream"
-msgstr "Декодиране на потока"
-
-#: radio_browser_source.py:698
+#: radio_browser_source.py:669
 msgid "downloading station information"
 msgstr "Сваляне на информация за станцията"
 
-#: radio_browser_source.py:698 radio_browser_source.py:772
-msgid "Try no"
-msgstr "Опит номер"
+#: radio_browser_source.py:669 radio_browser_source.py:743
+msgid "Try"
+msgstr ""
 
-#: radio_browser_source.py:710
+#: radio_browser_source.py:681
 msgid "Could not download station information"
 msgstr "Не може да се свали информация за станцията"
 
-#: radio_browser_source.py:711
+#: radio_browser_source.py:682
 msgid ""
 "Could not download station information from shoutcast directory server. "
 "Please try again later."
-msgstr "Не може да се свали информация за станцията от директорията на сървъра"
-"Моля опитайте отново по-късно"
+msgstr ""
+"Не може да се свали информация за станцията от директорията на сървъраМоля "
+"опитайте отново по-късно"
 
-#: radio_browser_source.py:772
+#: radio_browser_source.py:743
 msgid "downloading feed"
 msgstr "Сваляне на хранилището"
 
-#: radio_browser_source.py:772
+#: radio_browser_source.py:743
 msgid "from"
 msgstr "от"
 
-#: radio_browser_source.py:785
+#: radio_browser_source.py:756
 msgid "Feed download failed"
 msgstr "Свалянето на хранилището се провали"
 
-#: radio_browser_source.py:786
+#: radio_browser_source.py:757
 msgid "Could not download feed. Please try again later."
 msgstr "Не може да се свали хранилището. Моля опитайте по-късно"
 
-#: radio_browser_source.py:841
+#: radio_browser_source.py:812
 msgid "loading feed"
 msgstr "зареждане на хранилището"
 
-#: radio_browser_source.py:860
+#: radio_browser_source.py:831
 msgid "integrating feed"
 msgstr "вграждане на хранилището"
 
-#: radio_browser_source.py:860
+#: radio_browser_source.py:831
 msgid "into tree"
 msgstr "във списъка"
 
-#: radio_browser_source.py:884
+#: radio_browser_source.py:858
 msgid "By Genres"
 msgstr "По Стилове"
 
-#: radio_browser_source.py:885
+#: radio_browser_source.py:859
 msgid "By Country"
 msgstr "По Държава"
 
-#: radio_browser_source.py:886
+#: radio_browser_source.py:860
 msgid "By Streamtype"
 msgstr "По тип на стийма"
 
-#: radio_browser_source.py:887
+#: radio_browser_source.py:861
 msgid "By Bitrate"
 msgstr "По битрейт"
 
-#: radio_browser_source.py:961
+#: radio_browser_source.py:938
 msgid "Recently played"
 msgstr "Наскоро слушани"
 
-#: radio_browser_source.py:969
+#: radio_browser_source.py:950
 msgid "Bookmarks"
 msgstr "Отметки"
 
-#: record_process.py:54
+#: record_process.py:64
+msgid "Ripping stream"
+msgstr "Декодиране на потока"
+
+#: record_process.py:75
+msgid "Time"
+msgstr ""
+
+#: record_process.py:83 record_process.py:124
+msgid "Filesize"
+msgstr ""
+
+#: record_process.py:119
 msgid "Server"
 msgstr "Сървър"
 
-#: record_process.py:55
+#: record_process.py:120
 msgid "Stream"
 msgstr "Поток"
 
-#: record_process.py:56
+#: record_process.py:121
 msgid "Current song"
 msgstr "Текуща песен"
 
-#: record_process.py:58
+#: record_process.py:123
+msgid "Playing time"
+msgstr ""
+
+#: record_process.py:126
 msgid "Relay port"
 msgstr "Сменяне на порта"
+
+#~ msgid "Try no"
+#~ msgstr "Опит номер"
