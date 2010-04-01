@@ -548,23 +548,9 @@ class RadioBrowserSource(rb.StreamingSource):
 #		print "property changed "+str(new)
 
 	def record_uri(self,station):
-		def short_name(name):
-			maxlen = 30
-			if len(name) > maxlen:
-				return name[0:maxlen-3]+"..."
-			else:
-				return name
-
-		uri = station.getRealURL()
-
-		# do not record the same stream twice
-		if uri in self.recording_streams:
-			if self.recording_streams[uri].process.poll() is None:
-				return
-		self.recording_streams[uri] = RecordProcess(station,self.plugin.outputpath,self.play_uri,self.shell)
-		self.notebook.append_page(self.recording_streams[uri],gtk.Label(short_name(station.server_name)))
-		self.recording_streams[uri].start()
-		self.notebook.set_current_page(self.notebook.page_num(self.recording_streams[uri]))
+		play_thread = threading.Thread(target = self.play_uri_,args = (station,True))
+		play_thread.setDaemon(True)
+		play_thread.start()
 
 	""" listener for filter entry change """
 	def filter_entry_changed(self,gtk_entry):
@@ -644,20 +630,21 @@ class RadioBrowserSource(rb.StreamingSource):
 		play_thread.setDaemon(True)
 		play_thread.start()
 
-	def play_uri_(self,station):
+	def play_uri_(self,station,record=False):
 		# do not play while downloading
 		if self.updating:
 			return
 
-		# add to recently played
-		data = self.load_from_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME))
-		if data is None:
-			data = {}
-		if station.server_name not in data:
-			self.tree_store.append(self.recently_iter,(station.server_name,station))
-			data[station.server_name] = station
-			data[station.server_name].PlayTime = datetime.datetime.now()
-			self.save_to_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME),data)
+		if not station.listen_url.startswith("http://127.0.0.1"):
+			# add to recently played
+			data = self.load_from_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME))
+			if data is None:
+				data = {}
+			if station.server_name not in data:
+				self.tree_store.append(self.recently_iter,(station.server_name,station))
+				data[station.server_name] = station
+				data[station.server_name].PlayTime = datetime.datetime.now()
+				self.save_to_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME),data)
 
 		# try downloading station information
 		tryno = 0
@@ -690,23 +677,42 @@ class RadioBrowserSource(rb.StreamingSource):
 		self.updating = False
 		self.notify_status_changed()
 
-		# get player
-		player = self.shell.get_player()
-		player.stop()
+		if record:
+			def short_name(name):
+				maxlen = 30
+				if len(name) > maxlen:
+					return name[0:maxlen-3]+"..."
+				else:
+					return name
 
-		# create new entry to play
-		self.entry = self.shell.props.db.entry_lookup_by_location(station.getRealURL())
-		if self.entry == None:
-			#self.shell.props.db.entry_delete(self.entry)
+			uri = station.getRealURL()
 
-			self.entry = self.shell.props.db.entry_new(self.entry_type, station.getRealURL())
-			self.shell.props.db.set(self.entry, rhythmdb.PROP_TITLE, station.server_name)
-			self.shell.props.db.commit()
-		#shell.load_uri(uri,False)
+			# do not record the same stream twice
+			if uri in self.recording_streams:
+				if self.recording_streams[uri].process.poll() is None:
+					return
+			self.recording_streams[uri] = RecordProcess(station,self.plugin.outputpath,self.play_uri,self.shell)
+			self.notebook.append_page(self.recording_streams[uri],gtk.Label(short_name(station.server_name)))
+			self.recording_streams[uri].start()
+			self.notebook.set_current_page(self.notebook.page_num(self.recording_streams[uri]))
+		else:
+			# get player
+			player = self.shell.get_player()
+			player.stop()
 
-		# start playback
-		player.play()
-		player.play_entry(self.entry,self)
+			# create new entry to play
+			self.entry = self.shell.props.db.entry_lookup_by_location(station.getRealURL())
+			if self.entry == None:
+				#self.shell.props.db.entry_delete(self.entry)
+
+				self.entry = self.shell.props.db.entry_new(self.entry_type, station.getRealURL())
+				self.shell.props.db.set(self.entry, rhythmdb.PROP_TITLE, station.server_name)
+				self.shell.props.db.commit()
+			#shell.load_uri(uri,False)
+
+			# start playback
+			player.play()
+			player.play_entry(self.entry,self)
 
 		gtk.gdk.threads_leave()
 
