@@ -892,9 +892,16 @@ class RadioBrowserSource(rb.StreamingSource):
 				self.tree_store.append(streamtypes[station.server_type],(station.server_name,station))
 
 				# add station to treeview, by bitrate
-				if station.bitrate not in bitrates:
-					bitrates[station.bitrate] = self.tree_store.append(bitrate_iter,(station.bitrate,None))
-				self.tree_store.append(bitrates[station.bitrate],(station.server_name,station))
+				br = station.bitrate
+				try:
+					br_int = int(br)
+					if br_int > 512:
+						br = _("Invalid")
+				except:
+					pass
+				if br not in bitrates:
+					bitrates[br] = self.tree_store.append(bitrate_iter,(br,None))
+				self.tree_store.append(bitrates[br],(station.server_name,station))
 
 				# add station to treeview, by genre
 				if station.genre is not None:
