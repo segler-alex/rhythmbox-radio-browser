@@ -5,6 +5,7 @@ Changes since 1.9:
 * recently played entries get removed after a configurable time
 * streamripper overwrites the older file if the newer one with the same title is bigger
 * display station count in each subtree
+* group bitrate by steps of 32 and bigger ones than 512 to invalid
 
 Changes since 1.8:
 ==================
