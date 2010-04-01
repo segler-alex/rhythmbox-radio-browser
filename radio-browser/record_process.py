@@ -19,6 +19,7 @@ import threading
 import gobject
 import subprocess
 import gtk
+import os
 from datetime import datetime
 
 import xml.sax.saxutils
@@ -26,7 +27,7 @@ import xml.sax.saxutils
 from radio_station import RadioStation
 
 class RecordProcess(threading.Thread,gtk.VBox):
-	def __init__(self,station,outputpath,play_cb):
+	def __init__(self,station,outputpath,play_cb,shell):
 		# init base classes
 		threading.Thread.__init__(self)
 		gtk.VBox.__init__(self)
@@ -42,6 +43,8 @@ class RecordProcess(threading.Thread,gtk.VBox):
 		self.filesize = ""
 		self.song_start = datetime.now()
 		self.play_cb = play_cb
+		self.outputpath = outputpath
+		self.shell = shell
 
 		# prepare streamripper
 		commandline = ["streamripper",uri,"-d",outputpath,"-r","-o","larger"]
@@ -69,19 +72,24 @@ class RecordProcess(threading.Thread,gtk.VBox):
 		
 		# song list
 		self.songlist = gtk.TreeView()
-		self.songlist_store = gtk.ListStore(str,str,str)
+		self.songlist.connect('row-activated', self.open_file)
+		self.songlist_store = gtk.TreeStore(int,str,str)
+		self.songlist_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
 		self.songlist.set_model(self.songlist_store)
 
-		column_time = gtk.TreeViewColumn(_("Time"),gtk.CellRendererText(),text=0)
-#		column_time.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+		column_time_cell = gtk.CellRendererText()
+		column_time_cell.set_property('xalign', 0.0)
+		column_time = gtk.TreeViewColumn(_("Time"),column_time_cell)
+		column_time.set_cell_data_func(column_time_cell,self.display_cb)
 		self.songlist.append_column(column_time)
 
 		column_title = gtk.TreeViewColumn(_("Title"),gtk.CellRendererText(),text=1)
-#		column_title.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
 		self.songlist.append_column(column_title)
 
-		column_size = gtk.TreeViewColumn(_("Filesize"),gtk.CellRendererText(),text=2)
-#		column_title.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+		column_size_cell = gtk.CellRendererText()
+		column_size_cell.set_property('xalign', 1.0)
+		column_size = gtk.TreeViewColumn(_("Filesize"),column_size_cell,text=2)
+		column_size.set_alignment(1.0)
 		self.songlist.append_column(column_size)
 
 		tree_view_container = gtk.ScrolledWindow()
@@ -92,6 +100,38 @@ class RecordProcess(threading.Thread,gtk.VBox):
 		self.pack_start(decorated_box,False)
 		self.pack_start(tree_view_container)
 		self.show_all()
+
+	def open_file(self, treeview, path, column):
+		model = treeview.get_model()
+		iter = model.get_iter(path)
+		filename = os.path.join(os.path.join(self.outputpath, self.stream_name),model.get_value(iter, 1))
+		#self.shell.add_to_queue("file:/"+filename)
+		#self.shell.load_uri("file:/"+filename,True)
+		t = threading.Thread(target = self.play,args = (filename,))
+		t.setDaemon(True)
+		t.start()
+		return
+
+	def display_cb(self,column,cell,model,iter):
+		seconds = model.get_value(iter,0)
+		cell.set_property("text",datetime.fromtimestamp(seconds).strftime("%x %X"))
+
+	def play(self,filename):
+		print filename
+		subprocess.call(["rhythmbox",filename])
+
+	def refillList(self):
+		self.songlist.set_model()
+		self.songlist_store.clear()
+
+		path = os.path.join(self.outputpath,self.stream_name)
+		if os.path.isdir(path):
+			for filename in os.listdir(path):
+				filepath = os.path.join(path,filename)
+				if os.path.isfile(filepath):
+					self.songlist_store.append(None,(int(os.path.getmtime(filepath)),filename,str(os.path.getsize(filepath)/1024)+" kB"))
+
+		self.songlist.set_model(self.songlist_store)
 
 	def set_info_box(self):
 		self.added_lines = 0
@@ -150,11 +190,13 @@ class RecordProcess(threading.Thread,gtk.VBox):
 					break
 				line = line+char
 
-			#print line
+			#print "STREAMRIPPER:"+line
 			if line.startswith("relay port"):
 				self.relay_port = line.split(":")[1].strip()
 			if line.startswith("stream"):
 				self.stream_name = line.split(":")[1].strip()
+				# refillList depends on stream_name
+				self.refillList()
 			if line.startswith("server name"):
 				self.server_name = line.split(":")[1].strip()
 			if line.startswith("declared bitrate"):
@@ -163,10 +205,11 @@ class RecordProcess(threading.Thread,gtk.VBox):
 				song = line[17:len(line)-10]
 				# add old song to list, after recording title changed to new song
 				if self.song_info != song:
-					if self.song_info != "":
-						self.songlist_store.append((str(self.song_start.strftime("%x %X")),self.song_info,self.filesize))
+					#if self.song_info != "":
+					#	self.songlist_store.append((str(self.song_start.strftime("%x %X")),self.song_info,self.filesize))
 					self.song_info = song
 					self.song_start = datetime.now()
+					self.refillList()
 				self.filesize = line[len(line)-8:len(line)-1].strip()
 
 			gobject.idle_add(self.set_info_box)
