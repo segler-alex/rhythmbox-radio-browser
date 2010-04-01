@@ -74,7 +74,7 @@ class RecordProcess(threading.Thread,gtk.VBox):
 		self.songlist = gtk.TreeView()
 		self.songlist.connect('row-activated', self.open_file)
 		self.songlist_store = gtk.TreeStore(int,str,str)
-		self.songlist_store.set_sort_column_id(0,gtk.SORT_ASCENDING)
+		self.songlist_store.set_sort_column_id(0,gtk.SORT_DESCENDING)
 		self.songlist.set_model(self.songlist_store)
 
 		column_time_cell = gtk.CellRendererText()
