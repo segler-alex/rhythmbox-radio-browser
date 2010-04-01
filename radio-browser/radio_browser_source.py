@@ -895,6 +895,7 @@ class RadioBrowserSource(rb.StreamingSource):
 				br = station.bitrate
 				try:
 					br_int = int(br)
+					br = str((((br_int-1)/32)+1)*32)
 					if br_int > 512:
 						br = _("Invalid")
 				except:
