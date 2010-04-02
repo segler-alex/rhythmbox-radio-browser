@@ -20,6 +20,7 @@ import rhythmdb
 import gobject
 import gconf
 import gtk
+import os
 from gettext import *
 
 from radio_browser_source import RadioBrowserSource
