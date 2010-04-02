@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-31 05:54+0200\n"
+"POT-Creation-Date: 2010-04-02 07:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -125,35 +125,35 @@ msgstr ""
 msgid "Station is broken"
 msgstr ""
 
-#: radio-browser.py:41
+#: radio-browser.py:42
 msgid "Trys to download file"
 msgstr ""
 
-#: radio-browser.py:42
+#: radio-browser.py:43
 msgid "Recently played removal time(days)"
 msgstr ""
 
-#: radio-browser.py:43
+#: radio-browser.py:44
 msgid "Streamripper output path"
 msgstr ""
 
-#: radio-browser.py:62
+#: radio-browser.py:63
 msgid "Browser"
 msgstr ""
 
-#: radio-browser.py:68
+#: radio-browser.py:69
 msgid "Radio Browser Configuration"
 msgstr ""
 
-#: radio-browser.py:112
+#: radio-browser.py:113
 msgid "Radio browser"
 msgstr ""
 
-#: radio-browser.py:127
+#: radio-browser.py:128
 msgid "Update radio station list"
 msgstr ""
 
-#: radio-browser.py:131
+#: radio-browser.py:132
 msgid "Clear icon cache"
 msgstr ""
 
@@ -165,7 +165,7 @@ msgstr ""
 msgid "Loading"
 msgstr ""
 
-#: radio_browser_source.py:142 record_process.py:79
+#: radio_browser_source.py:142 record_process.py:86
 msgid "Title"
 msgstr ""
 
@@ -178,7 +178,7 @@ msgid "Genre"
 msgstr ""
 
 #: radio_browser_source.py:201 radio_browser_source.py:320
-#: record_process.py:125
+#: record_process.py:165
 msgid "Bitrate"
 msgstr ""
 
@@ -246,128 +246,136 @@ msgstr ""
 msgid "Stream URL"
 msgstr ""
 
-#: radio_browser_source.py:344 radio_browser_source.py:414
+#: radio_browser_source.py:332
+msgid "Added to recently played at"
+msgstr ""
+
+#: radio_browser_source.py:349 radio_browser_source.py:419
 msgid "Unbookmark"
 msgstr ""
 
-#: radio_browser_source.py:358 radio_browser_source.py:412
+#: radio_browser_source.py:363 radio_browser_source.py:417
 msgid "Bookmark"
 msgstr ""
 
-#: radio_browser_source.py:379
+#: radio_browser_source.py:384
 msgid "Redownload"
 msgstr ""
 
-#: radio_browser_source.py:382
+#: radio_browser_source.py:387
 msgid "Download"
 msgstr ""
 
-#: radio_browser_source.py:392
+#: radio_browser_source.py:397
 msgid "Play"
 msgstr ""
 
-#: radio_browser_source.py:404
+#: radio_browser_source.py:409
 msgid "Record"
 msgstr ""
 
-#: radio_browser_source.py:669
+#: radio_browser_source.py:650
 msgid "downloading station information"
 msgstr ""
 
-#: radio_browser_source.py:669 radio_browser_source.py:743
+#: radio_browser_source.py:650 radio_browser_source.py:754
 msgid "Try"
 msgstr ""
 
-#: radio_browser_source.py:681
+#: radio_browser_source.py:662
 msgid "Could not download station information"
 msgstr ""
 
-#: radio_browser_source.py:682
+#: radio_browser_source.py:663
 msgid ""
 "Could not download station information from shoutcast directory server. "
 "Please try again later."
 msgstr ""
 
-#: radio_browser_source.py:743
+#: radio_browser_source.py:754
 msgid "downloading feed"
 msgstr ""
 
-#: radio_browser_source.py:743
+#: radio_browser_source.py:754
 msgid "from"
 msgstr ""
 
-#: radio_browser_source.py:756
+#: radio_browser_source.py:767
 msgid "Feed download failed"
 msgstr ""
 
-#: radio_browser_source.py:757
+#: radio_browser_source.py:768
 msgid "Could not download feed. Please try again later."
 msgstr ""
 
-#: radio_browser_source.py:812
+#: radio_browser_source.py:823
 msgid "loading feed"
 msgstr ""
 
-#: radio_browser_source.py:831
+#: radio_browser_source.py:842
 msgid "integrating feed"
 msgstr ""
 
-#: radio_browser_source.py:831
+#: radio_browser_source.py:842
 msgid "into tree"
 msgstr ""
 
-#: radio_browser_source.py:858
+#: radio_browser_source.py:869
 msgid "By Genres"
 msgstr ""
 
-#: radio_browser_source.py:859
+#: radio_browser_source.py:870
 msgid "By Country"
 msgstr ""
 
-#: radio_browser_source.py:860
+#: radio_browser_source.py:871
 msgid "By Streamtype"
 msgstr ""
 
-#: radio_browser_source.py:861
+#: radio_browser_source.py:872
 msgid "By Bitrate"
 msgstr ""
 
-#: radio_browser_source.py:938
+#: radio_browser_source.py:905
+msgid "Invalid"
+msgstr ""
+
+#: radio_browser_source.py:957
 msgid "Recently played"
 msgstr ""
 
-#: radio_browser_source.py:950
+#: radio_browser_source.py:969
 msgid "Bookmarks"
 msgstr ""
 
-#: record_process.py:64
+#: record_process.py:67
 msgid "Ripping stream"
 msgstr ""
 
-#: record_process.py:75
+#: record_process.py:82
 msgid "Time"
 msgstr ""
 
-#: record_process.py:83 record_process.py:124
+#: record_process.py:91 record_process.py:164
 msgid "Filesize"
 msgstr ""
 
-#: record_process.py:119
+#: record_process.py:159
 msgid "Server"
 msgstr ""
 
-#: record_process.py:120
+#: record_process.py:160
 msgid "Stream"
 msgstr ""
 
-#: record_process.py:121
+#: record_process.py:161
 msgid "Current song"
 msgstr ""
 
-#: record_process.py:123
+#: record_process.py:163
 msgid "Playing time"
 msgstr ""
 
-#: record_process.py:126
+#: record_process.py:166
 msgid "Relay port"
 msgstr ""
