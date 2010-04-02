@@ -327,6 +327,11 @@ class RadioBrowserSource(rb.StreamingSource):
 			add_label(_("Votes"),station.votes)
 			add_label(_("Negative votes"),station.negativevotes)
 			add_label(_("Stream URL"),station.listen_url)
+			try:
+				PlayTime = station.PlayTime.strftime("%x %X")
+				add_label(_("Added to recently played at"),PlayTime)
+			except:
+				pass
 
 		button_box = gtk.VBox()
 
