@@ -635,17 +635,6 @@ class RadioBrowserSource(rb.StreamingSource):
 		if self.updating:
 			return
 
-		if not station.listen_url.startswith("http://127.0.0.1"):
-			# add to recently played
-			data = self.load_from_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME))
-			if data is None:
-				data = {}
-			if station.server_name not in data:
-				self.tree_store.append(self.recently_iter,(station.server_name,station))
-				data[station.server_name] = station
-				data[station.server_name].PlayTime = datetime.datetime.now()
-				self.save_to_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME),data)
-
 		# try downloading station information
 		tryno = 0
 		self.updating = True
@@ -671,6 +660,17 @@ class RadioBrowserSource(rb.StreamingSource):
 				message.destroy()
 				gtk.gdk.threads_leave()
 				return
+
+		if not station.listen_url.startswith("http://127.0.0.1"):
+			# add to recently played
+			data = self.load_from_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME))
+			if data is None:
+				data = {}
+			if station.server_name not in data:
+				self.tree_store.append(self.recently_iter,(station.server_name,station))
+				data[station.server_name] = station
+				data[station.server_name].PlayTime = datetime.datetime.now()
+				self.save_to_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME),data)
 
 		gtk.gdk.threads_enter()
 		self.load_status = ""
