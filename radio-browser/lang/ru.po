@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-31 05:54+0200\n"
+"POT-Creation-Date: 2010-04-02 07:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -61,7 +61,7 @@ msgstr "Страна"
 
 #: board_handler.py:94
 msgid "Utopia"
-msgstr ""
+msgstr "Utopia"
 
 #: board_handler.py:96 radio_browser_source.py:325
 msgid "Language"
@@ -77,7 +77,7 @@ msgstr "Тэги"
 
 #: board_handler.py:104
 msgid "Classical Jazz Talk"
-msgstr ""
+msgstr "Classical Jazz Talk"
 
 #: board_handler.py:128 board_handler.py:221
 msgid "Vote for station"
@@ -101,10 +101,6 @@ msgid ""
 "get deleted if enough people do that! More information on that on the feeds "
 "homepage: http://segler.bplaced.net/"
 msgstr ""
-"Вы действительно хотите пометить станцию как неработающую?"
-"Со временем она будет удалена, если достаточно людей отметят ее!"
-"Более подробную информацию об этом можно узнать на сайте:"
-"http://segler.bplaced.net/"
 
 #: board_handler.py:187
 msgid "Name and URL are necessary"
@@ -130,35 +126,35 @@ msgstr "Станция добавлена"
 msgid "Station is broken"
 msgstr "Станция не работает"
 
-#: radio-browser.py:41
-msgid "Trys to download file"
-msgstr "Попытка скачать файл"
-
 #: radio-browser.py:42
-msgid "Recently played removal time(days)"
-msgstr ""
+msgid "Trys to download file"
+msgstr "Количество попыток на скачивание файла"
 
 #: radio-browser.py:43
-msgid "Streamripper output path"
-msgstr "Путь к выходному файлу"
+msgid "Recently played removal time(days)"
+msgstr "Время(дни) очищения списка недавно прослушанных"
 
-#: radio-browser.py:62
+#: radio-browser.py:44
+msgid "Streamripper output path"
+msgstr "Путь к выходному файлу streamripper'а"
+
+#: radio-browser.py:63
 msgid "Browser"
 msgstr "Браузер"
 
-#: radio-browser.py:68
+#: radio-browser.py:69
 msgid "Radio Browser Configuration"
 msgstr "Настройки Радио Браузера"
 
-#: radio-browser.py:112
+#: radio-browser.py:113
 msgid "Radio browser"
 msgstr "Радио браузер"
 
-#: radio-browser.py:127
+#: radio-browser.py:128
 msgid "Update radio station list"
 msgstr "Обновить список станций"
 
-#: radio-browser.py:131
+#: radio-browser.py:132
 msgid "Clear icon cache"
 msgstr "Очистить кэш"
 
@@ -170,7 +166,7 @@ msgstr "Ничего"
 msgid "Loading"
 msgstr "Загрузка"
 
-#: radio_browser_source.py:142 record_process.py:79
+#: radio_browser_source.py:142 record_process.py:86
 msgid "Title"
 msgstr "Название"
 
@@ -183,7 +179,7 @@ msgid "Genre"
 msgstr "Стиль"
 
 #: radio_browser_source.py:201 radio_browser_source.py:320
-#: record_process.py:125
+#: record_process.py:165
 msgid "Bitrate"
 msgstr "Битрейт"
 
@@ -251,43 +247,47 @@ msgstr "Отрицательные отзывы"
 msgid "Stream URL"
 msgstr "Путь потока"
 
-#: radio_browser_source.py:344 radio_browser_source.py:414
+#: radio_browser_source.py:332
+msgid "Added to recently played at"
+msgstr ""
+
+#: radio_browser_source.py:349 radio_browser_source.py:419
 msgid "Unbookmark"
 msgstr "Удалить закладку"
 
-#: radio_browser_source.py:358 radio_browser_source.py:412
+#: radio_browser_source.py:363 radio_browser_source.py:417
 msgid "Bookmark"
 msgstr "Закладка"
 
-#: radio_browser_source.py:379
+#: radio_browser_source.py:384
 msgid "Redownload"
 msgstr "Скачать заново"
 
-#: radio_browser_source.py:382
+#: radio_browser_source.py:387
 msgid "Download"
 msgstr "Скачать"
 
-#: radio_browser_source.py:392
+#: radio_browser_source.py:397
 msgid "Play"
-msgstr "Воспроизведение"
+msgstr "Воспроизвести"
 
-#: radio_browser_source.py:404
+#: radio_browser_source.py:409
 msgid "Record"
 msgstr "Запись"
 
-#: radio_browser_source.py:669
+#: radio_browser_source.py:650
 msgid "downloading station information"
 msgstr "скачивание информации о станции"
 
-#: radio_browser_source.py:669 radio_browser_source.py:743
+#: radio_browser_source.py:650 radio_browser_source.py:754
 msgid "Try"
 msgstr "Попытка"
 
-#: radio_browser_source.py:681
+#: radio_browser_source.py:662
 msgid "Could not download station information"
 msgstr "Невозможно скачать информацию о станции"
 
-#: radio_browser_source.py:682
+#: radio_browser_source.py:663
 msgid ""
 "Could not download station information from shoutcast directory server. "
 "Please try again later."
@@ -295,86 +295,108 @@ msgstr ""
 "Невозможно скачать информацию о станции с сервера. Пожалуйста, попробуйте "
 "позже."
 
-#: radio_browser_source.py:743
+#: radio_browser_source.py:754
 msgid "downloading feed"
 msgstr "скачивание ленты"
 
-#: radio_browser_source.py:743
+#: radio_browser_source.py:754
 msgid "from"
 msgstr "из"
 
-#: radio_browser_source.py:756
+#: radio_browser_source.py:767
 msgid "Feed download failed"
 msgstr "Неудалось скачать ленту"
 
-#: radio_browser_source.py:757
+#: radio_browser_source.py:768
 msgid "Could not download feed. Please try again later."
 msgstr "Невозможно скачать ленту. Пожалуйста, попробуйте позже."
 
-#: radio_browser_source.py:812
+#: radio_browser_source.py:823
 msgid "loading feed"
 msgstr "загрузка ленты"
 
-#: radio_browser_source.py:831
+#: radio_browser_source.py:842
 msgid "integrating feed"
 msgstr "добавление ленты"
 
-#: radio_browser_source.py:831
+#: radio_browser_source.py:842
 msgid "into tree"
 msgstr "в список"
 
-#: radio_browser_source.py:858
+#: radio_browser_source.py:869
 msgid "By Genres"
 msgstr "По стилям"
 
-#: radio_browser_source.py:859
+#: radio_browser_source.py:870
 msgid "By Country"
 msgstr "По стране"
 
-#: radio_browser_source.py:860
+#: radio_browser_source.py:871
 msgid "By Streamtype"
 msgstr "По типу потока"
 
-#: radio_browser_source.py:861
+#: radio_browser_source.py:872
 msgid "By Bitrate"
 msgstr "По битрейту"
 
-#: radio_browser_source.py:938
+#: radio_browser_source.py:905
+msgid "Invalid"
+msgstr ""
+
+#: radio_browser_source.py:957
 msgid "Recently played"
 msgstr "Недавно проигранные"
 
-#: radio_browser_source.py:950
+#: radio_browser_source.py:969
 msgid "Bookmarks"
 msgstr "Закладки"
 
-#: record_process.py:64
+#: record_process.py:67
 msgid "Ripping stream"
 msgstr "Захват потока"
 
-#: record_process.py:75
+#: record_process.py:82
 msgid "Time"
 msgstr "Время"
 
-#: record_process.py:83 record_process.py:124
+#: record_process.py:91 record_process.py:164
 msgid "Filesize"
 msgstr "Размер файла"
 
-#: record_process.py:119
+#: record_process.py:159
 msgid "Server"
 msgstr "Сервер"
 
-#: record_process.py:120
+#: record_process.py:160
 msgid "Stream"
 msgstr "Поток"
 
-#: record_process.py:121
+#: record_process.py:161
 msgid "Current song"
 msgstr "Текущая композиция"
 
-#: record_process.py:123
+#: record_process.py:163
 msgid "Playing time"
-msgstr ""
+msgstr "Время проигрывания"
 
-#: record_process.py:126
+#: record_process.py:166
 msgid "Relay port"
 msgstr "Порт"
+
+#~ msgid ""
+#~ "Do you really want to mark this radio station as broken?\n"
+#~ "\n"
+#~ "It will eventually get deleted if enough people do that!\n"
+#~ "\n"
+#~ "More information on that on the feeds homepage:\n"
+#~ "http://segler.bplaced.net/"
+#~ msgstr ""
+#~ "Вы действительно хотите пометить станцию как неработающую?\n"
+#~ "\n"
+#~ "Со временем она будет удалена, если достаточно людей отметят ее!\n"
+#~ "\n"
+#~ "Более подробную информацию об этом можно узнать на сайте:\n"
+#~ "http://segler.bplaced.net/"
+
+#~ msgid "Try no"
+#~ msgstr "Попытка"
