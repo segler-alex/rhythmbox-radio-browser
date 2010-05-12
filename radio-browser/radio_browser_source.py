@@ -43,6 +43,7 @@ from icecast_handler import FeedIcecast
 from shoutcast_handler import FeedShoutcast
 from shoutcast_handler import ShoutcastRadioStation
 from board_handler import FeedBoard
+from radiotime_handler import FeedRadioTime
 
 #TODO: should not be defined here, but I don't know where to get it from. HELP: much apreciated
 RB_METADATA_FIELD_TITLE = 0
@@ -783,6 +784,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		yield FeedIcecast(self.cache_dir,self.update_download_status)
 		yield FeedBoard(self.cache_dir,self.update_download_status)
 		yield FeedShoutcast(self.cache_dir,self.update_download_status)
+		yield FeedRadioTime(self.cache_dir,self.update_download_status)
 
 	def get_stock_icon(self, name):
 		theme = gtk.icon_theme_get_default()

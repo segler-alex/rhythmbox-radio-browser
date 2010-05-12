@@ -17,6 +17,7 @@
 
 import os
 import gio
+import urllib2
 import xml.sax.handler
 
 from radio_station import RadioStation
@@ -70,15 +71,29 @@ class Feed:
 		except:
 			pass
 
-		remotefile = gio.File(self.uri)
-		localfile = gio.File(self.filename)
+		remotefile = urllib2.urlopen(self.uri)
 		
 		try:
-			if not remotefile.copy(localfile,self.copy_callback):
-				print "download failed"
-				return False
-		except:
-			print "download failed"
+			chunksize = 100
+			data = ""
+			current = 0
+
+			while True:
+				chunk = remotefile.read(chunksize)
+				current += chunksize
+				self.copy_callback(current,0)
+				if chunk == "":
+					break
+				if chunk == None:
+					break
+				data += chunk
+
+			localfile = open(self.filename,"w")
+			localfile.write(data)
+			localfile.close()
+		except Exception as inst:
+			print "download failed exception"
+			print inst
 			return False
 			pass
 		return True
