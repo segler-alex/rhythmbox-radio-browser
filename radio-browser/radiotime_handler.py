@@ -63,19 +63,30 @@ class RadioTimeHandler(xml.sax.handler.ContentHandler):
 				self.entry.server_type = attributes.get("formats")
 				self.entry.homepage = ""
 				self.entries.append(self.entry)
+			if attributes.get("type") == "link":
+				self.entry = FeedRadioTime(self.cache_dir,self.status_change_handler)
+				self.entry.uri = attributes.get("URL")
+				self.entry._name = attributes.get("text")
+				self.entry.filename = os.path.join(self.cache_dir,"radiotime-%s.xml" % attributes.get("guide_id"))
+				self.entry.setAutoDownload(False)
+				self.entries.append(self.entry)
 
 class FeedRadioTime(Feed):
 	def __init__(self,cache_dir,status_change_handler):
 		Feed.__init__(self)
 		print "init radiotime feed"
 		self.handler = RadioTimeHandler()
+		self.handler.cache_dir = cache_dir
+		self.handler.status_change_handler = status_change_handler
 		self.cache_dir = cache_dir
 		self.filename = os.path.join(self.cache_dir, "radiotime-local.xml")
-		self.uri = "http://opml.radiotime.com/Browse.ashx?c=local"
+		#self.uri = "http://opml.radiotime.com/Browse.ashx?c=local"
+		self.uri = "http://opml.radiotime.com/Browse.ashx?id=r0"
 		self.status_change_handler = status_change_handler
+		self._name = "RadioTime"
 
 	def name(self):
-		return "RadioTime"
+		return self._name
 
 	def getHomepage(self):
 		return "http://radiotime.com/"
