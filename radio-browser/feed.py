@@ -16,8 +16,11 @@
 #    along with Radio-Browser-Plugin.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import gio
 import urllib2
+import httplib
+from urlparse import urlparse
+import datetime
+import locale
 import xml.sax.handler
 
 from radio_station import RadioStation
@@ -91,9 +94,9 @@ class Feed:
 			localfile = open(self.filename,"w")
 			localfile.write(data)
 			localfile.close()
-		except Exception as inst:
+		except Exception as e:
 			print "download failed exception"
-			print inst
+			print e
 			return False
 			pass
 		return True
@@ -101,24 +104,35 @@ class Feed:
 	# only download if necessary
 	def update(self):
 		try:
-			lf = gio.File(self.filename)
-			lfi = lf.query_info(gio.FILE_ATTRIBUTE_TIME_MODIFIED)
-			local_mod = lfi.get_attribute_uint64(gio.FILE_ATTRIBUTE_TIME_MODIFIED)
+			local_mod = datetime.datetime.fromtimestamp(os.path.getmtime(self.filename))
 		except:
 			print "could not load local file:"+self.filename
 			self.download()
 			return
 
 		try:
-			rf = gio.File(self.uri)
-			rfi = rf.query_info(gio.FILE_ATTRIBUTE_TIME_MODIFIED)
-			remote_mod = rfi.get_attribute_uint64(gio.FILE_ATTRIBUTE_TIME_MODIFIED)
-		except:
+			urlparts = urlparse(self.uri)
+			conn = httplib.HTTPConnection(urlparts.netloc)
+			conn.request("HEAD", urlparts.path)
+			res = conn.getresponse()
+			remote_mod = 0
+			for key,value in res.getheaders():
+				if key == "last-modified":
+					print value
+					oldlocale = locale.setlocale(locale.LC_ALL)
+					locale.setlocale(locale.LC_ALL,"C")
+					remote_mod = datetime.datetime.strptime(value,'%a, %d %b %Y %H:%M:%S %Z')
+					locale.setlocale(locale.LC_ALL,oldlocale)
+		except Exception as e:
 			print "could not check remote file for modification time:"+self.uri
+			print e
+			self.download()
+			return
+		if remote_mod == 0:
 			self.download()
 			return
 
-		if remote_mod >= local_mod+24*60*60 or remote_mod == 0:
+		if remote_mod > local_mod:
 			print "Local file older than 1 day: remote("+str(remote_mod)+") local("+str(local_mod)+")"
 			# change date is different -> download
 			self.download()

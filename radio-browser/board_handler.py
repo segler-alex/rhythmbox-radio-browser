@@ -16,7 +16,6 @@
 #    along with Radio-Browser-Plugin.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import gio
 import urllib
 import gtk
 import xml.sax.handler

@@ -16,7 +16,7 @@
 #    along with Radio-Browser-Plugin.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import gio
+import urllib2
 import xml.sax.handler
 
 from radio_station import RadioStation
@@ -28,8 +28,9 @@ class ShoutcastRadioStation(RadioStation):
 			try:
 				# download from "http://www.shoutcast.com"+self.tunein+"?id="+shoutcast_id
 				url = "http://www.shoutcast.com"+self.tunein+"?id="+self.listen_id
-				remote = gio.File(url)
-				data,datalen,tag = remote.load_contents()
+				remote = urllib2.urlopen(url)
+				data = remote.read()
+				remote.close()
 
 				lines = data.splitlines()
 				for line in lines:
