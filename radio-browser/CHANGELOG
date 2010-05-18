@@ -1,5 +1,11 @@
-Changes since 1.9:
-==================
+Changes in 2.1:
+===============
+* gio library dependency is not needed any more
+* new source radiotime
+* translation updates
+
+Changes in 2.0:
+===============
 * more translations
 * recording streams creates a new tab for each recording
 * recently played entries get removed after a configurable time
@@ -7,8 +13,8 @@ Changes since 1.9:
 * display station count in each subtree
 * group bitrate by steps of 32 and bigger ones than 512 to invalid
 
-Changes since 1.8:
-==================
+Changes in 1.9:
+===============
 * new view to display search(filter) results
 * rewrite of some parts -> more stability
 * new icon set
