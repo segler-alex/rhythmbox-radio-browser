@@ -785,6 +785,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		yield FeedBoard(self.cache_dir,self.update_download_status)
 		yield FeedShoutcast(self.cache_dir,self.update_download_status)
 		yield FeedRadioTime(self.cache_dir,self.update_download_status)
+		yield FeedRadioTimeLocal(self.cache_dir,self.update_download_status)
 
 	def get_stock_icon(self, name):
 		theme = gtk.icon_theme_get_default()
@@ -868,10 +869,10 @@ class RadioBrowserSource(rb.StreamingSource):
 				station = obj
 				# add subitems for sorting, if there are stations
 				if self.load_current_size == 0:
-					genre_iter = self.tree_store.append(current_iter,(_("By Genres"),None))
-					country_iter = self.tree_store.append(current_iter,(_("By Country"),None))
-					streamtype_iter = self.tree_store.append(current_iter,(_("By Streamtype"),None))
-					bitrate_iter = self.tree_store.append(current_iter,(_("By Bitrate"),None))
+					genre_iter = self.tree_store.append(current_iter,("!"+_("By Genres"),None))
+					country_iter = self.tree_store.append(current_iter,("!"+_("By Country"),None))
+					streamtype_iter = self.tree_store.append(current_iter,("!"+_("By Streamtype"),None))
+					bitrate_iter = self.tree_store.append(current_iter,("!"+_("By Bitrate"),None))
 
 				# display status info in statusbar
 				self.load_current_size += 1
