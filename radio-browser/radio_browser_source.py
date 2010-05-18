@@ -44,6 +44,7 @@ from shoutcast_handler import FeedShoutcast
 from shoutcast_handler import ShoutcastRadioStation
 from board_handler import FeedBoard
 from radiotime_handler import FeedRadioTime
+from radiotime_handler import FeedRadioTimeLocal
 
 #TODO: should not be defined here, but I don't know where to get it from. HELP: much apreciated
 RB_METADATA_FIELD_TITLE = 0

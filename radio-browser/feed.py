@@ -74,9 +74,8 @@ class Feed:
 		except:
 			pass
 
-		remotefile = urllib2.urlopen(self.uri)
-		
 		try:
+			remotefile = urllib2.urlopen(self.uri)
 			chunksize = 100
 			data = ""
 			current = 0
