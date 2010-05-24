@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-05-24 23:08+0200\n"
+"POT-Creation-Date: 2010-05-24 23:51+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -385,10 +385,10 @@ msgstr ""
 msgid "Relay port"
 msgstr ""
 
-#: ../radio-browser.rb-plugin.h:1
+#: ../radio-browser.rb-plugin.in.h:1
 msgid "Internet radio station browser"
 msgstr ""
 
-#: ../radio-browser.rb-plugin.h:2
+#: ../radio-browser.rb-plugin.in.h:2
 msgid "Shows icecast and shoutcast radio stations on a tab."
 msgstr ""

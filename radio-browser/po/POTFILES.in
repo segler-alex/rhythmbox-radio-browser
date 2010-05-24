@@ -8,4 +8,4 @@ radio_station.py
 radiotime_handler.py
 record_process.py
 shoutcast_handler.py
-[type: gettext/ini]radio-browser.rb-plugin
+[type: gettext/ini]radio-browser.rb-plugin.in
