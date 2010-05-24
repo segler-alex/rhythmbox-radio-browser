@@ -82,6 +82,7 @@ class FeedRadioTime(Feed):
 		self.uri = "http://opml.radiotime.com/Browse.ashx?id=r0"
 		self.status_change_handler = status_change_handler
 		self._name = "RadioTime"
+		self.setUpdateChecking(False)
 
 	def name(self):
 		return self._name
