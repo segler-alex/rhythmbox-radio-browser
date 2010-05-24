@@ -48,6 +48,8 @@ class Feed:
 		self.loaded = False
 		self.AutoDownload = True
 		self.UpdateChecking = True
+		self.FileSize = 0
+		self.remote_mod = datetime.datetime.now()
 
 	def getSource(self):
 		return self.uri
@@ -83,7 +85,7 @@ class Feed:
 			while True:
 				chunk = remotefile.read(chunksize)
 				current += chunksize
-				self.copy_callback(current,0)
+				self.copy_callback(current,self.FileSize)
 				if chunk == "":
 					break
 				if chunk == None:
@@ -100,40 +102,46 @@ class Feed:
 			pass
 		return True
 
-	# only download if necessary
-	def update(self):
-		try:
-			local_mod = datetime.datetime.fromtimestamp(os.path.getmtime(self.filename))
-		except:
-			print "could not load local file:"+self.filename
-			self.download()
-			return
-
+	def getRemoteFileInfo(self):
 		try:
 			urlparts = urlparse(self.uri)
 			conn = httplib.HTTPConnection(urlparts.netloc)
 			conn.request("HEAD", urlparts.path)
 			res = conn.getresponse()
-			remote_mod = 0
 			for key,value in res.getheaders():
 				if key == "last-modified":
-					print value
+					print key+":"+value
 					oldlocale = locale.setlocale(locale.LC_ALL)
 					locale.setlocale(locale.LC_ALL,"C")
-					remote_mod = datetime.datetime.strptime(value,'%a, %d %b %Y %H:%M:%S %Z')
+					self.remote_mod = datetime.datetime.strptime(value,'%a, %d %b %Y %H:%M:%S %Z')
 					locale.setlocale(locale.LC_ALL,oldlocale)
+				if key == "content-length":
+					print key+":"+value
+					self.FileSize = int(value)
 		except Exception as e:
 			print "could not check remote file for modification time:"+self.uri
 			print e
-			self.download()
-			return
-		if remote_mod == 0:
-			self.download()
 			return
 
-		if remote_mod > local_mod:
-			print "Local file older than 1 day: remote("+str(remote_mod)+") local("+str(local_mod)+")"
+	# only download if necessary
+	def update(self):
+		download = False
+		local_mod = datetime.datetime.min
+
+		try:
+			local_mod = datetime.datetime.fromtimestamp(os.path.getmtime(self.filename))
+		except:
+			print "could not load local file:"+self.filename
+			download = True
+
+		self.getRemoteFileInfo()
+		
+		if self.remote_mod > local_mod:
+			print "Local file older than 1 day: remote("+str(self.remote_mod)+") local("+str(local_mod)+")"
 			# change date is different -> download
+			download = True
+
+		if download:
 			self.download()
 
 	def load(self):
