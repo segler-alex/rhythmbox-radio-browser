@@ -870,10 +870,10 @@ class RadioBrowserSource(rb.StreamingSource):
 				station = obj
 				# add subitems for sorting, if there are stations
 				if self.load_current_size == 0:
-					genre_iter = self.tree_store.append(current_iter,("!"+_("By Genres"),None))
-					country_iter = self.tree_store.append(current_iter,("!"+_("By Country"),None))
-					streamtype_iter = self.tree_store.append(current_iter,("!"+_("By Streamtype"),None))
-					bitrate_iter = self.tree_store.append(current_iter,("!"+_("By Bitrate"),None))
+					genre_iter = self.tree_store.append(current_iter,(_("By Genres"),None))
+					country_iter = self.tree_store.append(current_iter,(_("By Country"),None))
+					streamtype_iter = self.tree_store.append(current_iter,(_("By Streamtype"),None))
+					bitrate_iter = self.tree_store.append(current_iter,(_("By Bitrate"),None))
 
 				# display status info in statusbar
 				self.load_current_size += 1
