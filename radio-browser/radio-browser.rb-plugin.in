@@ -19,10 +19,8 @@
 Loader=python
 Module=radio-browser
 IAge=1
-Name=Internet radio station browser
-Name[de]=Internetradio-Verzeichnis
-Description=Shows icecast and shoutcast radio stations on a tab.
-Description[de]=Zeigt Icecast und Shoutcast Radiostationen auf einem Tab an.
+_Name=Internet radio station browser
+_Description=Shows icecast and shoutcast radio stations on a tab.
 Authors=segler_alex@web.de
 Copyright=Copyright © 2009 segler_alex
 Website=http://programmierecke.net
