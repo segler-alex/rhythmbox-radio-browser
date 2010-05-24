@@ -1,381 +1,375 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <kubwit@tiscali.it>, YEAR.
-# Italian
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: rhythmbox-radio-browser\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-31 03:57+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: Italian <LL@li.org>\n"
+"POT-Creation-Date: 2010-03-29 19:18:35 UTC\n"
+"PO-Revision-Date: 2010-04-29 13:03:02 UTC\n"
+"Last-Translator: Web Translate It <support@webtranslateit.com>\n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Web Translate It\n"
 
-#: board_handler.py:62 board_handler.py:108 board_handler.py:216
-msgid "Post new station"
-msgstr ""
+#: board_handler.py
+msgid "Do you really want to mark this radio station as broken? It will eventually get deleted if enough people do that! More information on that on the feeds homepage: http://segler.bplaced.net/"
+msgstr "Vuoi veramente segnalare questa stazione come non funzionante? Se anche altre persone lo faranno allora eventualmente verrà eliminata! Trovi più informazioni nella homepage dei feed:\nhttp://segler.bplaced.net/"
 
-#: board_handler.py:69
-msgid "Examples"
-msgstr ""
+#: radio_browser_source.py
+msgid "Could not download feed. Please try again later."
+msgstr "Non e stato possibile di scarica il feed. Per favore riprovare più tardi"
 
-#: board_handler.py:71 radio_browser_source.py:318
-msgid "Name"
-msgstr "Nome"
-
-#: board_handler.py:74
-msgid "My Station"
-msgstr ""
-
-#: board_handler.py:76
-msgid "URL"
-msgstr ""
-
-#: board_handler.py:79
-msgid "http://listen.to.my/station.pls"
-msgstr ""
-
-#: board_handler.py:81
-msgid "Homepage URL"
-msgstr ""
-
-#: board_handler.py:84
+#: board_handler.py
 msgid "http://very.cool.site"
 msgstr ""
 
-#: board_handler.py:86
+#: board_handler.py
 msgid "Favicon URL"
-msgstr ""
+msgstr "Favicon URL"
 
-#: board_handler.py:89
-msgid "http://very.cool.site/favicon.ico"
-msgstr ""
+#: board_handler.py
+msgid "Do you really want to vote for this station? It means, that you like it, and you want more people to know, that this is a good station."
+msgstr "Sei sicuro di voler votare questa stazione? Ciò significa che ti piace e vuoi che più persone sappiano che questa è una buona stazione."
 
-#: board_handler.py:91 radio_browser_source.py:326
-msgid "Country"
-msgstr "Paese"
-
-#: board_handler.py:94
-msgid "Utopia"
-msgstr ""
-
-#: board_handler.py:96 radio_browser_source.py:325
-msgid "Language"
-msgstr "Lingua"
-
-#: board_handler.py:99
-msgid "Esperanto"
-msgstr ""
-
-#: board_handler.py:101 radio_browser_source.py:319
-msgid "Tags"
-msgstr "Tags"
-
-#: board_handler.py:104
-msgid "Classical Jazz Talk"
-msgstr ""
-
-#: board_handler.py:128 board_handler.py:221
-msgid "Vote for station"
-msgstr ""
-
-#: board_handler.py:129
-msgid ""
-"Do you really want to vote for this station? It means, that you like it, and "
-"you want more people to know, that this is a good station."
-msgstr ""
-
-#: board_handler.py:140
-msgid "Mark station as broken"
-msgstr ""
-
-#: board_handler.py:141
-msgid ""
-"Do you really want to mark this radio station as broken?\n"
-"\n"
-"It will eventually get deleted if enough people do that!\n"
-"\n"
-"More information on that on the feeds homepage:\n"
-"http://segler.bplaced.net/"
-msgstr ""
-
-#: board_handler.py:187
-msgid "Name and URL are necessary"
-msgstr ""
-
-#: board_handler.py:191
-msgid "URL needs to start with http:// or mms://"
-msgstr ""
-
-#: board_handler.py:196
-msgid "Homepage URL needs to start with http://"
-msgstr ""
-
-#: board_handler.py:201
-msgid "Favicon URL needs to start with http://"
-msgstr ""
-
-#: board_handler.py:208
-msgid "Station successfully posted"
-msgstr ""
-
-#: board_handler.py:222
-msgid "Station is broken"
-msgstr ""
-
-#: radio-browser.py:41
-msgid "Trys to download file"
-msgstr ""
-
-#: radio-browser.py:42
-msgid "Recently played removal time(days)"
-msgstr ""
-
-#: radio-browser.py:43
-msgid "Streamripper output path"
-msgstr ""
-
-#: radio-browser.py:62
-msgid "Browser"
-msgstr ""
-
-#: radio-browser.py:68
-msgid "Radio Browser Configuration"
-msgstr ""
-
-#: radio-browser.py:112
-msgid "Radio browser"
-msgstr ""
-
-#: radio-browser.py:127
-msgid "Update radio station list"
-msgstr "Ricerca lista di stazioni radio"
-
-#: radio-browser.py:131
-msgid "Clear icon cache"
-msgstr "Pulisci cache di icone"
-
-#: radio_browser_source.py:79
-msgid "Nothing"
-msgstr "Niente"
-
-#: radio_browser_source.py:84
-msgid "Loading"
-msgstr "caricando"
-
-#: radio_browser_source.py:142 record_process.py:79
-msgid "Title"
-msgstr "Titolo"
-
-#: radio_browser_source.py:197
-msgid "Filter"
-msgstr "Filtro"
-
-#: radio_browser_source.py:199
-msgid "Genre"
-msgstr "Genere"
-
-#: radio_browser_source.py:201 radio_browser_source.py:320
-#: record_process.py:125
-msgid "Bitrate"
-msgstr "Rata dei Bit"
-
-#: radio_browser_source.py:212
-msgid "Radiostation list"
-msgstr ""
-
-#: radio_browser_source.py:302
-msgid "Entry type"
-msgstr "Tipo di entrata"
-
-#: radio_browser_source.py:302
-msgid "Feed"
-msgstr "Feed"
-
-#: radio_browser_source.py:304
-msgid "Description"
-msgstr "Descrizione"
-
-#: radio_browser_source.py:305
-msgid "Feed homepage"
-msgstr "Feed pagina iniziale"
-
-#: radio_browser_source.py:306
-msgid "Feed source"
-msgstr "Sorgente feed"
-
-#: radio_browser_source.py:312
-msgid "No local copy"
-msgstr ""
-
-#: radio_browser_source.py:313
-msgid "Last update"
-msgstr "Ultimo aggiornamento"
-
-#: radio_browser_source.py:317
-msgid "Source feed"
-msgstr "Sorgente Feed"
-
-#: radio_browser_source.py:321
-msgid "Server type"
-msgstr "Tipo di server"
-
-#: radio_browser_source.py:322
-msgid "Homepage"
-msgstr "Pagina iniziale"
-
-#: radio_browser_source.py:323
-msgid "Current song (on last refresh)"
-msgstr "Brano corrente "
-
-#: radio_browser_source.py:324
-msgid "Current listeners"
-msgstr "Attuali ascoltatori"
-
-#: radio_browser_source.py:327
-msgid "Votes"
-msgstr "Voti"
-
-#: radio_browser_source.py:328
-msgid "Negative votes"
-msgstr "Voti negativi"
-
-#: radio_browser_source.py:329
+#: radio_browser_source.py
 msgid "Stream URL"
 msgstr ""
 
-#: radio_browser_source.py:344 radio_browser_source.py:414
-msgid "Unbookmark"
-msgstr "Cancella segnalibri"
+#: board_handler.py
+msgid "Examples"
+msgstr "Esempi"
 
-#: radio_browser_source.py:358 radio_browser_source.py:412
-msgid "Bookmark"
-msgstr "Segnalibri"
+#: board_handler.py
+msgid "http://very.cool.site/favicon.ico"
+msgstr ""
 
-#: radio_browser_source.py:379
-msgid "Redownload"
-msgstr "Riscarica"
+#: board_handler.py
+msgid "Utopia"
+msgstr "Utopia"
 
-#: radio_browser_source.py:382
-msgid "Download"
-msgstr "Scarica"
+#: board_handler.py
+msgid "Esperanto"
+msgstr "Esperanto"
 
-#: radio_browser_source.py:392
-msgid "Play"
-msgstr "Avvia"
+#: board_handler.py
+msgid "Classical Jazz Talk"
+msgstr "Classical Jazz Talk"
 
-#: radio_browser_source.py:404
-msgid "Record"
-msgstr "Registra"
+#: radio-browser.py
+msgid "Recently played removal time(days)"
+msgstr ""
 
-#: radio_browser_source.py:669
-msgid "downloading station information"
-msgstr "Scaricando informazione della stazione radio"
+#: board_handler.py
+msgid "My Station"
+msgstr ""
 
-#: radio_browser_source.py:669 radio_browser_source.py:743
+#: board_handler.py
+msgid "URL"
+msgstr "URL"
+
+#: board_handler.py
+msgid "http://listen.to.my/station.pls"
+msgstr ""
+
+#: board_handler.py
+msgid "Homepage URL"
+msgstr ""
+
+#: radio_browser_source.py
 msgid "Try"
 msgstr ""
 
-#: radio_browser_source.py:681
-msgid "Could not download station information"
-msgstr "Non e stato possibile scaricare informazioni sulla stazione radio"
+#: radio_browser_source.py
+msgid "Added to recently played at"
+msgstr "Aggiunta alle ascoltate di recente il"
 
-#: radio_browser_source.py:682
-msgid ""
-"Could not download station information from shoutcast directory server. "
-"Please try again later."
+msgid "Trys to download file"
+msgstr "Tentetivi di download del file"
+
+#: radio-browser.py
+msgid "Radio browser"
 msgstr ""
-"Non e stato possibile di scaricare informazioni dell shoutcast directory "
-"serverper favore riprava più tardi"
 
-#: radio_browser_source.py:743
+#: radio_browser_source.py
+msgid "Invalid"
+msgstr "Non valido"
+
+#: radio-browser.py
+msgid "Streamripper output path"
+msgstr ""
+
+#: radio-browser.py
+msgid "Radio Browser Configuration"
+msgstr "Configurazione di Radio Browser"
+
+#: radio_browser_source.py
+msgid "Radiostation list"
+msgstr "Lista delle stazioni radio"
+
+#: radio_browser_source.py
+msgid "Nothing"
+msgstr "Niente"
+
+#: radio_browser_source.py
+msgid "Loading"
+msgstr "caricando"
+
+#: radio_browser_source.py
+#: record_process.py
+msgid "Title"
+msgstr "Titolo"
+
+#: radio_browser_source.py
+msgid "Filter"
+msgstr "Filtro"
+
+#: radio_browser_source.py
+msgid "Genre"
+msgstr "Genere"
+
+#: radio_browser_source.py
+msgid "Entry type"
+msgstr "Tipo di entrata"
+
+#: radio_browser_source.py
+msgid "Feed"
+msgstr "Feed"
+
+#: radio_browser_source.py
+msgid "Description"
+msgstr "Descrizione"
+
+#: radio_browser_source.py
+msgid "Feed homepage"
+msgstr "Feed pagina iniziale"
+
+#: radio_browser_source.py
+msgid "Feed source"
+msgstr "Sorgente feed"
+
+msgid "No local copy"
+msgstr "Nessuna copia locale"
+
+#: radio_browser_source.py
+msgid "Last update"
+msgstr "Ultimo aggiornamento"
+
+#: radio_browser_source.py
+msgid "Source feed"
+msgstr "Sorgente Feed"
+
+#: board_handler.py
+#: radio_browser_source.py
+msgid "Name"
+msgstr "Nome"
+
+#: radio_browser_source.py
+#: record_process.py
+msgid "Bitrate"
+msgstr "Bitrate"
+
+#: radio_browser_source.py
+msgid "Current song (on last refresh)"
+msgstr "Brano corrente"
+
+#: radio_browser_source.py
+msgid "Current listeners"
+msgstr "Attuali ascoltatori"
+
+#: board_handler.py
+#: radio_browser_source.py
+msgid "Language"
+msgstr "Lingua"
+
+#: board_handler.py
+#: radio_browser_source.py
+msgid "Country"
+msgstr "Paese"
+
+#: record_process.py
+msgid "Ripping stream"
+msgstr "sto registrando la trasmissione"
+
+msgid "Try no"
+msgstr "Non provare"
+
+#: radio_browser_source.py
 msgid "downloading feed"
 msgstr "Scarica feed"
 
-#: radio_browser_source.py:743
+#: radio_browser_source.py
 msgid "from"
 msgstr "da"
 
-#: radio_browser_source.py:756
+#: radio_browser_source.py
 msgid "Feed download failed"
 msgstr "Scarica feed fallito"
 
-#: radio_browser_source.py:757
-msgid "Could not download feed. Please try again later."
-msgstr ""
-"Non e stato possibile di scarica il feed. Per favore riprovare più tardi"
-
-#: radio_browser_source.py:812
+#: radio_browser_source.py
 msgid "loading feed"
 msgstr "caricando feed"
 
-#: radio_browser_source.py:831
+#: radio_browser_source.py
 msgid "integrating feed"
 msgstr "feed integrato"
 
-#: radio_browser_source.py:831
+#: radio_browser_source.py
 msgid "into tree"
 msgstr ""
 
-#: radio_browser_source.py:858
-msgid "By Genres"
-msgstr "Per genere"
-
-#: radio_browser_source.py:859
-msgid "By Country"
-msgstr "Per paese"
-
-#: radio_browser_source.py:860
+#: radio_browser_source.py
 msgid "By Streamtype"
 msgstr "per tipo di stream"
 
-#: radio_browser_source.py:861
-msgid "By Bitrate"
-msgstr "per tipo di rata bit"
-
-#: radio_browser_source.py:938
-msgid "Recently played"
-msgstr "recente"
-
-#: radio_browser_source.py:950
-msgid "Bookmarks"
-msgstr "Segnalibri"
-
-#: record_process.py:64
-msgid "Ripping stream"
-msgstr "Registra trasmissione"
-
-#: record_process.py:75
-msgid "Time"
-msgstr ""
-
-#: record_process.py:83 record_process.py:124
-msgid "Filesize"
-msgstr ""
-
-#: record_process.py:119
-msgid "Server"
-msgstr "Server"
-
-#: record_process.py:120
+#: record_process.py
 msgid "Stream"
 msgstr "Stream"
 
-#: record_process.py:121
-msgid "Current song"
-msgstr "Brano attuale"
-
-#: record_process.py:123
-msgid "Playing time"
-msgstr ""
-
-#: record_process.py:126
+#: record_process.py
 msgid "Relay port"
 msgstr "Relay port"
 
-#~ msgid "Try no"
-#~ msgstr "Non provare"
+#: board_handler.py
+msgid "Vote for station"
+msgstr "Vota la stazione"
+
+#: board_handler.py
+msgid "Mark station as broken"
+msgstr "Segnala come non funzionante"
+
+#: board_handler.py
+msgid "Name and URL are necessary"
+msgstr "Nome e URL sono necessari"
+
+#: board_handler.py
+msgid "URL needs to start with http:// or mms://"
+msgstr "L' URL deve iniziare con http:// o mms://"
+
+#: board_handler.py
+msgid "Homepage URL needs to start with http://"
+msgstr "L' Homepage URL deve iniziare con http://"
+
+#: board_handler.py
+msgid "Favicon URL needs to start with http://"
+msgstr "La Favicon URL deve iniziare con http://"
+
+#: board_handler.py
+msgid "Station successfully posted"
+msgstr "Stazione pubblicata con successo"
+
+#: board_handler.py
+msgid "Post new station"
+msgstr "Pubblica una nuova stazione"
+
+#: board_handler.py
+msgid "Station is broken"
+msgstr "La stazione non funziona"
+
+#: radio-browser.py
+msgid "Browser"
+msgstr ""
+
+#: board_handler.py
+#: radio_browser_source.py
+msgid "Tags"
+msgstr "Tags"
+
+#: radio_browser_source.py
+msgid "Server type"
+msgstr "Tipo di server"
+
+#: radio-browser.py
+msgid "Update radio station list"
+msgstr "Aggiorna la lista delle stazioni radio"
+
+#: radio_browser_source.py
+msgid "Could not download station information from shoutcast directory server. Please try again later."
+msgstr "Non e stato possibile scaricare informazioni dalla directory shoutcast del server. Si prega di riprovare più tardi."
+
+#: radio_browser_source.py
+msgid "Record"
+msgstr "Registra"
+
+#: radio-browser.py
+msgid "Clear icon cache"
+msgstr "Pulisci cache di icone"
+
+#: radio_browser_source.py
+msgid "Homepage"
+msgstr "Pagina iniziale"
+
+#: radio_browser_source.py
+msgid "Votes"
+msgstr "Voti"
+
+#: radio_browser_source.py
+msgid "Negative votes"
+msgstr "Voti negativi"
+
+#: radio_browser_source.py
+msgid "Unbookmark"
+msgstr "Cancella segnalibri"
+
+#: record_process.py
+msgid "Current song"
+msgstr "Brano attuale"
+
+#: radio_browser_source.py
+msgid "Bookmark"
+msgstr "Segnalibri"
+
+#: radio_browser_source.py
+msgid "Download"
+msgstr "Scarica"
+
+#: radio_browser_source.py
+msgid "Redownload"
+msgstr "Riscarica"
+
+#: radio_browser_source.py
+msgid "Play"
+msgstr "Avvia"
+
+#: radio_browser_source.py
+msgid "downloading station information"
+msgstr "Sto scaricando informazioni sulla stazione"
+
+#: radio_browser_source.py
+msgid "Could not download station information"
+msgstr "Non e stato possibile scaricare informazioni sulla stazione radio"
+
+#: radio_browser_source.py
+msgid "By Genres"
+msgstr "Per genere"
+
+#: radio_browser_source.py
+msgid "By Country"
+msgstr "Per paese"
+
+#: radio_browser_source.py
+msgid "By Bitrate"
+msgstr "per tipo di Bitrate"
+
+#: radio_browser_source.py
+msgid "Recently played"
+msgstr "Ascoltate di recente"
+
+#: radio_browser_source.py
+msgid "Bookmarks"
+msgstr "Segnalibri"
+
+#: record_process.py
+msgid "Server"
+msgstr "Server"
+
+#: record_process.py
+msgid "Time"
+msgstr "Tempo"
+
+#: record_process.py
+msgid "Filesize"
+msgstr "Dimensione del file"
+
+#: record_process.py
+msgid "Playing time"
+msgstr ""
