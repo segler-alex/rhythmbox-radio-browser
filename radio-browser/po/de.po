@@ -11,7 +11,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Web Translate It\n"
 
-#: radio-browser.py
+#: ../radio-browser.py
 msgid "Radio browser"
 msgstr "Radio browser"
 
@@ -27,10 +27,6 @@ msgstr "Lösche Icon Zwischenspeicher"
 #: radio_browser_source.py
 msgid "Nothing"
 msgstr "Nichts"
-
-#: radio_browser_source.py
-msgid "Loading"
-msgstr "Lade"
 
 #: ../record_process.py
 #: ../radio_browser_source.py
@@ -168,32 +164,12 @@ msgid "Could not download station information from shoutcast directory server. P
 msgstr "Konnte Senderinformationen nicht vom Shoutcast Verzeichnisserver herunterladen. Bitte versuchen sie es später noch einmal."
 
 #: radio_browser_source.py
-msgid "downloading feed"
-msgstr "Lade Quelle"
-
-#: radio_browser_source.py
-msgid "from"
-msgstr "von"
-
-#: radio_browser_source.py
 msgid "Feed download failed"
 msgstr "Quellendownload fehlgeschlagen"
 
 #: radio_browser_source.py
 msgid "Could not download feed. Please try again later."
 msgstr "Konnte Quelle nicht herunterladen. Bitte versuchen sie es später noch einmal"
-
-#: radio_browser_source.py
-msgid "loading feed"
-msgstr "lade Quelle"
-
-#: radio_browser_source.py
-msgid "integrating feed"
-msgstr "integriere quelle"
-
-#: radio_browser_source.py
-msgid "into tree"
-msgstr "in den Baum"
 
 #: radio_browser_source.py
 msgid "By Genres"
@@ -377,8 +353,22 @@ msgstr "Hinzugefügt zu 'Kürzlich gehört' am"
 msgid "Invalid"
 msgstr "ungültig"
 
+#: ../radio-browser.rb-plugin.in.h
 msgid "Internet radio station browser"
 msgstr "Internetradio Verzeichnis"
 
+#: ../radio-browser.rb-plugin.in.h
 msgid "Shows icecast and shoutcast radio stations on a tab."
 msgstr "Zeigt Icecast und Shoutcast Radiostationen auf einem Tab an."
+
+msgid "Loading %(url)s"
+msgstr "Lade %(url)s"
+
+msgid "Downloading feed %(name)s from %(url)s. %(try)d/%(trys)d"
+msgstr "Lade %(name)s von %(url)s. %(try)d/%(trys)d"
+
+msgid "Loading feed %(name)s"
+msgstr "Lade Quelle %(name)s"
+
+msgid "Integrating feed %(name)s (%(itemcount)d items) into tree..."
+msgstr "Integriere Quelle %(name)s (%(itemcount)d Elemente) in den Baum..."
