@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-05-24 23:51+0200\n"
+"POT-Creation-Date: 2010-05-25 18:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -163,7 +163,8 @@ msgid "Nothing"
 msgstr ""
 
 #: ../radio_browser_source.py:86
-msgid "Loading"
+#, python-format
+msgid "Loading %(url)s"
 msgstr ""
 
 #. create the view
@@ -281,7 +282,7 @@ msgstr ""
 msgid "downloading station information"
 msgstr ""
 
-#: ../radio_browser_source.py:652 ../radio_browser_source.py:756
+#: ../radio_browser_source.py:652
 msgid "Try"
 msgstr ""
 
@@ -296,11 +297,8 @@ msgid ""
 msgstr ""
 
 #: ../radio_browser_source.py:756
-msgid "downloading feed"
-msgstr ""
-
-#: ../radio_browser_source.py:756
-msgid "from"
+#, python-format
+msgid "Downloading feed %(name)s from %(url)s. %(try)d/%(trys)d"
 msgstr ""
 
 #: ../radio_browser_source.py:769
@@ -312,15 +310,13 @@ msgid "Could not download feed. Please try again later."
 msgstr ""
 
 #: ../radio_browser_source.py:827
-msgid "loading feed"
+#, python-format
+msgid "Loading feed %(name)s"
 msgstr ""
 
 #: ../radio_browser_source.py:846
-msgid "integrating feed"
-msgstr ""
-
-#: ../radio_browser_source.py:846
-msgid "into tree"
+#, python-format
+msgid "Integrating feed %(name)s (%(itemcount)d items) into tree..."
 msgstr ""
 
 #: ../radio_browser_source.py:873

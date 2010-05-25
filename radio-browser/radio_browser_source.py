@@ -83,7 +83,7 @@ class RadioBrowserSource(rb.StreamingSource):
 	def update_download_status(self,filename,current, total):
 		self.load_current_size = current
 		self.load_total_size = total
-		self.load_status = _("Loading")+" : "+filename
+		self.load_status = _("Loading %(url)s") % {'url':filename}
 
 		gtk.gdk.threads_enter()
 		self.notify_status_changed()
@@ -753,7 +753,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			tryno += 1
 
 			gtk.gdk.threads_enter()
-			self.load_status = _("downloading feed")+" '"+feed.name()+"' "+_("from")+" '"+feed.uri+"', "+_("Try")+":"+str(tryno)+"/"+str(math.trunc(float(self.plugin.download_trys)))
+			self.load_status = _("Downloading feed %(name)s from %(url)s. %(try)d/%(trys)d") % {'name':feed.name(), 'url':feed.uri, 'try':tryno, 'trys':(math.trunc(float(self.plugin.download_trys)))}
 			self.load_total_size = 0
 			self.notify_status_changed()
 			gtk.gdk.threads_leave()
@@ -824,7 +824,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		local_icon = self.load_icon_file(self.plugin.find_file("local-logo.png"),None)
 
 		gtk.gdk.threads_enter()
-		self.load_status = _("loading feed")+" '"+feed.name()+"'"
+		self.load_status = _("Loading feed %(name)s") % {'name':feed.name(),}
 		self.load_total_size = 0
 		self.notify_status_changed()
 		gtk.gdk.threads_leave()
@@ -843,7 +843,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		entries = feed.entries()
 
 		gtk.gdk.threads_enter()
-		self.load_status = _("integrating feed")+" '"+feed.name()+"'("+str(len(entries))+" items)"+_("into tree")+"..."
+		self.load_status = _("Integrating feed %(name)s (%(itemcount)d items) into tree...") % {'name':feed.name(),'itemcount':len(entries)}
 		self.notify_status_changed()
 		gtk.gdk.threads_leave()
 
