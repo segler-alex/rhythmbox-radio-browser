@@ -45,7 +45,7 @@ class RadioTimeRadioStation(RadioStation):
 
 class RadioTimeHandler(xml.sax.handler.ContentHandler):
 	def __init__(self):
-		self.genres = []
+		self.genres = {}
 		self.entries = []
  
 	def startElement(self, name, attributes):
@@ -70,6 +70,11 @@ class RadioTimeHandler(xml.sax.handler.ContentHandler):
 				self.entry.filename = os.path.join(self.cache_dir,"radiotime-%s.xml" % attributes.get("guide_id"))
 				self.entry.setAutoDownload(False)
 				self.entries.append(self.entry)
+			if attributes.get("type") == "text":
+				self.genres[attributes.get("guide_id")] = attributes.get("text")
+				print "got: "+attributes.get("guide_id")+"="+attributes.get("text")
+
+RadioTimeGenreList = None
 
 class FeedRadioTime(Feed):
 	def __init__(self,cache_dir,status_change_handler):
@@ -78,11 +83,48 @@ class FeedRadioTime(Feed):
 		self.handler.cache_dir = cache_dir
 		self.handler.status_change_handler = status_change_handler
 		self.cache_dir = cache_dir
+		self.status_change_handler = status_change_handler
 		self.filename = os.path.join(self.cache_dir, "radiotime.xml")
 		self.uri = "http://opml.radiotime.com/Browse.ashx?id=r0"
-		self.status_change_handler = status_change_handler
 		self._name = "RadioTime"
 		self.setUpdateChecking(False)
+
+	def loadGenreList(self):
+		global RadioTimeGenreList
+		print "load genre list"
+
+		url = "http://opml.radiotime.com/Describe.ashx?c=genres"
+		handler = RadioTimeHandler()
+		RadioTimeGenreList = {}
+
+		try:
+			remote = urllib2.urlopen(url)
+			xmlData = remote.read()
+			remote.close()
+		except Exception as e:
+			print "could not load genre list"
+			print str(e)
+			return
+
+		try:
+			xml.sax.parseString(xmlData,handler)
+			RadioTimeGenreList = handler.genres
+		except:
+			print "parse failed of "+xmlData
+
+	def entries(self):
+		items = Feed.entries(self)
+		if RadioTimeGenreList == None:
+			self.loadGenreList()
+
+		for item in items:
+			if isinstance(item,RadioTimeRadioStation):
+				#print "search for '"+item.genre_id+"'"
+				if item.genre_id in RadioTimeGenreList:
+					#print "found it!"
+					item.genre = RadioTimeGenreList[item.genre_id]
+
+		return items
 
 	def name(self):
 		return self._name
