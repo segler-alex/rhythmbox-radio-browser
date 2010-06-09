@@ -95,7 +95,7 @@ class Feed:
 			localfile = open(self.filename,"w")
 			localfile.write(data)
 			localfile.close()
-		except Exception as e:
+		except Exception, e:
 			print "download failed exception"
 			print e
 			return False
@@ -118,7 +118,7 @@ class Feed:
 				if key == "content-length":
 					print key+":"+value
 					self.FileSize = int(value)
-		except Exception as e:
+		except Exception, e:
 			print "could not check remote file for modification time:"+self.uri
 			print e
 			return

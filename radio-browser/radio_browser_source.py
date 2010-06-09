@@ -649,7 +649,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			tryno += 1
 
 			gtk.gdk.threads_enter()
-			self.load_status = _("downloading station information")+" '"+station.server_name+"', "+_("Try")+":"+str(tryno)+"/"+str(math.trunc(float(self.plugin.download_trys)))
+			self.load_status = _("downloading station information")+" '"+station.server_name+"', "+_("Try")+":"+str(tryno)+"/"+str(math.floor(float(self.plugin.download_trys)))
 			self.load_total_size = 0
 			self.notify_status_changed()
 			gtk.gdk.threads_leave()
@@ -753,7 +753,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			tryno += 1
 
 			gtk.gdk.threads_enter()
-			self.load_status = _("Downloading feed %(name)s from %(url)s. %(try)d/%(trys)d") % {'name':feed.name(), 'url':feed.uri, 'try':tryno, 'trys':(math.trunc(float(self.plugin.download_trys)))}
+			self.load_status = _("Downloading feed %(name)s from %(url)s. %(try)d/%(trys)d") % {'name':feed.name(), 'url':feed.uri, 'try':tryno, 'trys':(math.floor(float(self.plugin.download_trys)))}
 			self.load_total_size = 0
 			self.notify_status_changed()
 			gtk.gdk.threads_leave()
