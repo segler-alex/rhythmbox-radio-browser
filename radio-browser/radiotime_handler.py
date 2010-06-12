@@ -101,7 +101,7 @@ class FeedRadioTime(Feed):
 			remote = urllib2.urlopen(url)
 			xmlData = remote.read()
 			remote.close()
-		except Exception as e:
+		except Exception, e:
 			print "could not load genre list"
 			print str(e)
 			return
