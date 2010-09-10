@@ -111,8 +111,11 @@ class RadioBrowserPlugin (rb.Plugin):
 
 		# register this source in rhythmbox
 		db = shell.props.db
-		entry_type = RadioBrowserEntryType()
-		db.register_entry_type(entry_type)
+		try:
+			entry_type = RadioBrowserEntryType()
+			db.register_entry_type(entry_type)
+		except NotImplementedError:
+			entry_type = db.entry_register_type("RadioBrowserEntryType")
 		entry_type.category = rhythmdb.ENTRY_STREAM
 		group = rb.rb_source_group_get_by_name ("library")
 		self.source = gobject.new (RadioBrowserSource, shell=shell, name=_("Radio browser"), entry_type=entry_type,source_group=group,plugin=self)
