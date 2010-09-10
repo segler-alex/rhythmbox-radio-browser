@@ -96,6 +96,10 @@ class ConfigDialog (gtk.Dialog):
 		self.plugin.outputpath = self.entry_outputpath.get_text()
 		gconf.client_get_default().set_string(gconf_keys['outputpath'], self.plugin.outputpath)
 
+class RadioBrowserEntryType(rhythmdb.EntryType):
+	def __init__(self):
+		rhythmdb.EntryType.__init__(self, name='RadioBrowserEntryType')
+
 class RadioBrowserPlugin (rb.Plugin):
 	def __init__(self):
 		rb.Plugin.__init__(self)
@@ -107,7 +111,8 @@ class RadioBrowserPlugin (rb.Plugin):
 
 		# register this source in rhythmbox
 		db = shell.props.db
-		entry_type = db.entry_register_type("RadioBrowserEntryType")
+		entry_type = RadioBrowserEntryType()
+		db.register_entry_type(entry_type)
 		entry_type.category = rhythmdb.ENTRY_STREAM
 		group = rb.rb_source_group_get_by_name ("library")
 		self.source = gobject.new (RadioBrowserSource, shell=shell, name=_("Radio browser"), entry_type=entry_type,source_group=group,plugin=self)
@@ -181,5 +186,6 @@ class RadioBrowserPlugin (rb.Plugin):
 	def deactivate(self, shell):
 		uim = shell.get_ui_manager ()
 		uim.remove_action_group(self.actiongroup)
+		self.actiongroup = None
 		self.source.delete_thyself()
 		self.source = None

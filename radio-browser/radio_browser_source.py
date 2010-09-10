@@ -718,7 +718,6 @@ class RadioBrowserSource(rb.StreamingSource):
 			#shell.load_uri(uri,False)
 
 			# start playback
-			player.play()
 			player.play_entry(self.entry,self)
 
 		gtk.gdk.threads_leave()
@@ -776,9 +775,11 @@ class RadioBrowserSource(rb.StreamingSource):
 		self.refill_list()
 
 	def do_impl_delete_thyself(self):
-		# kill all running records
-		for uri in self.recording_streams.keys():
-			self.recording_streams[uri].stop()
+		if self.hasActivated:
+			# kill all running records
+			for uri in self.recording_streams.keys():
+				self.recording_streams[uri].stop()
+			self.shell = False
 
 	def engines(self):
 		yield FeedLocal(self.cache_dir,self.update_download_status)
