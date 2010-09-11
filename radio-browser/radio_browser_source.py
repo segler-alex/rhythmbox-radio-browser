@@ -255,6 +255,26 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.play_uri(station)
 			pass
 		
+		def button_add_click(widget,name,station):
+			data = self.load_from_file(os.path.join(self.cache_dir,BOOKMARKS_FILENAME))
+			if data is None:
+				data = {}
+			if station.server_name not in data:
+				data[station.server_name] = station
+			self.save_to_file(os.path.join(self.cache_dir,BOOKMARKS_FILENAME),data)
+			
+			self.refill_favourites()
+		
+		def button_delete_click(widget,name,station):
+			data = self.load_from_file(os.path.join(self.cache_dir,BOOKMARKS_FILENAME))
+			if data is None:
+				data = {}
+			if station.server_name in data:
+				del data[station.server_name]
+			self.save_to_file(os.path.join(self.cache_dir,BOOKMARKS_FILENAME),data)
+			
+			self.refill_favourites()
+		
 		# add recently played list
 		recently_box = gtk.VBox()
 		scrolled_box = gtk.ScrolledWindow()
@@ -278,7 +298,17 @@ class RadioBrowserSource(rb.StreamingSource):
 					short_value = name
 				button = gtk.Button(short_value)
 				button.connect("clicked",button_click,name,station)
-				recently_box.pack_start(button, expand=False)
+				
+				button_add = gtk.Button()
+				img = gtk.Image()
+				img.set_from_stock(gtk.STOCK_GO_FORWARD,gtk.ICON_SIZE_BUTTON)
+				button_add.set_image(img)
+				button_add.connect("clicked",button_add_click,name,station)
+				line = gtk.HBox()
+				line.pack_start(button)
+				line.pack_start(button_add,expand=False)
+				
+				recently_box.pack_start(line, expand=False)
 				dataNew[name] = station
 				
 				if station.icon_src != "":
@@ -307,14 +337,23 @@ class RadioBrowserSource(rb.StreamingSource):
 			data = {}
 		sortedkeys = sorted(data.keys())
 		for name in sortedkeys:
+			line = gtk.HBox()
 			station = data[name]
 			if len(name) > 53:
 				short_value = name[0:50]+"..."
 			else:
 				short_value = name
+			
 			button = gtk.Button(short_value)
 			button.connect("clicked",button_click,name,station)
-			favourites_box.pack_start(button, expand=False)
+			button_delete = gtk.Button()
+			img = gtk.Image()
+			img.set_from_stock(gtk.STOCK_DELETE,gtk.ICON_SIZE_BUTTON)
+			button_delete.set_image(img)
+			button_delete.connect("clicked",button_delete_click,name,station)
+			line.pack_start(button)
+			line.pack_start(button_delete,expand=False)
+			favourites_box.pack_start(line, expand=False)
 			
 			if station.icon_src != "":
 				hash_src = hashlib.md5(station.icon_src).hexdigest()
