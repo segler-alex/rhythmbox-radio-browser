@@ -236,11 +236,17 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			# first time filling of the model
 			self.main_list_filled = False
+			
+			# enable images on buttons
+			settings = gtk.settings_get_default()
+			settings.set_property("gtk-button-images",True)
 
 		rb.BrowserSource.do_impl_activate (self)
 
 	def refill_favourites(self):
 		print "refill favourites"
+		width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_BUTTON)
+		
 		# remove all old information in infobox
 		for widget in self.start_box.get_children():
 			self.start_box.remove(widget)
@@ -266,11 +272,25 @@ class RadioBrowserSource(rb.StreamingSource):
 		for name in sortedkeys:
 			station = data[name]
 			if datetime.datetime.now()-station.PlayTime <= datetime.timedelta(days=float(self.plugin.recently_played_purge_days)):
-				button = gtk.Button(name)
+				if len(name) > 53:
+					short_value = name[0:50]+"..."
+				else:
+					short_value = name
+				button = gtk.Button(short_value)
 				button.connect("clicked",button_click,name,station)
 				recently_box.pack_start(button, expand=False)
 				dataNew[name] = station
-		#recently_box.pack_start(gtk.Label("test"),expand=True)
+				
+				if station.icon_src != "":
+					hash_src = hashlib.md5(station.icon_src).hexdigest()
+					filepath = os.path.join(self.icon_cache_dir, hash_src)
+					if os.path.exists(filepath):
+						buffer = gtk.gdk.pixbuf_new_from_file_at_size(filepath,width,height)
+						img = gtk.Image()
+						img.set_from_pixbuf(buffer)
+						img.show()
+						button.set_image(img)
+
 		self.save_to_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME),dataNew)
 
 		# add bookmarks
@@ -288,9 +308,23 @@ class RadioBrowserSource(rb.StreamingSource):
 		sortedkeys = sorted(data.keys())
 		for name in sortedkeys:
 			station = data[name]
-			button = gtk.Button(name)
+			if len(name) > 53:
+				short_value = name[0:50]+"..."
+			else:
+				short_value = name
+			button = gtk.Button(short_value)
 			button.connect("clicked",button_click,name,station)
 			favourites_box.pack_start(button, expand=False)
+			
+			if station.icon_src != "":
+				hash_src = hashlib.md5(station.icon_src).hexdigest()
+				filepath = os.path.join(self.icon_cache_dir, hash_src)
+				if os.path.exists(filepath):
+					buffer = gtk.gdk.pixbuf_new_from_file_at_size(filepath,width,height)
+					img = gtk.Image()
+					img.set_from_pixbuf(buffer)
+					img.show()
+					button.set_image(img)
 		
 		self.start_box.show_all()
 
