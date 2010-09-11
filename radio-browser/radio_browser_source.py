@@ -204,6 +204,8 @@ class RadioBrowserSource(rb.StreamingSource):
 			filterbox.pack_start(self.filter_entry_bitrate,False)
 
 			self.info_box = gtk.HBox()
+			
+			self.start_box = gtk.HBox()
 
 			stations_box = gtk.VBox()
 			stations_box.pack_start(filterbox,False)
@@ -211,9 +213,11 @@ class RadioBrowserSource(rb.StreamingSource):
 			stations_box.pack_start(self.info_box,False)
 
 			self.notebook = gtk.Notebook()
+			self.notebook.append_page(self.start_box,gtk.Label(_("Favourites")))
 			self.notebook.append_page(stations_box,gtk.Label(_("Radiostation list")))
 			self.notebook.set_scrollable(True)
-
+			self.notebook.connect("switch-page",self.event_page_switch)
+			
 			self.pack_start(self.notebook)
 			self.notebook.show_all()
 			self.icon_view_container.hide_all()
@@ -231,9 +235,75 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.icon_download_thread.start()
 
 			# first time filling of the model
-			self.refill_list()
+			self.main_list_filled = False
 
 		rb.BrowserSource.do_impl_activate (self)
+
+	def refill_favourites(self):
+		print "refill favourites"
+		# remove all old information in infobox
+		for widget in self.start_box.get_children():
+			self.start_box.remove(widget)
+		
+		def button_click(widget,name,station):
+			self.play_uri(station)
+			pass
+		
+		# add recently played list
+		recently_box = gtk.VBox()
+		scrolled_box = gtk.ScrolledWindow()
+		scrolled_box.add_with_viewport(recently_box)
+		scrolled_box.set_property("hscrollbar-policy", gtk.POLICY_AUTOMATIC)
+		decorated_box = gtk.Frame(_("Recently played"))
+		decorated_box.add(scrolled_box)
+		self.start_box.pack_start(decorated_box)
+		
+		data = self.load_from_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME))
+		if data is None:
+			data = {}
+		dataNew = {}
+		sortedkeys = sorted(data.keys())
+		for name in sortedkeys:
+			station = data[name]
+			if datetime.datetime.now()-station.PlayTime <= datetime.timedelta(days=float(self.plugin.recently_played_purge_days)):
+				button = gtk.Button(name)
+				button.connect("clicked",button_click,name,station)
+				recently_box.pack_start(button, expand=False)
+				dataNew[name] = station
+		#recently_box.pack_start(gtk.Label("test"),expand=True)
+		self.save_to_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME),dataNew)
+
+		# add bookmarks
+		favourites_box = gtk.VBox()
+		scrolled_box = gtk.ScrolledWindow()
+		scrolled_box.add_with_viewport(favourites_box)
+		scrolled_box.set_property("hscrollbar-policy", gtk.POLICY_AUTOMATIC)
+		decorated_box = gtk.Frame(_("Favourites"))
+		decorated_box.add(scrolled_box)
+		self.start_box.pack_start(decorated_box)
+		
+		data = self.load_from_file(os.path.join(self.cache_dir,BOOKMARKS_FILENAME))
+		if data is None:
+			data = {}
+		sortedkeys = sorted(data.keys())
+		for name in sortedkeys:
+			station = data[name]
+			button = gtk.Button(name)
+			button.connect("clicked",button_click,name,station)
+			favourites_box.pack_start(button, expand=False)
+		
+		self.start_box.show_all()
+
+	""" handler for page switches in the main notebook """
+	def event_page_switch(self,notebook,page,page_num):
+		if page_num == 0:
+			# update favourites each time user selects it
+			self.refill_favourites()
+		if page_num == 1:
+			if not self.main_list_filled:
+				# fill the list only the first time, the user selects the main tab
+				self.main_list_filled = True
+				self.refill_list()
 
 	""" listener on double click in search view """
 	def on_item_activated_icon_view(self,widget,item):
@@ -433,7 +503,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		sub_info_box.pack_start(info_container)
 		sub_info_box.pack_start(button_box,False)
 
-		decorated_info_box = gtk.Frame("Info box")
+		decorated_info_box = gtk.Frame(_("Info box"))
 		decorated_info_box.add(sub_info_box)
 
 		self.info_box.pack_start(decorated_info_box)
