@@ -38,6 +38,8 @@ class BoardHandler(xml.sax.handler.ContentHandler):
 			self.entry.id = attributes.get("id")
 			self.entry.server_name = attributes.get("name")
 			self.entry.genre = attributes.get("tags")
+			if (self.entry.genre == None):
+				self.entry.genre = ""
 			self.entry.genre = ",".join(self.entry.genre.split(" "))
 			self.entry.listen_url = attributes.get("url")
 			self.entry.language = attributes.get("language")

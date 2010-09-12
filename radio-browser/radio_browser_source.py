@@ -247,33 +247,22 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	def download_click_statistic(self):
 		# download statistics
-		data = ""
+		statisticsStr = ""
 		try:
 			remotefile = urllib2.urlopen("http://segler.bplaced.net/topclick.php?limit=10")
-			chunksize = 100
-			current = 0
-
-			while True:
-				chunk = remotefile.read(chunksize)
-				current += chunksize
-				if chunk == "":
-					break
-				if chunk == None:
-					break
-				data += chunk
+			statisticsStr = remotefile.read()
 		
 		except Exception, e:
 			print "download failed exception"
 			print e
-			return False
-		statisticsStr = data
+			return
 		
 		# parse statistics
 		self.statistics_handler = BoardHandler()
 		xml.sax.parseString(statisticsStr,self.statistics_handler)
-		
+	
 		# fill statistics box
-		self.refill_statistics()
+		self.refill_statistics(thread=True)
 	
 	def shortStr(self,longstring,maxlen):
 		if len(longstring) > maxlen:
@@ -282,7 +271,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			short_value = longstring
 		return short_value
 	
-	def refill_statistics(self):
+	def refill_statistics(self, thread=False):
 		# check if already downloaded
 		try:
 			self.statistics_handler
@@ -305,6 +294,8 @@ class RadioBrowserSource(rb.StreamingSource):
 			
 			self.refill_favourites()
 		
+		if thread:
+			gtk.gdk.threads_enter()
 		for entry in self.statistics_handler.entries:
 			button = gtk.Button(self.shortStr(entry.server_name,30)+" ("+entry.clickcount+")")
 			button.connect("clicked",button_click,entry.server_name,entry)
@@ -319,8 +310,11 @@ class RadioBrowserSource(rb.StreamingSource):
 			line.pack_start(button_add,expand=False)
 			
 			self.statistics_box.pack_start(line,expand=False)
+			line.show_all()
 			
 		self.statistics_box.show_all()
+		if thread:
+			gtk.gdk.threads_leave()
 
 	def refill_favourites(self):
 		print "refill favourites"
