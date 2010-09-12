@@ -1,3 +1,7 @@
+Changes in 2.2:
+===============
+* added new tab, that displays favourites for faster access on program start
+
 Changes in 2.1:
 ===============
 * gio library dependency is not needed any more
