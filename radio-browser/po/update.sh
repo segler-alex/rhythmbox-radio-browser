@@ -1,4 +1,6 @@
 #!/bin/sh
+# update package.pot
+intltool-update -p -g package
 
 # update translations from webtranslateit
 /var/lib/gems/1.8/bin/wti pull

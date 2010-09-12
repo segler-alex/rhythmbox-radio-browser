@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-05-25 18:15+0200\n"
+"POT-Creation-Date: 2010-09-12 14:29+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,112 +16,112 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../board_handler.py:61 ../board_handler.py:107 ../board_handler.py:215
+#: ../board_handler.py:67 ../board_handler.py:113 ../board_handler.py:221
 msgid "Post new station"
 msgstr ""
 
-#: ../board_handler.py:68
+#: ../board_handler.py:74
 msgid "Examples"
 msgstr ""
 
-#: ../board_handler.py:70 ../radio_browser_source.py:320
+#: ../board_handler.py:76 ../radio_browser_source.py:564
 msgid "Name"
 msgstr ""
 
-#: ../board_handler.py:73
+#: ../board_handler.py:79
 msgid "My Station"
 msgstr ""
 
-#: ../board_handler.py:75
+#: ../board_handler.py:81
 msgid "URL"
 msgstr ""
 
-#: ../board_handler.py:78
+#: ../board_handler.py:84
 msgid "http://listen.to.my/station.pls"
 msgstr ""
 
-#: ../board_handler.py:80
+#: ../board_handler.py:86
 msgid "Homepage URL"
 msgstr ""
 
-#: ../board_handler.py:83
+#: ../board_handler.py:89
 msgid "http://very.cool.site"
 msgstr ""
 
-#: ../board_handler.py:85
+#: ../board_handler.py:91
 msgid "Favicon URL"
 msgstr ""
 
-#: ../board_handler.py:88
+#: ../board_handler.py:94
 msgid "http://very.cool.site/favicon.ico"
 msgstr ""
 
-#: ../board_handler.py:90 ../radio_browser_source.py:328
+#: ../board_handler.py:96 ../radio_browser_source.py:572
 msgid "Country"
 msgstr ""
 
-#: ../board_handler.py:93
+#: ../board_handler.py:99
 msgid "Utopia"
 msgstr ""
 
-#: ../board_handler.py:95 ../radio_browser_source.py:327
+#: ../board_handler.py:101 ../radio_browser_source.py:571
 msgid "Language"
 msgstr ""
 
-#: ../board_handler.py:98
+#: ../board_handler.py:104
 msgid "Esperanto"
 msgstr ""
 
-#: ../board_handler.py:100 ../radio_browser_source.py:321
+#: ../board_handler.py:106 ../radio_browser_source.py:565
 msgid "Tags"
 msgstr ""
 
-#: ../board_handler.py:103
+#: ../board_handler.py:109
 msgid "Classical Jazz Talk"
 msgstr ""
 
-#: ../board_handler.py:127 ../board_handler.py:220
+#: ../board_handler.py:133 ../board_handler.py:226
 msgid "Vote for station"
 msgstr ""
 
-#: ../board_handler.py:128
+#: ../board_handler.py:134
 msgid ""
 "Do you really want to vote for this station? It means, that you like it, and "
 "you want more people to know, that this is a good station."
 msgstr ""
 
-#: ../board_handler.py:139
+#: ../board_handler.py:145
 msgid "Mark station as broken"
 msgstr ""
 
-#: ../board_handler.py:140
+#: ../board_handler.py:146
 msgid ""
 "Do you really want to mark this radio station as broken? It will eventually "
 "get deleted if enough people do that! More information on that on the feeds "
 "homepage: http://segler.bplaced.net/"
 msgstr ""
 
-#: ../board_handler.py:186
+#: ../board_handler.py:192
 msgid "Name and URL are necessary"
 msgstr ""
 
-#: ../board_handler.py:190
+#: ../board_handler.py:196
 msgid "URL needs to start with http:// or mms://"
 msgstr ""
 
-#: ../board_handler.py:195
+#: ../board_handler.py:201
 msgid "Homepage URL needs to start with http://"
 msgstr ""
 
-#: ../board_handler.py:200
+#: ../board_handler.py:206
 msgid "Favicon URL needs to start with http://"
 msgstr ""
 
-#: ../board_handler.py:207
+#: ../board_handler.py:213
 msgid "Station successfully posted"
 msgstr ""
 
-#: ../board_handler.py:221
+#: ../board_handler.py:227
 msgid "Station is broken"
 msgstr ""
 
@@ -145,207 +145,219 @@ msgstr ""
 msgid "Radio Browser Configuration"
 msgstr ""
 
-#: ../radio-browser.py:113
+#: ../radio-browser.py:121
 msgid "Radio browser"
 msgstr ""
 
 #. add "update-all" action to the toolbar
-#: ../radio-browser.py:128
+#: ../radio-browser.py:136
 msgid "Update radio station list"
 msgstr ""
 
-#: ../radio-browser.py:132
+#: ../radio-browser.py:140
 msgid "Clear icon cache"
 msgstr ""
 
-#: ../radio_browser_source.py:81
+#: ../radio_browser_source.py:83
 msgid "Nothing"
 msgstr ""
 
-#: ../radio_browser_source.py:86
+#: ../radio_browser_source.py:88
 #, python-format
 msgid "Loading %(url)s"
 msgstr ""
 
 #. create the view
 #. "Title",gtk.CellRendererText(),text=0)
-#: ../radio_browser_source.py:144 ../record_process.py:86
+#: ../radio_browser_source.py:146 ../record_process.py:86
 msgid "Title"
 msgstr ""
 
-#: ../radio_browser_source.py:199
+#: ../radio_browser_source.py:201
 msgid "Filter"
 msgstr ""
 
-#: ../radio_browser_source.py:201
+#: ../radio_browser_source.py:203
 msgid "Genre"
 msgstr ""
 
-#: ../radio_browser_source.py:203 ../radio_browser_source.py:322
+#: ../radio_browser_source.py:205 ../radio_browser_source.py:566
 #: ../record_process.py:165
 msgid "Bitrate"
 msgstr ""
 
-#: ../radio_browser_source.py:214
+#: ../radio_browser_source.py:218 ../radio_browser_source.py:424
+msgid "Favourites"
+msgstr ""
+
+#: ../radio_browser_source.py:219
 msgid "Radiostation list"
 msgstr ""
 
-#: ../radio_browser_source.py:304
+#: ../radio_browser_source.py:360
+msgid "Click statistics (Last 30 days)"
+msgstr ""
+
+#. add recently played list
+#: ../radio_browser_source.py:372 ../radio_browser_source.py:1207
+msgid "Recently played"
+msgstr ""
+
+#: ../radio_browser_source.py:548
 msgid "Entry type"
 msgstr ""
 
-#: ../radio_browser_source.py:304
+#: ../radio_browser_source.py:548
 msgid "Feed"
 msgstr ""
 
-#: ../radio_browser_source.py:306
+#: ../radio_browser_source.py:550
 msgid "Description"
 msgstr ""
 
-#: ../radio_browser_source.py:307
+#: ../radio_browser_source.py:551
 msgid "Feed homepage"
 msgstr ""
 
-#: ../radio_browser_source.py:308
+#: ../radio_browser_source.py:552
 msgid "Feed source"
 msgstr ""
 
-#: ../radio_browser_source.py:314
+#: ../radio_browser_source.py:558
 msgid "No local copy"
 msgstr ""
 
-#: ../radio_browser_source.py:315
+#: ../radio_browser_source.py:559
 msgid "Last update"
 msgstr ""
 
-#: ../radio_browser_source.py:319
+#: ../radio_browser_source.py:563
 msgid "Source feed"
 msgstr ""
 
-#: ../radio_browser_source.py:323
+#: ../radio_browser_source.py:567
 msgid "Server type"
 msgstr ""
 
-#: ../radio_browser_source.py:324
+#: ../radio_browser_source.py:568
 msgid "Homepage"
 msgstr ""
 
-#: ../radio_browser_source.py:325
+#: ../radio_browser_source.py:569
 msgid "Current song (on last refresh)"
 msgstr ""
 
-#: ../radio_browser_source.py:326
+#: ../radio_browser_source.py:570
 msgid "Current listeners"
 msgstr ""
 
-#: ../radio_browser_source.py:329
+#: ../radio_browser_source.py:573
 msgid "Votes"
 msgstr ""
 
-#: ../radio_browser_source.py:330
+#: ../radio_browser_source.py:574
 msgid "Negative votes"
 msgstr ""
 
-#: ../radio_browser_source.py:331
+#: ../radio_browser_source.py:575
 msgid "Stream URL"
 msgstr ""
 
-#: ../radio_browser_source.py:334
+#: ../radio_browser_source.py:578
 msgid "Added to recently played at"
 msgstr ""
 
-#: ../radio_browser_source.py:351 ../radio_browser_source.py:421
+#: ../radio_browser_source.py:594 ../radio_browser_source.py:663
 msgid "Unbookmark"
 msgstr ""
 
-#: ../radio_browser_source.py:365 ../radio_browser_source.py:419
+#: ../radio_browser_source.py:608 ../radio_browser_source.py:661
 msgid "Bookmark"
 msgstr ""
 
-#: ../radio_browser_source.py:386
+#: ../radio_browser_source.py:628
 msgid "Redownload"
 msgstr ""
 
-#: ../radio_browser_source.py:389
+#: ../radio_browser_source.py:631
 msgid "Download"
 msgstr ""
 
-#: ../radio_browser_source.py:399
+#: ../radio_browser_source.py:641
 msgid "Play"
 msgstr ""
 
-#: ../radio_browser_source.py:411
+#: ../radio_browser_source.py:653
 msgid "Record"
 msgstr ""
 
-#: ../radio_browser_source.py:652
+#: ../radio_browser_source.py:678
+msgid "Info box"
+msgstr ""
+
+#: ../radio_browser_source.py:894
 msgid "downloading station information"
 msgstr ""
 
-#: ../radio_browser_source.py:652
+#: ../radio_browser_source.py:894
 msgid "Try"
 msgstr ""
 
-#: ../radio_browser_source.py:664
+#: ../radio_browser_source.py:906
 msgid "Could not download station information"
 msgstr ""
 
-#: ../radio_browser_source.py:665
+#: ../radio_browser_source.py:907
 msgid ""
 "Could not download station information from shoutcast directory server. "
 "Please try again later."
 msgstr ""
 
-#: ../radio_browser_source.py:756
+#: ../radio_browser_source.py:1000
 #, python-format
 msgid "Downloading feed %(name)s from %(url)s. %(try)d/%(trys)d"
 msgstr ""
 
-#: ../radio_browser_source.py:769
+#: ../radio_browser_source.py:1013
 msgid "Feed download failed"
 msgstr ""
 
-#: ../radio_browser_source.py:770
+#: ../radio_browser_source.py:1014
 msgid "Could not download feed. Please try again later."
 msgstr ""
 
-#: ../radio_browser_source.py:827
+#: ../radio_browser_source.py:1073
 #, python-format
 msgid "Loading feed %(name)s"
 msgstr ""
 
-#: ../radio_browser_source.py:846
+#: ../radio_browser_source.py:1092
 #, python-format
 msgid "Integrating feed %(name)s (%(itemcount)d items) into tree..."
 msgstr ""
 
-#: ../radio_browser_source.py:873
+#: ../radio_browser_source.py:1119
 msgid "By Genres"
 msgstr ""
 
-#: ../radio_browser_source.py:874
+#: ../radio_browser_source.py:1120
 msgid "By Country"
 msgstr ""
 
-#: ../radio_browser_source.py:875
+#: ../radio_browser_source.py:1121
 msgid "By Streamtype"
 msgstr ""
 
-#: ../radio_browser_source.py:876
+#: ../radio_browser_source.py:1122
 msgid "By Bitrate"
 msgstr ""
 
-#: ../radio_browser_source.py:909
+#: ../radio_browser_source.py:1155
 msgid "Invalid"
 msgstr ""
 
-#. add recently played list
-#: ../radio_browser_source.py:961
-msgid "Recently played"
-msgstr ""
-
 #. add bookmarks
-#: ../radio_browser_source.py:973
+#: ../radio_browser_source.py:1219
 msgid "Bookmarks"
 msgstr ""
 
