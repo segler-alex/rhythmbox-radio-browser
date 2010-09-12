@@ -928,7 +928,10 @@ class RadioBrowserSource(rb.StreamingSource):
 					pass
 				data[station.server_name] = station
 				data[station.server_name].PlayTime = datetime.datetime.now()
-				self.save_to_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME),data)
+			else:
+				data[station.server_name].PlayTime = datetime.datetime.now()
+			
+			self.save_to_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME),data)
 
 		gtk.gdk.threads_enter()
 		self.load_status = ""
