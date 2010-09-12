@@ -215,7 +215,11 @@ class RecordProcess(threading.Thread,gtk.VBox):
 			gobject.idle_add(self.set_info_box)
 
 		print "thread closed"
+		
+		gtk.gdk.threads_enter()
+		self.get_parent().set_current_page(0)
 		self.get_parent().remove(self)
+		gtk.gdk.threads_leave()
 
 	def stop(self):
 		if self.process.poll() is None:

@@ -326,7 +326,9 @@ class RadioBrowserSource(rb.StreamingSource):
 		
 		def button_click(widget,name,station):
 			self.play_uri(station)
-			pass
+		
+		def button_record_click(widget,name,station):
+			self.record_uri(station)
 		
 		def button_add_click(widget,name,station):
 			data = self.load_from_file(os.path.join(self.cache_dir,BOOKMARKS_FILENAME))
@@ -439,7 +441,15 @@ class RadioBrowserSource(rb.StreamingSource):
 			img.set_from_stock(gtk.STOCK_DELETE,gtk.ICON_SIZE_BUTTON)
 			button_delete.set_image(img)
 			button_delete.connect("clicked",button_delete_click,name,station)
+			
+			button_record = gtk.Button()
+			img = gtk.Image()
+			img.set_from_stock(gtk.STOCK_MEDIA_RECORD,gtk.ICON_SIZE_BUTTON)
+			button_record.set_image(img)
+			button_record.connect("clicked",button_record_click,name,station)
+			
 			line.pack_start(button)
+			line.pack_start(button_record,expand=False)
 			line.pack_start(button_delete,expand=False)
 			favourites_box.pack_start(line, expand=False)
 			
@@ -570,7 +580,6 @@ class RadioBrowserSource(rb.StreamingSource):
 
 		def button_play_handler(widget,station):
 			self.play_uri(station)
-			pass
 
 		def button_bookmark_handler(widget,station):
 			data = self.load_from_file(os.path.join(self.cache_dir,BOOKMARKS_FILENAME))
