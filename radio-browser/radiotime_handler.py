@@ -72,7 +72,6 @@ class RadioTimeHandler(xml.sax.handler.ContentHandler):
 				self.entries.append(self.entry)
 			if attributes.get("type") == "text":
 				self.genres[attributes.get("guide_id")] = attributes.get("text")
-				print "got: "+attributes.get("guide_id")+"="+attributes.get("text")
 
 RadioTimeGenreList = None
 

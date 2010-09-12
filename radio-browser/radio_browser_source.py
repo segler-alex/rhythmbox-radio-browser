@@ -282,7 +282,6 @@ class RadioBrowserSource(rb.StreamingSource):
 		
 		def button_click(widget,name,station):
 			self.play_uri(station)
-			pass
 		
 		def button_add_click(widget,name,station):
 			data = self.load_from_file(os.path.join(self.cache_dir,BOOKMARKS_FILENAME))
@@ -312,7 +311,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.statistics_box.pack_start(line,expand=False)
 			line.show_all()
 			
-		self.statistics_box.show_all()
+		self.statistics_box_parent.show_all()
 		if thread:
 			gtk.gdk.threads_leave()
 
@@ -351,6 +350,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.refill_favourites()
 		
 		left_box = gtk.VBox()
+		left_box.show()
 		
 		# add click statistics list
 		self.statistics_box = gtk.VBox()
@@ -359,6 +359,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		scrolled_box.set_property("hscrollbar-policy", gtk.POLICY_AUTOMATIC)
 		decorated_box = gtk.Frame(_("Click statistics (Last 30 days)"))
 		decorated_box.add(scrolled_box)
+		self.statistics_box_parent = decorated_box
 		left_box.pack_start(decorated_box)
 		
 		self.refill_statistics()
@@ -410,7 +411,9 @@ class RadioBrowserSource(rb.StreamingSource):
 						img.set_from_pixbuf(buffer)
 						img.show()
 						button.set_image(img)
-
+		
+		if len(sortedkeys)>0:
+			decorated_box.show_all()
 		self.save_to_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME),dataNew)
 
 		# add bookmarks
@@ -462,8 +465,8 @@ class RadioBrowserSource(rb.StreamingSource):
 					img.set_from_pixbuf(buffer)
 					img.show()
 					button.set_image(img)
-		
-		self.start_box.show_all()
+		if (len(sortedkeys) > 0):
+			decorated_box.show_all()
 
 	""" handler for page switches in the main notebook """
 	def event_page_switch(self,notebook,page,page_num):
