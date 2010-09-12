@@ -402,15 +402,18 @@ class RadioBrowserSource(rb.StreamingSource):
 				recently_box.pack_start(line, expand=False)
 				dataNew[name] = station
 				
-				if station.icon_src != "":
-					hash_src = hashlib.md5(station.icon_src).hexdigest()
-					filepath = os.path.join(self.icon_cache_dir, hash_src)
-					if os.path.exists(filepath):
-						buffer = gtk.gdk.pixbuf_new_from_file_at_size(filepath,width,height)
-						img = gtk.Image()
-						img.set_from_pixbuf(buffer)
-						img.show()
-						button.set_image(img)
+				try:
+					if station.icon_src != "":
+						hash_src = hashlib.md5(station.icon_src).hexdigest()
+						filepath = os.path.join(self.icon_cache_dir, hash_src)
+						if os.path.exists(filepath):
+							buffer = gtk.gdk.pixbuf_new_from_file_at_size(filepath,width,height)
+							img = gtk.Image()
+							img.set_from_pixbuf(buffer)
+							img.show()
+							button.set_image(img)
+				except:
+					print "could not set image for station:"+str(station.server_name)
 		
 		if len(sortedkeys)>0:
 			decorated_box.show_all()
@@ -456,15 +459,18 @@ class RadioBrowserSource(rb.StreamingSource):
 			line.pack_start(button_delete,expand=False)
 			favourites_box.pack_start(line, expand=False)
 			
-			if station.icon_src != "":
-				hash_src = hashlib.md5(station.icon_src).hexdigest()
-				filepath = os.path.join(self.icon_cache_dir, hash_src)
-				if os.path.exists(filepath):
-					buffer = gtk.gdk.pixbuf_new_from_file_at_size(filepath,width,height)
-					img = gtk.Image()
-					img.set_from_pixbuf(buffer)
-					img.show()
-					button.set_image(img)
+			try:
+				if station.icon_src != "":
+					hash_src = hashlib.md5(station.icon_src).hexdigest()
+					filepath = os.path.join(self.icon_cache_dir, hash_src)
+					if os.path.exists(filepath):
+						buffer = gtk.gdk.pixbuf_new_from_file_at_size(filepath,width,height)
+						img = gtk.Image()
+						img.set_from_pixbuf(buffer)
+						img.show()
+						button.set_image(img)
+			except:
+				print "could not set image for station:"+str(station.server_name)
 		if (len(sortedkeys) > 0):
 			decorated_box.show_all()
 
