@@ -10,6 +10,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Language: Greek\n"
+"X-Poedit-Country: GREECE\n"
 
 #: ../board_handler.py:61
 #: ../board_handler.py:107
@@ -47,9 +49,8 @@ msgid "http://very.cool.site"
 msgstr "http://very.cool.site"
 
 #: ../board_handler.py:85
-#, fuzzy
 msgid "Favicon URL"
-msgstr "Favicon URL"
+msgstr "URL Εικονιδίου"
 
 #: ../board_handler.py:88
 msgid "http://very.cool.site/favicon.ico"
@@ -62,7 +63,7 @@ msgstr "Χώρα"
 
 #: ../board_handler.py:93
 msgid "Utopia"
-msgstr "Utopia"
+msgstr "Ουτοπία"
 
 #: ../board_handler.py:95
 #: ../radio_browser_source.py:327
@@ -80,7 +81,7 @@ msgstr "Σημειώσεις"
 
 #: ../board_handler.py:103
 msgid "Classical Jazz Talk"
-msgstr "Classical Jazz Talk"
+msgstr "Κλασσική Jazz Ομιλία"
 
 #: ../board_handler.py:127
 #: ../board_handler.py:220
@@ -129,7 +130,7 @@ msgstr "Προσπάθειες για κατέβασμα αρχείου"
 
 #: ../radio-browser.py:43
 msgid "Recently played removal time(days)"
-msgstr "Πρόσφατα αναπαραχθέντα. Χρόνος αφαίρεσης (ημέρες)"
+msgstr "Χρόνος αφαίρεσης πρόσφατα αναπαραχθέντων. (ημέρες)"
 
 #: ../radio-browser.py:44
 msgid "Streamripper output path"
@@ -161,7 +162,7 @@ msgid "Nothing"
 msgstr "Τίποτα"
 
 #: ../radio_browser_source.py:86
-#, fuzzy, python-format
+#, python-format
 msgid "Loading %(url)s"
 msgstr "Φόρτωση %(url)s"
 
@@ -195,7 +196,6 @@ msgid "Entry type"
 msgstr "Τύπος Εισόδου"
 
 #: ../radio_browser_source.py:304
-#, fuzzy
 msgid "Feed"
 msgstr "Τροφοδοσία"
 
@@ -204,12 +204,10 @@ msgid "Description"
 msgstr "Περιγραφή"
 
 #: ../radio_browser_source.py:307
-#, fuzzy
 msgid "Feed homepage"
-msgstr "Αρχική σελίδα τροφοδοσίας"
+msgstr "Ιστοσελίδα τροφοδοσίας"
 
 #: ../radio_browser_source.py:308
-#, fuzzy
 msgid "Feed source"
 msgstr "Πηγή τροφοδοσίας"
 
@@ -222,9 +220,8 @@ msgid "Last update"
 msgstr "Τελευταία ενημέρωση"
 
 #: ../radio_browser_source.py:319
-#, fuzzy
 msgid "Source feed"
-msgstr "Πηγή Τροφοδοσίας"
+msgstr "Τύπος Τροφοδοσίας"
 
 #: ../radio_browser_source.py:323
 msgid "Server type"
@@ -240,7 +237,7 @@ msgstr "Τρέχον τραγούδι (μετά από την τελευταία
 
 #: ../radio_browser_source.py:326
 msgid "Current listeners"
-msgstr "Πόσοι ακούουν τώρα"
+msgstr "Ποιοι ακούν τώρα"
 
 #: ../radio_browser_source.py:329
 msgid "Votes"
@@ -301,27 +298,25 @@ msgid "Could not download station information from shoutcast directory server. P
 msgstr "Δεν μπορώ να κατεβάσω τις πληροφορίες για το σταθμό από τον εξυπηρετητή shoutcast. Παρακαλώ δοκιμάστε αργότερα"
 
 #: ../radio_browser_source.py:756
-#, fuzzy, python-format
+#, python-format
 msgid "Downloading feed %(name)s from %(url)s. %(try)d/%(trys)d"
 msgstr "Κατέβασμα τροφοδοσίας %(name)s από %(url)s. %(try)d/%(trys)d"
 
 #: ../radio_browser_source.py:769
-#, fuzzy
 msgid "Feed download failed"
 msgstr "Το κατέβασμα τροφοδοσίας απέτυχε"
 
 #: ../radio_browser_source.py:770
-#, fuzzy
 msgid "Could not download feed. Please try again later."
 msgstr "Δεν μπορώ να κατεβάσω τη τροφοδοσία. Παρακαλώ προσπαθείστε αργότερα."
 
 #: ../radio_browser_source.py:827
-#, fuzzy, python-format
+#, python-format
 msgid "Loading feed %(name)s"
 msgstr "Φόρτωμα ροής  %(name)s"
 
 #: ../radio_browser_source.py:846
-#, fuzzy, python-format
+#, python-format
 msgid "Integrating feed %(name)s (%(itemcount)d items) into tree..."
 msgstr "Ελεγχος αρτιότητας τροφοδοσίας %(name)s (%(itemcount)d αντικείμενα) στο δέντρο..."
 
@@ -331,7 +326,7 @@ msgstr "Κατά Τεχνοτροπία"
 
 #: ../radio_browser_source.py:874
 msgid "By Country"
-msgstr "Ανά Χώρα"
+msgstr "Κατά Χώρα"
 
 #: ../radio_browser_source.py:875
 msgid "By Streamtype"
@@ -348,7 +343,7 @@ msgstr "Μη έγκυρο"
 #. add recently played list
 #: ../radio_browser_source.py:961
 msgid "Recently played"
-msgstr "Πρόσφατα αναπαραχθέντες"
+msgstr "Πρόσφατα αναπαραχθέντα"
 
 #. add bookmarks
 #: ../radio_browser_source.py:973
@@ -394,5 +389,5 @@ msgstr "Internet radio station browser"
 
 #: ../radio-browser.rb-plugin.in.h:2
 msgid "Shows icecast and shoutcast radio stations on a tab."
-msgstr "Εμφανίζει ραδιοφωνικούς σταθμούς,  icecast και shoutcast, στην καρτέλα"
+msgstr "Εμφανίζει ραδιοφωνικούς σταθμούς,  icecast και shoutcast, σε μια καρτέλα."
 
