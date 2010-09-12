@@ -30,7 +30,7 @@ class BoardHandler(xml.sax.handler.ContentHandler):
 		self.entries = []
 		self.languages = []
 		self.countries = []
- 
+
 	def startElement(self, name, attributes):
 		if name == "station":
 			self.entry = RadioStation()
@@ -46,6 +46,10 @@ class BoardHandler(xml.sax.handler.ContentHandler):
 			self.entry.negativevotes = attributes.get("negativevotes")
 			self.entry.homepage = attributes.get("homepage")
 			self.entry.icon_src = attributes.get("favicon")
+			try:
+				self.entry.clickcount = attributes.get("clickcount")
+			except:
+				self.entry.clickcount = 0
 			self.entries.append(self.entry)
 
 			if self.entry.country.title() not in self.countries:

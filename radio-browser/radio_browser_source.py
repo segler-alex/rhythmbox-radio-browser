@@ -31,6 +31,7 @@ import Queue
 import pickle
 import datetime
 import math
+import urllib2
 
 import xml.sax.saxutils
 
@@ -43,6 +44,7 @@ from icecast_handler import FeedIcecast
 from shoutcast_handler import FeedShoutcast
 from shoutcast_handler import ShoutcastRadioStation
 from board_handler import FeedBoard
+from board_handler import BoardHandler
 from radiotime_handler import FeedRadioTime
 from radiotime_handler import FeedRadioTimeLocal
 
@@ -78,7 +80,7 @@ class RadioBrowserSource(rb.StreamingSource):
 				progress = min (float(self.load_current_size) / self.load_total_size, 1.0)
 			return (self.load_status,None,progress)
 		else:
-			return (_("Nothing"),None,0.0)
+			return (_("Nothing"),None,2.0)
 
 	def update_download_status(self,filename,current, total):
 		self.load_current_size = current
@@ -243,6 +245,83 @@ class RadioBrowserSource(rb.StreamingSource):
 
 		rb.BrowserSource.do_impl_activate (self)
 
+	def download_click_statistic(self):
+		# download statistics
+		data = ""
+		try:
+			remotefile = urllib2.urlopen("http://segler.bplaced.net/topclick.php?limit=10")
+			chunksize = 100
+			current = 0
+
+			while True:
+				chunk = remotefile.read(chunksize)
+				current += chunksize
+				if chunk == "":
+					break
+				if chunk == None:
+					break
+				data += chunk
+		
+		except Exception, e:
+			print "download failed exception"
+			print e
+			return False
+		statisticsStr = data
+		
+		# parse statistics
+		self.statistics_handler = BoardHandler()
+		xml.sax.parseString(statisticsStr,self.statistics_handler)
+		
+		# fill statistics box
+		self.refill_statistics()
+	
+	def shortStr(self,longstring,maxlen):
+		if len(longstring) > maxlen:
+			short_value = longstring[0:maxlen-3]+"..."
+		else:
+			short_value = longstring
+		return short_value
+	
+	def refill_statistics(self):
+		# check if already downloaded
+		try:
+			self.statistics_handler
+		except:
+			transmit_thread = threading.Thread(target = self.download_click_statistic)
+			transmit_thread.start()
+			return
+		
+		def button_click(widget,name,station):
+			self.play_uri(station)
+			pass
+		
+		def button_add_click(widget,name,station):
+			data = self.load_from_file(os.path.join(self.cache_dir,BOOKMARKS_FILENAME))
+			if data is None:
+				data = {}
+			if station.server_name not in data:
+				data[station.server_name] = station
+			self.save_to_file(os.path.join(self.cache_dir,BOOKMARKS_FILENAME),data)
+			
+			self.refill_favourites()
+		
+		for entry in self.statistics_handler.entries:
+			button = gtk.Button(self.shortStr(entry.server_name,30)+" ("+entry.clickcount+")")
+			button.connect("clicked",button_click,entry.server_name,entry)
+			
+			button_add = gtk.Button()
+			img = gtk.Image()
+			img.set_from_stock(gtk.STOCK_GO_FORWARD,gtk.ICON_SIZE_BUTTON)
+			button_add.set_image(img)
+			button_add.connect("clicked",button_add_click,entry.server_name,entry)
+			line = gtk.HBox()
+			line.pack_start(button)
+			line.pack_start(button_add,expand=False)
+			
+			self.statistics_box.pack_start(line,expand=False)
+			
+		self.statistics_box.show_all()
+
 	def refill_favourites(self):
 		print "refill favourites"
 		width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_BUTTON)
@@ -275,6 +354,19 @@ class RadioBrowserSource(rb.StreamingSource):
 			
 			self.refill_favourites()
 		
+		left_box = gtk.VBox()
+		
+		# add click statistics list
+		self.statistics_box = gtk.VBox()
+		scrolled_box = gtk.ScrolledWindow()
+		scrolled_box.add_with_viewport(self.statistics_box)
+		scrolled_box.set_property("hscrollbar-policy", gtk.POLICY_AUTOMATIC)
+		decorated_box = gtk.Frame(_("Click statistics (Last 30 days)"))
+		decorated_box.add(scrolled_box)
+		left_box.pack_start(decorated_box)
+		
+		self.refill_statistics()
+		
 		# add recently played list
 		recently_box = gtk.VBox()
 		scrolled_box = gtk.ScrolledWindow()
@@ -282,7 +374,9 @@ class RadioBrowserSource(rb.StreamingSource):
 		scrolled_box.set_property("hscrollbar-policy", gtk.POLICY_AUTOMATIC)
 		decorated_box = gtk.Frame(_("Recently played"))
 		decorated_box.add(scrolled_box)
-		self.start_box.pack_start(decorated_box)
+		left_box.pack_start(decorated_box)
+		
+		self.start_box.pack_start(left_box)
 		
 		data = self.load_from_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME))
 		if data is None:
@@ -515,7 +609,6 @@ class RadioBrowserSource(rb.StreamingSource):
 			transmit_thread = threading.Thread(target = self.download_feed,args = (feed,))
 			transmit_thread.setDaemon(True)
 			transmit_thread.start()
-			pass
 
 		def button_action_handler(widget,action):
 			action.call(self)
@@ -817,7 +910,10 @@ class RadioBrowserSource(rb.StreamingSource):
 			if data is None:
 				data = {}
 			if station.server_name not in data:
-				self.tree_store.append(self.recently_iter,(station.server_name,station))
+				try:
+					self.tree_store.append(self.recently_iter,(station.server_name,station))
+				except:
+					pass
 				data[station.server_name] = station
 				data[station.server_name].PlayTime = datetime.datetime.now()
 				self.save_to_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME),data)

@@ -99,7 +99,6 @@ class Feed:
 			print "download failed exception"
 			print e
 			return False
-			pass
 		return True
 
 	def getRemoteFileInfo(self):
