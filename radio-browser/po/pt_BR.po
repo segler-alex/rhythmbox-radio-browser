@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: rhythmbox-radio-browser\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-03-29 19:18:35 UTC\n"
-"PO-Revision-Date: 2010-09-11 16:29:52 UTC\n"
+"PO-Revision-Date: 2010-09-12 12:30:32 UTC\n"
 "Last-Translator: Web Translate It <support@webtranslateit.com>\n"
 "Language-Team: Portuguese, Brazil\n"
 "MIME-Version: 1.0\n"
@@ -57,6 +57,9 @@ msgstr "Classical Jazz Talk"
 #: ../radio-browser.py
 msgid "Clear icon cache"
 msgstr "Limpar ícones da cache"
+
+msgid "Click statistics (Last 30 days)"
+msgstr "Clique para ver as estatísticas (Últimos 30 dias)"
 
 #: ../radio_browser_source.py
 msgid "Could not download feed. Please try again later."
@@ -129,6 +132,9 @@ msgstr "URL do favicon"
 msgid "Favicon URL needs to start with http://"
 msgstr "O URL do favicon precisa iniciar com http://"
 
+msgid "Favourites"
+msgstr "Favoritos"
+
 #: ../radio_browser_source.py
 msgid "Feed"
 msgstr "Feed"
@@ -168,6 +174,9 @@ msgstr "URL da Homepage"
 #: ../board_handler.py
 msgid "Homepage URL needs to start with http://"
 msgstr "O URL da página precisa inciar com http://"
+
+msgid "Info box"
+msgstr "Caixa de informação"
 
 #: ../radio_browser_source.py
 msgid "Integrating feed %(name)s (%(itemcount)d items) into tree..."
@@ -381,4 +390,3 @@ msgstr "http://site.muito.legal"
 #: ../board_handler.py
 msgid "http://very.cool.site/favicon.ico"
 msgstr "http://site.muito.legal/favicon.ico"
-

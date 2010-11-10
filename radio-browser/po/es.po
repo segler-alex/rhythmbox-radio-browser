@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: rhythmbox-radio-browser\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-03-29 19:18:35 UTC\n"
-"PO-Revision-Date: 2010-09-11 16:29:52 UTC\n"
+"PO-Revision-Date: 2010-09-12 12:30:32 UTC\n"
 "Last-Translator: Web Translate It <support@webtranslateit.com>\n"
 "Language-Team: Spanish; Castilian\n"
 "MIME-Version: 1.0\n"
@@ -50,13 +50,16 @@ msgstr "Por Géneros"
 msgid "By Streamtype"
 msgstr ""
 
-#: ../board_handler.py
 msgid "Classical Jazz Talk"
-msgstr ""
+msgstr "Charla de Jazz Clásico"
 
 #: ../radio-browser.py
 msgid "Clear icon cache"
 msgstr "Purgar caché de iconos"
+
+#: ../radio_browser_source.py
+msgid "Click statistics (Last 30 days)"
+msgstr ""
 
 #: ../radio_browser_source.py
 msgid "Could not download feed. Please try again later."
@@ -91,9 +94,8 @@ msgstr "Canción actual"
 msgid "Description"
 msgstr "Descripción"
 
-#: ../board_handler.py
 msgid "Do you really want to mark this radio station as broken? It will eventually get deleted if enough people do that! More information on that on the feeds homepage: http://segler.bplaced.net/"
-msgstr "Está seguro de que desea marcar esta estación como inválida? Eventualmente será borrada si suficientes personas hacen lo mismo. Más información al respecto en la página del feed. http://segler.bplaced.net"
+msgstr "¿Está seguro de que desea marcar esta estación como inválida? Sólo será borrada si suficientes personas hacen lo mismo. Más información al respecto en la página del feed. http://segler.bplaced.net"
 
 #: ../board_handler.py
 # "Вы" пишется с большой буквы только в официальных сообщениях и личной переписке для выделения уважительного отношения к собеседнику (весьма конкретному собеседнику). Во всех остальных случаях местоимение "вы" пишется со строчной. В данном случае написание с большой буквы не оправдано.
@@ -128,6 +130,11 @@ msgstr "Dirección web del favicon"
 #: ../board_handler.py
 msgid "Favicon URL needs to start with http://"
 msgstr "Dirección web del favicon debe comenzar con http://"
+
+#: ../radio_browser_source.py
+#: ../radio_browser_source.py
+msgid "Favourites"
+msgstr ""
 
 #: ../radio_browser_source.py
 msgid "Feed"
@@ -168,6 +175,10 @@ msgstr "Dirección web de la página principal"
 #: ../board_handler.py
 msgid "Homepage URL needs to start with http://"
 msgstr "Dirección web de la página principal debe comenzar con http://"
+
+#: ../radio_browser_source.py
+msgid "Info box"
+msgstr ""
 
 #: ../radio_browser_source.py
 msgid "Integrating feed %(name)s (%(itemcount)d items) into tree..."
@@ -273,9 +284,8 @@ msgstr "Descargar de nuevo"
 msgid "Relay port"
 msgstr ""
 
-#: ../record_process.py
 msgid "Ripping stream"
-msgstr ""
+msgstr "Hacer rip desde fuente stream"
 
 #: ../record_process.py
 msgid "Server"
@@ -381,4 +391,3 @@ msgstr "http://sitio.muy.interesante"
 #: ../board_handler.py
 msgid "http://very.cool.site/favicon.ico"
 msgstr "http://sitio.muy.interesante/favicon.ico"
-

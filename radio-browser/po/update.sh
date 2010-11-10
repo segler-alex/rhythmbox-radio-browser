@@ -1,5 +1,6 @@
 #!/bin/sh
 # update package.pot
+echo "update package.pot"
 intltool-update -p -g package
 
 # update translations from webtranslateit
