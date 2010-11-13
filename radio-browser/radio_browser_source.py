@@ -207,7 +207,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			self.info_box = gtk.HBox()
 			
-			self.start_box = gtk.HBox()
+			self.start_box = gtk.HPaned()
 
 			stations_box = gtk.VBox()
 			stations_box.pack_start(filterbox,False)
@@ -373,7 +373,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		decorated_box.add(scrolled_box)
 		left_box.pack_start(decorated_box)
 		
-		self.start_box.pack_start(left_box)
+		self.start_box.pack1(left_box)
 		
 		data = self.load_from_file(os.path.join(self.cache_dir,RECENTLY_USED_FILENAME))
 		if data is None:
@@ -426,7 +426,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		scrolled_box.set_property("hscrollbar-policy", gtk.POLICY_AUTOMATIC)
 		decorated_box = gtk.Frame(_("Favourites"))
 		decorated_box.add(scrolled_box)
-		self.start_box.pack_start(decorated_box)
+		self.start_box.pack2(decorated_box)
 		
 		data = self.load_from_file(os.path.join(self.cache_dir,BOOKMARKS_FILENAME))
 		if data is None:
