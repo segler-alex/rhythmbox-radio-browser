@@ -128,6 +128,15 @@ class FeedBoard(Feed):
 	def name(self):
 		return "Board"
 
+	def search(self, term):
+		foundEntries = []
+
+		for entry in self.entries():
+			if entry.server_name.lower().find(term.lower()) >= 0:
+				foundEntries.append(entry)
+
+		return foundEntries
+
 	""" vote for station on board """
 	def vote_station(self,source,station):
 		message = gtk.MessageDialog(message_format=_("Vote for station"),buttons=gtk.BUTTONS_YES_NO,type=gtk.MESSAGE_QUESTION)

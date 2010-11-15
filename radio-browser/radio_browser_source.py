@@ -272,11 +272,11 @@ class RadioBrowserSource(rb.StreamingSource):
 		rb.BrowserSource.do_impl_activate (self)
 
 	def searchEngines(self):
-		#yield FeedLocal(self.cache_dir,self.update_download_status)
-		#yield FeedIcecast(self.cache_dir,self.update_download_status)
-		#yield FeedBoard(self.cache_dir,self.update_download_status)
-		yield FeedShoutcast(self.cache_dir,self.update_download_status)
-		yield FeedRadioTime(self.cache_dir,self.update_download_status)
+		yield FeedLocal(self.cache_dir,self.update_download_status)
+		yield FeedIcecast(self.cache_dir,self.update_download_status)
+		yield FeedBoard(self.cache_dir,self.update_download_status)
+		#yield FeedShoutcast(self.cache_dir,self.update_download_status)
+		#yield FeedRadioTime(self.cache_dir,self.update_download_status)
 
 	def doSearch(self, term):
 		search_model = gtk.ListStore(str)

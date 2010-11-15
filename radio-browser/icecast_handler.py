@@ -74,3 +74,12 @@ class FeedIcecast(Feed):
 
 	def getHomepage(self):
 		return "http://dir.xiph.org"
+
+	def search(self, term):
+		foundEntries = []
+
+		for entry in self.entries():
+			if entry.server_name.lower().find(term.lower()) >= 0:
+				foundEntries.append(entry)
+
+		return foundEntries
