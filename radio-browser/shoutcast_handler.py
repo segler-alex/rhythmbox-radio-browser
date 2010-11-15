@@ -123,7 +123,7 @@ class FeedSubShoutcast(Feed):
 		self.handler = ShoutcastHandler()
 		self.cache_dir = cache_dir
 		self.filename = os.path.join(self.cache_dir, "shoutcast-"+genre+".xml")
-		self.uri = "http://www.shoutcast.com/sbin/newxml.phtml?genre="+genre
+		self.uri = "http://www.shoutcast.com/sbin/newxml.phtml?%s" % urllib.urlencode({"genre":genre})
 		self.status_change_handler = status_change_handler
 		self.genre = genre
 		self.setAutoDownload(False)
