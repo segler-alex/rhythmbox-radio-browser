@@ -225,6 +225,8 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			self.result_box = gtk.TreeView()
 			self.result_box.connect("row-activated",self.row_activated_handler)
+			self.result_box.connect("cursor-changed",self.treeview_cursor_changed_handler)
+
 			self.result_box_container = gtk.ScrolledWindow()
 			self.result_box_container.set_shadow_type(gtk.SHADOW_IN)
 			self.result_box_container.add(self.result_box)
@@ -233,6 +235,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			self.search_box.pack_start(search_input_box,False)
 			self.search_box.pack_start(self.result_box_container)
+			self.search_box.pack_start(self.info_box,False)
 
 			stations_box = gtk.VBox()
 			stations_box.pack_start(filterbox,False)
@@ -275,8 +278,8 @@ class RadioBrowserSource(rb.StreamingSource):
 		yield FeedLocal(self.cache_dir,self.update_download_status)
 		yield FeedIcecast(self.cache_dir,self.update_download_status)
 		yield FeedBoard(self.cache_dir,self.update_download_status)
-		#yield FeedShoutcast(self.cache_dir,self.update_download_status)
-		#yield FeedRadioTime(self.cache_dir,self.update_download_status)
+		yield FeedShoutcast(self.cache_dir,self.update_download_status)
+		yield FeedRadioTime(self.cache_dir,self.update_download_status)
 
 	def doSearch(self, term):
 		search_model = gtk.ListStore(str)
@@ -290,6 +293,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	def doSearchThread(self,term):
 		results = {}
+		self.station_actions = {}
 
 		# check each engine for search method
 		for feed in self.searchEngines():
@@ -301,6 +305,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			# call search method
 			try:
+				self.station_actions[feed.name()] = feed.get_station_actions()
 				result = feed.search(term)
 				results[feed.name()] = result
 			except Exception,e:
@@ -583,7 +588,7 @@ class RadioBrowserSource(rb.StreamingSource):
 	""" listener for selection changes """
 	def treeview_cursor_changed_handler(self,treeview):
 		# get selected item
-		selection = self.tree_view.get_selection()
+		selection = treeview.get_selection()
 		model,iter = selection.get_selected()
 
 		# if some item is selected
