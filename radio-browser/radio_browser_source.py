@@ -228,7 +228,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.result_box_container.set_shadow_type(gtk.SHADOW_IN)
 			self.result_box_container.add(self.result_box)
 			self.result_box_container.set_property("hscrollbar-policy", gtk.POLICY_AUTOMATIC)
-			self.result_box.append_column(gtk.TreeViewColumn("Title",gtk.CellRendererText(),text=0))
+			self.result_box.append_column(gtk.TreeViewColumn(_("Title"),gtk.CellRendererText(),text=0))
 
 			self.search_box.pack_start(search_input_box,False)
 			self.search_box.pack_start(self.result_box_container)
@@ -270,14 +270,28 @@ class RadioBrowserSource(rb.StreamingSource):
 
 		rb.BrowserSource.do_impl_activate (self)
 
+	def searchEngines(self):
+		#yield FeedLocal(self.cache_dir,self.update_download_status)
+		#yield FeedIcecast(self.cache_dir,self.update_download_status)
+		#yield FeedBoard(self.cache_dir,self.update_download_status)
+		yield FeedShoutcast(self.cache_dir,self.update_download_status)
+		yield FeedRadioTime(self.cache_dir,self.update_download_status)
+
 	def doSearch(self, term):
-		print("search for:"+term)
-		results = {}
+		search_model = gtk.ListStore(str)
+		search_model.append((_("Searching for : '%s'") % term,))
+
 		# unset model
-		self.result_box.set_model()
+		self.result_box.set_model(search_model)
+		# start thread
+		search_thread = threading.Thread(target = self.doSearchThread, args = (term,))
+		search_thread.start()
+
+	def doSearchThread(self,term):
+		results = {}
 
 		# check each engine for search method
-		for feed in self.engines():
+		for feed in self.searchEngines():
 			try:
 				feed.search
 			except:
@@ -291,6 +305,8 @@ class RadioBrowserSource(rb.StreamingSource):
 			except Exception,e:
 				print "error with source:"+feed.name()
 				print "error:"+str(e)
+
+		gtk.gdk.threads_enter()
 		# create new model
 		new_model = gtk.TreeStore(str)
 		# add entries to model
@@ -303,6 +319,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		# set model of result_box
 		new_model.set_sort_column_id(0,gtk.SORT_ASCENDING)
 		self.result_box.set_model(new_model)
+		gtk.gdk.threads_leave()
 			
 	def download_click_statistic(self):
 		# download statistics
