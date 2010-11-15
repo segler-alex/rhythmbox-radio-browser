@@ -52,7 +52,7 @@ from radiotime_handler import FeedRadioTimeLocal
 RB_METADATA_FIELD_TITLE = 0
 RB_METADATA_FIELD_GENRE = 4
 RB_METADATA_FIELD_BITRATE = 20
-BOARD_ROOT = "http://segler.bplaced.net/"
+BOARD_ROOT = "http://www.radio-browser.info/"
 RECENTLY_USED_FILENAME = "recently2.bin"
 BOOKMARKS_FILENAME = "bookmarks.bin"
 
@@ -209,6 +209,21 @@ class RadioBrowserSource(rb.StreamingSource):
 			
 			self.start_box = gtk.HPaned()
 
+			# prepare search tab
+			self.search_box = gtk.VBox()
+			self.search_entry = gtk.Entry()
+			#self.search_entry.connect("changed",self.filter_entry_changed)
+
+			search_input_box = gtk.HBox()
+			search_input_box.pack_start(gtk.Label(_("Search")+":"),False)
+			search_input_box.pack_start(self.search_entry)
+			search_input_box.pack_start(gtk.Button("."))
+
+			result_box = gtk.IconView()
+
+			self.search_box.pack_start(search_input_box,False)
+			self.search_box.pack_start(result_box)
+
 			stations_box = gtk.VBox()
 			stations_box.pack_start(filterbox,False)
 			stations_box.pack_start(self.view)
@@ -216,6 +231,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			self.notebook = gtk.Notebook()
 			self.notebook.append_page(self.start_box,gtk.Label(_("Favourites")))
+			self.notebook.append_page(self.search_box,gtk.Label(_("Search")))
 			self.notebook.append_page(stations_box,gtk.Label(_("Radiostation list")))
 			self.notebook.set_scrollable(True)
 			self.notebook.connect("switch-page",self.event_page_switch)
@@ -249,7 +265,7 @@ class RadioBrowserSource(rb.StreamingSource):
 		# download statistics
 		statisticsStr = ""
 		try:
-			remotefile = urllib2.urlopen("http://segler.bplaced.net/topclick.php?limit=10")
+			remotefile = urllib2.urlopen("http://www.radio-browser.info/topclick.php?limit=10")
 			statisticsStr = remotefile.read()
 		
 		except Exception, e:
@@ -480,6 +496,8 @@ class RadioBrowserSource(rb.StreamingSource):
 			# update favourites each time user selects it
 			self.refill_favourites()
 		if page_num == 1:
+			pass
+		if page_num == 2:
 			if not self.main_list_filled:
 				# fill the list only the first time, the user selects the main tab
 				self.main_list_filled = True

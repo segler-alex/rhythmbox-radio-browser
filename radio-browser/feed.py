@@ -201,3 +201,30 @@ class Feed:
 	def get_station_actions(self):
 		actions = []
 		return actions
+
+	def search(self,term,queue):
+		print "not implemented in this feed"
+
+	def downloadFile(self,url):
+		try:
+			remotefile = urllib2.urlopen(urli)
+			chunksize = 100
+			data = ""
+			current = 0
+
+			while True:
+				chunk = remotefile.read(chunksize)
+				current += chunksize
+				if chunk == "":
+					break
+				if chunk == None:
+					break
+				data += chunk
+
+			remotefile.close()
+			return data
+		except Exception, e:
+			print "download failed exception"
+			print e
+
+		return None

@@ -106,6 +106,15 @@ class FeedShoutcast(Feed):
 
 		return entry_list
 
+	def search(self,term,queue):
+		data = self.downloadFile("http://www.shoutcast.com/sbin/newxml.phtml?search="+term)
+		handler = ShoutcastHandler()
+		if data != None:
+			xml.sax.parseString(data,handler)
+			return handler.entries
+
+		return None
+
 class FeedSubShoutcast(Feed):
 	def __init__(self,cache_dir,status_change_handler,genre):
 		Feed.__init__(self)

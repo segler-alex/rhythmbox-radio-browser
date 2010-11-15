@@ -122,7 +122,7 @@ class FeedBoard(Feed):
 		self.handler = BoardHandler()
 		self.cache_dir = cache_dir
 		self.filename = os.path.join(self.cache_dir, "board.xml")
-		self.uri = "http://segler.bplaced.net/xml.php"
+		self.uri = "http://www.radio-browser.info/xml.php"
 		self.status_change_handler = status_change_handler
 
 	def name(self):
@@ -135,7 +135,7 @@ class FeedBoard(Feed):
 		response = message.run()
 		if response == gtk.RESPONSE_YES:
 			params = urllib.urlencode({'action': 'vote','id': station.id})
-			f = urllib.urlopen("http://segler.bplaced.net/?%s" % params)
+			f = urllib.urlopen("http://www.radio-browser.info/?%s" % params)
 			f.read()
 			source.refill_list()
 		message.destroy()
@@ -143,11 +143,11 @@ class FeedBoard(Feed):
 	""" mark station as bad on board """
 	def bad_station(self,source,station):
 		message = gtk.MessageDialog(message_format=_("Mark station as broken"),buttons=gtk.BUTTONS_YES_NO,type=gtk.MESSAGE_WARNING)
-		message.format_secondary_text(_("Do you really want to mark this radio station as broken? It will eventually get deleted if enough people do that! More information on that on the feeds homepage: http://segler.bplaced.net/"))
+		message.format_secondary_text(_("Do you really want to mark this radio station as broken? It will eventually get deleted if enough people do that! More information on that on the feeds homepage: http://www.radio-browser.info/"))
 		response = message.run()
 		if response == gtk.RESPONSE_YES:
 			params = urllib.urlencode({'action': 'negativevote','id': station.id})
-			f = urllib.urlopen("http://segler.bplaced.net/?%s" % params)
+			f = urllib.urlopen("http://www.radio-browser.info/?%s" % params)
 			f.read()
 			source.refill_list()
 		message.destroy()
@@ -207,7 +207,7 @@ class FeedBoard(Feed):
 						continue
 				
 				params = urllib.urlencode({'action': 'add','name': Name, 'url': URL, 'homepage': Homepage,'favicon': Favicon, 'tags': Tags,'language': Language, 'country':Country})
-				f = urllib.urlopen("http://segler.bplaced.net/?%s" % params)
+				f = urllib.urlopen("http://www.radio-browser.info/?%s" % params)
 				f.read()
 
 				show_message(_("Station successfully posted"))
