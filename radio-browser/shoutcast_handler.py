@@ -16,6 +16,7 @@
 #    along with Radio-Browser-Plugin.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import urllib
 import urllib2
 import xml.sax.handler
 
@@ -106,8 +107,9 @@ class FeedShoutcast(Feed):
 
 		return entry_list
 
-	def search(self,term,queue):
-		data = self.downloadFile("http://www.shoutcast.com/sbin/newxml.phtml?search="+term)
+	def search(self,term):
+		searchUrl = "http://www.shoutcast.com/sbin/newxml.phtml?%s" % urllib.urlencode({"search":term})
+		data = self.downloadFile(searchUrl)
 		handler = ShoutcastHandler()
 		if data != None:
 			xml.sax.parseString(data,handler)

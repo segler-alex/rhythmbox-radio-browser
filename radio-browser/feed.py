@@ -202,12 +202,13 @@ class Feed:
 		actions = []
 		return actions
 
-	def search(self,term,queue):
-		print "not implemented in this feed"
+	#def search(self,term,queue):
+	#	print "not implemented in this feed"
+	#	return None
 
 	def downloadFile(self,url):
 		try:
-			remotefile = urllib2.urlopen(urli)
+			remotefile = urllib2.urlopen(url)
 			chunksize = 100
 			data = ""
 			current = 0

@@ -214,15 +214,24 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.search_entry = gtk.Entry()
 			#self.search_entry.connect("changed",self.filter_entry_changed)
 
-			search_input_box = gtk.HBox()
-			search_input_box.pack_start(gtk.Label(_("Search")+":"),False)
-			search_input_box.pack_start(self.search_entry)
-			search_input_box.pack_start(gtk.Button("."))
+			def searchButtonClick(widget):
+				self.doSearch(self.search_entry.get_text())
+			searchbutton = gtk.Button(_("Search"))
+			searchbutton.connect("clicked",searchButtonClick)
 
-			result_box = gtk.IconView()
+			search_input_box = gtk.HBox()
+			search_input_box.pack_start(self.search_entry)
+			search_input_box.pack_start(searchbutton,False)
+
+			self.result_box = gtk.TreeView()
+			self.result_box_container = gtk.ScrolledWindow()
+			self.result_box_container.set_shadow_type(gtk.SHADOW_IN)
+			self.result_box_container.add(self.result_box)
+			self.result_box_container.set_property("hscrollbar-policy", gtk.POLICY_AUTOMATIC)
+			self.result_box.append_column(gtk.TreeViewColumn("Title",gtk.CellRendererText(),text=0))
 
 			self.search_box.pack_start(search_input_box,False)
-			self.search_box.pack_start(result_box)
+			self.search_box.pack_start(self.result_box_container)
 
 			stations_box = gtk.VBox()
 			stations_box.pack_start(filterbox,False)
@@ -261,6 +270,40 @@ class RadioBrowserSource(rb.StreamingSource):
 
 		rb.BrowserSource.do_impl_activate (self)
 
+	def doSearch(self, term):
+		print("search for:"+term)
+		results = {}
+		# unset model
+		self.result_box.set_model()
+
+		# check each engine for search method
+		for feed in self.engines():
+			try:
+				feed.search
+			except:
+				print "no search support in : "+feed.name()
+				continue
+
+			# call search method
+			try:
+				result = feed.search(term)
+				results[feed.name()] = result
+			except Exception,e:
+				print "error with source:"+feed.name()
+				print "error:"+str(e)
+		# create new model
+		new_model = gtk.TreeStore(str)
+		# add entries to model
+		for name in results.keys():
+			result = results[name]
+			source_parent = new_model.append(None,(name+" ("+str(len(result))+")",))
+			for entry in result:
+				new_model.append(source_parent,(entry.server_name,))
+
+		# set model of result_box
+		new_model.set_sort_column_id(0,gtk.SORT_ASCENDING)
+		self.result_box.set_model(new_model)
+			
 	def download_click_statistic(self):
 		# download statistics
 		statisticsStr = ""

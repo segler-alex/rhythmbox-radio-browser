@@ -16,6 +16,7 @@
 #    along with Radio-Browser-Plugin.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import urllib
 import urllib2
 import xml.sax.handler
 
@@ -64,12 +65,15 @@ class RadioTimeHandler(xml.sax.handler.ContentHandler):
 				self.entry.homepage = ""
 				self.entries.append(self.entry)
 			if attributes.get("type") == "link":
-				self.entry = FeedRadioTime(self.cache_dir,self.status_change_handler)
-				self.entry.uri = attributes.get("URL")
-				self.entry._name = attributes.get("text")
-				self.entry.filename = os.path.join(self.cache_dir,"radiotime-%s.xml" % attributes.get("guide_id"))
-				self.entry.setAutoDownload(False)
-				self.entries.append(self.entry)
+				try:
+					self.entry = FeedRadioTime(self.cache_dir,self.status_change_handler)
+					self.entry.uri = attributes.get("URL")
+					self.entry._name = attributes.get("text")
+					self.entry.filename = os.path.join(self.cache_dir,"radiotime-%s.xml" % attributes.get("guide_id"))
+					self.entry.setAutoDownload(False)
+					self.entries.append(self.entry)
+				except:
+					pass
 			if attributes.get("type") == "text":
 				self.genres[attributes.get("guide_id")] = attributes.get("text")
 
@@ -130,6 +134,17 @@ class FeedRadioTime(Feed):
 
 	def getHomepage(self):
 		return "http://radiotime.com/"
+
+	def search(self,term):
+		searchUrl = "http://opml.radiotime.com/Search.ashx?%s" % urllib.urlencode({"query":term})
+		print("url:"+searchUrl)
+		data = self.downloadFile(searchUrl)
+		handler = RadioTimeHandler()
+		if data != None:
+			xml.sax.parseString(data,handler)
+			return handler.entries
+
+		return None
 
 class FeedRadioTimeLocal(FeedRadioTime):
 	def __init__(self,cache_dir,status_change_handler):
