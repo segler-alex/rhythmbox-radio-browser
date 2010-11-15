@@ -224,6 +224,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			search_input_box.pack_start(searchbutton,False)
 
 			self.result_box = gtk.TreeView()
+			self.result_box.connect("row-activated",self.row_activated_handler)
 			self.result_box_container = gtk.ScrolledWindow()
 			self.result_box_container.set_shadow_type(gtk.SHADOW_IN)
 			self.result_box_container.add(self.result_box)
@@ -308,13 +309,13 @@ class RadioBrowserSource(rb.StreamingSource):
 
 		gtk.gdk.threads_enter()
 		# create new model
-		new_model = gtk.TreeStore(str)
+		new_model = gtk.TreeStore(str,object)
 		# add entries to model
 		for name in results.keys():
 			result = results[name]
-			source_parent = new_model.append(None,(name+" ("+str(len(result))+")",))
+			source_parent = new_model.append(None,(name+" ("+str(len(result))+")",None))
 			for entry in result:
-				new_model.append(source_parent,(entry.server_name,))
+				new_model.append(source_parent,(entry.server_name,entry))
 
 		# set model of result_box
 		new_model.set_sort_column_id(0,gtk.SORT_ASCENDING)
@@ -1065,6 +1066,8 @@ class RadioBrowserSource(rb.StreamingSource):
 		myiter = model.get_iter(path)
 		
 		obj = model.get_value(myiter,1)
+		if obj == None:
+			return
 
 		if isinstance(obj,RadioStation):
 			station = obj
