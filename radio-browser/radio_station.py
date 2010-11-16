@@ -62,7 +62,7 @@ class RadioStation:
 				newiter = urlListStore.append((url,))
 				if iter == None:
 					iter = newiter
-				if url.startswith("http://"):
+				if url.lower().startswith("http://") and not url.lower().endswith("asx"):
 					iter = newiter
 			urlListView.set_model(urlListStore)
 
