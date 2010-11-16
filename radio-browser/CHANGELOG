@@ -1,3 +1,9 @@
+Changes in 2.3.1:
+=================
+* added stream chooser dialog if station has multiple streams urls
+* some bugfixes
+* updated translations
+
 Changes in 2.3:
 ===============
 * new search tab

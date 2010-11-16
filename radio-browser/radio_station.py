@@ -62,6 +62,8 @@ class RadioStation:
 				newiter = urlListStore.append((url,))
 				if iter == None:
 					iter = newiter
+				if url.startswith("http://"):
+					iter = newiter
 			urlListView.set_model(urlListStore)
 
 			treeselection = urlListView.get_selection()
