@@ -28,6 +28,7 @@ class RadioTimeRadioStation(RadioStation):
 		if self.listen_url == "":
 			try:
 				url = "http://opml.radiotime.com/Tune.ashx?id="+self.listen_id
+				print "tunein:"+url
 				remote = urllib2.urlopen(url)
 				data = remote.read()
 				remote.close()
@@ -35,8 +36,14 @@ class RadioTimeRadioStation(RadioStation):
 				lines = data.splitlines()
 				for line in lines:
 					if not line.startswith("#"):
-						self.listen_url = line
-						print "playing uri:"+self.listen_url
+						print "new link:"+line
+						# set if not set yet
+						if self.listen_url == "":
+							self.listen_url = line
+						# overwrite if link is not mms://
+						if line.startswith("http://"):
+							self.listen_url = line
+						print "new playing choice:"+self.listen_url
 			except:
 				return None
 		if self.listen_url == "":
@@ -88,7 +95,7 @@ class FeedRadioTime(Feed):
 		self.cache_dir = cache_dir
 		self.status_change_handler = status_change_handler
 		self.filename = os.path.join(self.cache_dir, "radiotime.xml")
-		self.uri = "http://opml.radiotime.com/Browse.ashx?id=r0"
+		self.uri = "http://opml.radiotime.com/Browse.ashx?%s" % urllib.urlencode({"id":"r0","formats":"ogg,mp3,aac,wma"})
 		self._name = "RadioTime"
 		self.setUpdateChecking(False)
 
@@ -149,6 +156,6 @@ class FeedRadioTime(Feed):
 class FeedRadioTimeLocal(FeedRadioTime):
 	def __init__(self,cache_dir,status_change_handler):
 		FeedRadioTime.__init__(self,cache_dir,status_change_handler)
-		self.uri = "http://opml.radiotime.com/Browse.ashx?c=local"
+		self.uri = "http://opml.radiotime.com/Browse.ashx?%s" % urllib.urlencode({"c":"local","formats":"ogg,mp3,aac,wma"})
 		self._name = "RadioTime Local"
 		self.filename = os.path.join(self.cache_dir, "radiotime-local.xml")
