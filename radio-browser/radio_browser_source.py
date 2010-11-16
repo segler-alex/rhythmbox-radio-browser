@@ -168,11 +168,13 @@ class RadioBrowserSource(rb.StreamingSource):
 			column_bitrate.set_fixed_width(100)
 			self.tree_view.append_column(column_bitrate)"""
 
+			self.info_box_tree = gtk.HBox()
+
 			# add some more listeners for tree view...
 			# - row double click
 			self.tree_view.connect("row-activated",self.row_activated_handler)
 			# - selection change
-			self.tree_view.connect("cursor-changed",self.treeview_cursor_changed_handler)
+			self.tree_view.connect("cursor-changed",self.treeview_cursor_changed_handler,self.info_box_tree)
 
 			# create icon view
 			self.icon_view = gtk.IconView()
@@ -205,11 +207,10 @@ class RadioBrowserSource(rb.StreamingSource):
 			filterbox.pack_start(gtk.Label(_("Bitrate")+":"),False)
 			filterbox.pack_start(self.filter_entry_bitrate,False)
 
-			self.info_box = gtk.HBox()
-			
 			self.start_box = gtk.HPaned()
 
 			# prepare search tab
+			self.info_box_search = gtk.HBox()
 			self.search_box = gtk.VBox()
 			self.search_entry = gtk.Entry()
 			#self.search_entry.connect("changed",self.filter_entry_changed)
@@ -225,7 +226,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			self.result_box = gtk.TreeView()
 			self.result_box.connect("row-activated",self.row_activated_handler)
-			self.result_box.connect("cursor-changed",self.treeview_cursor_changed_handler)
+			self.result_box.connect("cursor-changed",self.treeview_cursor_changed_handler,self.info_box_search)
 
 			self.result_box_container = gtk.ScrolledWindow()
 			self.result_box_container.set_shadow_type(gtk.SHADOW_IN)
@@ -235,12 +236,12 @@ class RadioBrowserSource(rb.StreamingSource):
 
 			self.search_box.pack_start(search_input_box,False)
 			self.search_box.pack_start(self.result_box_container)
-			self.search_box.pack_start(self.info_box,False)
+			self.search_box.pack_start(self.info_box_search,False)
 
 			stations_box = gtk.VBox()
 			stations_box.pack_start(filterbox,False)
 			stations_box.pack_start(self.view)
-			stations_box.pack_start(self.info_box,False)
+			stations_box.pack_start(self.info_box_tree,False)
 
 			self.notebook = gtk.Notebook()
 			self.notebook.append_page(self.start_box,gtk.Label(_("Favourites")))
@@ -586,7 +587,7 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.update_info_box(obj)
 	
 	""" listener for selection changes """
-	def treeview_cursor_changed_handler(self,treeview):
+	def treeview_cursor_changed_handler(self,treeview,info_box):
 		# get selected item
 		selection = treeview.get_selection()
 		model,iter = selection.get_selected()
@@ -594,12 +595,12 @@ class RadioBrowserSource(rb.StreamingSource):
 		# if some item is selected
 		if not iter == None:
 			obj = model.get_value(iter,1)
-			self.update_info_box(obj)
+			self.update_info_box(obj,info_box)
 
-	def update_info_box(self,obj):
+	def update_info_box(self,obj,info_box):
 		# remove all old information in infobox
-		for widget in self.info_box.get_children():
-			self.info_box.remove(widget)
+		for widget in info_box.get_children():
+			info_box.remove(widget)
 
 		# create new infobox
 		info_container = gtk.Table(12,2)
@@ -608,6 +609,8 @@ class RadioBrowserSource(rb.StreamingSource):
 
 		# convinience method for adding new labels to infobox
 		def add_label(title,value,shorten=True):
+			if value == None:
+				return
 			if not value == "":
 				if shorten:
 					if len(value) > 53:
@@ -768,8 +771,8 @@ class RadioBrowserSource(rb.StreamingSource):
 		decorated_info_box = gtk.Frame(_("Info box"))
 		decorated_info_box.add(sub_info_box)
 
-		self.info_box.pack_start(decorated_info_box)
-		self.info_box.show_all()
+		info_box.pack_start(decorated_info_box)
+		info_box.show_all()
 
 	""" icon download worker thread function """
 	def icon_download_worker(self):
