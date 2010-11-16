@@ -24,28 +24,28 @@ from radio_station import RadioStation
 from feed import Feed
 
 class RadioTimeRadioStation(RadioStation):
+	def updateRealURL(self):
+		self.listen_urls = []
+		try:
+			url = "http://opml.radiotime.com/Tune.ashx?id="+self.listen_id
+			print "tunein:"+url
+			remote = urllib2.urlopen(url)
+			data = remote.read()
+			remote.close()
+
+			lines = data.splitlines()
+			for line in lines:
+				if not line.startswith("#"):
+					self.listen_urls.append(line)
+					print "new link:"+line
+			self.askUserAboutUrls()
+
+		except:
+			return
+
 	def getRealURL(self):
 		if self.listen_url == "":
-			try:
-				url = "http://opml.radiotime.com/Tune.ashx?id="+self.listen_id
-				print "tunein:"+url
-				remote = urllib2.urlopen(url)
-				data = remote.read()
-				remote.close()
-
-				lines = data.splitlines()
-				for line in lines:
-					if not line.startswith("#"):
-						print "new link:"+line
-						# set if not set yet
-						if self.listen_url == "":
-							self.listen_url = line
-						# overwrite if link is not mms://
-						if line.startswith("http://"):
-							self.listen_url = line
-						print "new playing choice:"+self.listen_url
-			except:
-				return None
+			self.updateRealURL()
 		if self.listen_url == "":
 			return None
 		else:
@@ -143,7 +143,7 @@ class FeedRadioTime(Feed):
 		return "http://radiotime.com/"
 
 	def search(self,term):
-		searchUrl = "http://opml.radiotime.com/Search.ashx?%s" % urllib.urlencode({"query":term})
+		searchUrl = "http://opml.radiotime.com/Search.ashx?%s" % urllib.urlencode({"query":term,"formats":"ogg,mp3,aac,wma"})
 		print("url:"+searchUrl)
 		data = self.downloadFile(searchUrl)
 		handler = RadioTimeHandler()
