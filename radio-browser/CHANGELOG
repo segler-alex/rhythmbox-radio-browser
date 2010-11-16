@@ -1,3 +1,11 @@
+Changes in 2.3:
+===============
+* new search tab
+* moved board to new server: http://www.radio-browser.info
+* start page has resizer-handle now
+* translation updates
+* some bugfixes
+
 Changes in 2.2:
 ===============
 * added new tab, that displays favourites for faster access on program start
