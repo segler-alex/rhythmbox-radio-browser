@@ -968,6 +968,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 	""" starts playback of the station """
 	def play_uri(self,station):
+		station.updateRealURL()
 		play_thread = threading.Thread(target = self.play_uri_,args = (station,))
 		play_thread.setDaemon(True)
 		play_thread.start()
