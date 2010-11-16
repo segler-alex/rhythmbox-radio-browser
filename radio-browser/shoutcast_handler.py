@@ -24,22 +24,26 @@ from radio_station import RadioStation
 from feed import Feed
 
 class ShoutcastRadioStation(RadioStation):
+	def updateRealURL(self):
+		self.listen_urls = []
+		try:
+			# download from "http://www.shoutcast.com"+self.tunein+"?id="+shoutcast_id
+			url = "http://www.shoutcast.com"+self.tunein+"?id="+self.listen_id
+			remote = urllib2.urlopen(url)
+			data = remote.read()
+			remote.close()
+
+			lines = data.splitlines()
+			for line in lines:
+				if line.startswith("File"):
+					self.listen_urls.append(line.split("=")[1])
+					print "new link:"+line.split("=")[1]
+			self.askUserAboutUrls()
+		except:
+			return
 	def getRealURL(self):
 		if self.listen_url == "":
-			try:
-				# download from "http://www.shoutcast.com"+self.tunein+"?id="+shoutcast_id
-				url = "http://www.shoutcast.com"+self.tunein+"?id="+self.listen_id
-				remote = urllib2.urlopen(url)
-				data = remote.read()
-				remote.close()
-
-				lines = data.splitlines()
-				for line in lines:
-					if line.startswith("File"):
-						self.listen_url = line.split("=")[1];
-						print "playing uri:"+self.listen_url
-			except:
-				return None
+			self.updateRealURL()
 		if self.listen_url == "":
 			return None
 		else:

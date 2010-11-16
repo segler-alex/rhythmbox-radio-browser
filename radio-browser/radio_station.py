@@ -52,7 +52,7 @@ class RadioStation:
 				return
 
 			gtk.gdk.threads_enter()
-			dialog = gtk.Dialog("My dialog",flags=gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,buttons=(gtk.STOCK_OK,gtk.RESPONSE_OK))
+			dialog = gtk.Dialog(_("Select stream URL please"),flags=gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,buttons=(gtk.STOCK_OK,gtk.RESPONSE_OK))
 
 			urlListView = gtk.TreeView()
 			urlListView.append_column(gtk.TreeViewColumn(_("Url"),gtk.CellRendererText(),text=0))
