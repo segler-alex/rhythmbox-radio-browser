@@ -80,7 +80,7 @@ class RadioBrowserSource(rb.StreamingSource):
 				progress = min (float(self.load_current_size) / self.load_total_size, 1.0)
 			return (self.load_status,None,progress)
 		else:
-			return (_("Nothing"),None,2.0)
+			return (_("Nothing to do"),None,2.0)
 
 	def update_download_status(self,filename,current, total):
 		self.load_current_size = current
