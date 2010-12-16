@@ -622,7 +622,7 @@ class RadioBrowserSource(rb.StreamingSource):
 
 				label = gtk.Label()
 				label.set_line_wrap(True)
-				if value.startswith("http://") or value.startswith("mailto:"):
+				if value.startswith("http://") or value.startswith("mms:") or value.startswith("mailto:"):
 					label.set_markup("<a href='"+xml.sax.saxutils.escape(value)+"'>"+xml.sax.saxutils.escape(short_value)+"</a>")
 				else:
 					label.set_markup(xml.sax.saxutils.escape(short_value))
@@ -829,7 +829,7 @@ class RadioBrowserSource(rb.StreamingSource):
 					hash_src = hashlib.md5(station.icon_src).hexdigest()
 					filepath = os.path.join(self.icon_cache_dir, hash_src)
 					if os.path.exists(filepath):
-						icon = self.get_icon_pixbuf(filepath,self.clef_icon)
+						icon = self.get_icon_pixbuf(filepath,icon)
 					else:
 						# load icon
 						self.icon_download_queue.put([filepath,station.icon_src])
