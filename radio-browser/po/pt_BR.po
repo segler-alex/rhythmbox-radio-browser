@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox-radio-browser\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-29 19:18:35 UTC\n"
-"PO-Revision-Date: 2010-09-12 12:30:32 UTC\n"
+"POT-Creation-Date: 2010-03-29 20:18:35 +0100\n"
+"PO-Revision-Date: 2010-11-16 23:40:41 +0000\n"
 "Last-Translator: Web Translate It <support@webtranslateit.com>\n"
 "Language-Team: Portuguese, Brazil\n"
 "MIME-Version: 1.0\n"
@@ -13,22 +13,22 @@ msgstr ""
 
 #: ../radio_browser_source.py
 msgid "Added to recently played at"
-msgstr "Adicionada recentemente tocada em"
+msgstr "Adicionado na reprodução atual em"
 
 #: ../radio_browser_source.py
 #: ../record_process.py
 msgid "Bitrate"
-msgstr "Bitrate"
+msgstr "Taxa de bit"
 
 #: ../radio_browser_source.py
 # Всё же это "В закладки", а то назначение кнопки не очевидно.
 msgid "Bookmark"
-msgstr "Marcar"
+msgstr "Marcar como favorito"
 
 #: ../radio_browser_source.py
 #. add bookmarks
 msgid "Bookmarks"
-msgstr "Marcadores"
+msgstr "Adicionar Marcador"
 
 #: ../radio-browser.py
 msgid "Browser"
@@ -36,7 +36,7 @@ msgstr "Navegador"
 
 #: ../radio_browser_source.py
 msgid "By Bitrate"
-msgstr "Por Bitrate"
+msgstr "Por Taxa de Bits"
 
 #: ../radio_browser_source.py
 msgid "By Country"
@@ -48,7 +48,7 @@ msgstr "Por Gêneros"
 
 #: ../radio_browser_source.py
 msgid "By Streamtype"
-msgstr "Por Tipo de Stream"
+msgstr "Por Tipo de Transmissão"
 
 #: ../board_handler.py
 msgid "Classical Jazz Talk"
@@ -56,8 +56,9 @@ msgstr "Classical Jazz Talk"
 
 #: ../radio-browser.py
 msgid "Clear icon cache"
-msgstr "Limpar ícones da cache"
+msgstr "Limpar ícone da cache"
 
+#: ../radio_browser_source.py
 msgid "Click statistics (Last 30 days)"
 msgstr "Clique para ver as estatísticas (Últimos 30 dias)"
 
@@ -95,13 +96,13 @@ msgid "Description"
 msgstr "Descrição"
 
 #: ../board_handler.py
-msgid "Do you really want to mark this radio station as broken? It will eventually get deleted if enough people do that! More information on that on the feeds homepage: http://segler.bplaced.net/"
-msgstr "Você realmente quer marca esta rádio como quebrada? Isso acabará deletando-a se muitas pessoas fizerem isso! Mais informações acesse: http://segler.bplaced.net/"
+msgid "Do you really want to mark this radio station as broken? It will eventually get deleted if enough people do that! More information on that on the feeds homepage: http://www.radio-browser.info/"
+msgstr "Você realmente quer marcar essa estação de rádio como quebrada? Ela será deletada se várias pessoas fizerem isso! Mais informações sobre isso no site: http://www.radio-browser.info/"
 
 #: ../board_handler.py
 # "Вы" пишется с большой буквы только в официальных сообщениях и личной переписке для выделения уважительного отношения к собеседнику (весьма конкретному собеседнику). Во всех остальных случаях местоимение "вы" пишется со строчной. В данном случае написание с большой буквы не оправдано.
 msgid "Do you really want to vote for this station? It means, that you like it, and you want more people to know, that this is a good station."
-msgstr "Você realmente quer votar nesta estação? Isso significa que você gosta dela, e quer que as pessoas saibam que é uma boa rádio."
+msgstr "Tem certeza que deseja votar nesta estação? Isso significa que você gosta dela, e quer que as pessoas saibam que é uma boa rádio."
 
 #: ../radio_browser_source.py
 msgid "Download"
@@ -110,6 +111,10 @@ msgstr "Baixar"
 #: ../radio_browser_source.py
 msgid "Downloading feed %(name)s from %(url)s. %(try)d/%(trys)d"
 msgstr "Baixando feed %(name)s de %(url)s. %(try)d/%(trys)d"
+
+#: ../radio_browser_source.py
+msgid "downloading station information"
+msgstr "baixando informações da estação"
 
 #: ../radio_browser_source.py
 # audio/mpeg, например.
@@ -132,6 +137,8 @@ msgstr "URL do favicon"
 msgid "Favicon URL needs to start with http://"
 msgstr "O URL do favicon precisa iniciar com http://"
 
+#: ../radio_browser_source.py
+#: ../radio_browser_source.py
 msgid "Favourites"
 msgstr "Favoritos"
 
@@ -141,7 +148,7 @@ msgstr "Feed"
 
 #: ../radio_browser_source.py
 msgid "Feed download failed"
-msgstr "Falha ao baixar o feed"
+msgstr "Falha ao baixar feed"
 
 #: ../radio_browser_source.py
 msgid "Feed homepage"
@@ -175,6 +182,19 @@ msgstr "URL da Homepage"
 msgid "Homepage URL needs to start with http://"
 msgstr "O URL da página precisa inciar com http://"
 
+#: ../board_handler.py
+msgid "http://listen.to.my/station.pls"
+msgstr "http://escute.a.minha/radio.pls"
+
+#: ../board_handler.py
+msgid "http://very.cool.site"
+msgstr "http://site.muito.legal"
+
+#: ../board_handler.py
+msgid "http://very.cool.site/favicon.ico"
+msgstr "http://site.muito.legal/favicon.ico"
+
+#: ../radio_browser_source.py
 msgid "Info box"
 msgstr "Caixa de informação"
 
@@ -233,12 +253,16 @@ msgid "No local copy"
 msgstr "Nenhuma cópia local"
 
 #: ../radio_browser_source.py
+# You're right, of course it would be better. When I have a bit of time will think and correct the Italian translation too. Ciao.
+# This string »Nothing« appears in the status bar on the bottom of Rhythmbox, doesn't it? Is this the message when Radio Browser is idling? If yes, my suggestion for the german translation would rather be like »Nichts zu tun« (which means »Nothing to do«/»Idling«)  instead of »Nichts« (»Nothing«) – I mention that because I find this string a bit confusing. Thanks in advance for Your insights on that.
+# Make Rodolfo words my words. I corrected it :)
+# Thanks Rodolfo and Eugênio F. I've corrected it in the German translation, too.
 msgid "Nothing"
-msgstr "Nada"
+msgstr "Ocioso"
 
 #: ../radio_browser_source.py
 msgid "Play"
-msgstr "Tocar"
+msgstr "Reproduzir"
 
 #: ../record_process.py
 msgid "Playing time"
@@ -249,13 +273,13 @@ msgid "Post new station"
 msgstr "Publicar nova estação"
 
 #: ../radio-browser.py
-msgid "Radio Browser Configuration"
-msgstr "Configuração do Radio Browser"
-
-#: ../radio-browser.py
 # Звучит как два не связанных слова. Может "Радиостанции" будет лучше? Не дословно, но хоть не разваливается на куски.
 msgid "Radio browser"
-msgstr "Navegador de rádio"
+msgstr "Radio Browser"
+
+#: ../radio-browser.py
+msgid "Radio Browser Configuration"
+msgstr "Configuração do Radio Browser"
 
 #: ../radio_browser_source.py
 msgid "Radiostation list"
@@ -264,7 +288,7 @@ msgstr "Lista das estações de rádio"
 #: ../radio_browser_source.py
 #. add recently played list
 msgid "Recently played"
-msgstr "Tocado recentemente"
+msgstr "Reproduzido recentemente"
 
 #: ../radio-browser.py
 msgid "Recently played removal time(days)"
@@ -284,7 +308,20 @@ msgstr "Porta"
 
 #: ../record_process.py
 msgid "Ripping stream"
-msgstr "Rippando stream"
+msgstr "Rippando transmissão"
+
+#: ../radio_browser_source.py
+#: ../radio_browser_source.py
+msgid "Search"
+msgstr "Buscar"
+
+#: ../radio_browser_source.py
+msgid "Searching for : '%s'"
+msgstr "Buscando por : '%s'"
+
+#: ../radio_station.py
+msgid "Select stream URL please"
+msgstr "Selecione a URL de transmissão por favor"
 
 #: ../record_process.py
 msgid "Server"
@@ -312,12 +349,12 @@ msgstr "Estação publicada com sucesso"
 
 #: ../record_process.py
 msgid "Stream"
-msgstr "Stream"
+msgstr "Transmissão"
 
 #: ../radio_browser_source.py
 # Всё же URL-адрес понятнее, чем "путь потока". Куда он течёт? ж)
 msgid "Stream URL"
-msgstr "URL do stream"
+msgstr "URL da transmissão"
 
 #: ../radio-browser.py
 msgid "Streamripper output path"
@@ -326,7 +363,7 @@ msgstr "Caminho de saída do Streamripper"
 #: ../board_handler.py
 #: ../radio_browser_source.py
 msgid "Tags"
-msgstr "Tags"
+msgstr "Marcadores"
 
 #: ../record_process.py
 msgid "Time"
@@ -340,19 +377,11 @@ msgstr "Título"
 
 #: ../radio_browser_source.py
 msgid "Try"
-msgstr "Tente"
+msgstr "Tentativa"
 
 #: ../radio-browser.py
 msgid "Trys to download file"
 msgstr "Tentativas para baixar arquivo"
-
-#: ../board_handler.py
-msgid "URL"
-msgstr "URL"
-
-#: ../board_handler.py
-msgid "URL needs to start with http:// or mms://"
-msgstr "O URL precisa iniciar com http:// ou mms://"
 
 #: ../radio_browser_source.py
 msgid "Unbookmark"
@@ -362,6 +391,18 @@ msgstr "Desmarcar"
 #. add "update-all" action to the toolbar
 msgid "Update radio station list"
 msgstr "Atualizar lista de estações de rádio"
+
+#: ../board_handler.py
+msgid "URL"
+msgstr "URL"
+
+#: ../radio_station.py
+msgid "Url"
+msgstr "Url"
+
+#: ../board_handler.py
+msgid "URL needs to start with http:// or mms://"
+msgstr "O URL precisa iniciar com http:// ou mms://"
 
 #: ../board_handler.py
 msgid "Utopia"
@@ -375,18 +416,3 @@ msgstr "Votar na estação"
 msgid "Votes"
 msgstr "Votos"
 
-#: ../radio_browser_source.py
-msgid "downloading station information"
-msgstr "baixando informações da estação"
-
-#: ../board_handler.py
-msgid "http://listen.to.my/station.pls"
-msgstr "http://escute.a.minha/radio.pls"
-
-#: ../board_handler.py
-msgid "http://very.cool.site"
-msgstr "http://site.muito.legal"
-
-#: ../board_handler.py
-msgid "http://very.cool.site/favicon.ico"
-msgstr "http://site.muito.legal/favicon.ico"

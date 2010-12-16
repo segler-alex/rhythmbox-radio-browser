@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox-radio-browser\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-29 19:18:35 UTC\n"
-"PO-Revision-Date: 2010-09-11 16:29:52 UTC\n"
+"POT-Creation-Date: 2010-03-29 20:18:35 +0100\n"
+"PO-Revision-Date: 2010-11-16 23:40:41 +0000\n"
 "Last-Translator: Web Translate It <support@webtranslateit.com>\n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -59,6 +59,10 @@ msgid "Clear icon cache"
 msgstr "Очистить кэш иконок"
 
 #: ../radio_browser_source.py
+msgid "Click statistics (Last 30 days)"
+msgstr ""
+
+#: ../radio_browser_source.py
 msgid "Could not download feed. Please try again later."
 msgstr "Невозможно скачать ленту. Пожалуйста, попробуйте позже."
 
@@ -92,8 +96,8 @@ msgid "Description"
 msgstr "Описание"
 
 #: ../board_handler.py
-msgid "Do you really want to mark this radio station as broken? It will eventually get deleted if enough people do that! More information on that on the feeds homepage: http://segler.bplaced.net/"
-msgstr "Вы действительно хотите отметить станцию как не работающую? Со временем она будет удалена если достаточно людей так её отметят! Подробнее можно узнать на сайте: http://segler.bplaced.net/"
+msgid "Do you really want to mark this radio station as broken? It will eventually get deleted if enough people do that! More information on that on the feeds homepage: http://www.radio-browser.info/"
+msgstr ""
 
 #: ../board_handler.py
 # "Вы" пишется с большой буквы только в официальных сообщениях и личной переписке для выделения уважительного отношения к собеседнику (весьма конкретному собеседнику). Во всех остальных случаях местоимение "вы" пишется со строчной. В данном случае написание с большой буквы не оправдано.
@@ -107,6 +111,10 @@ msgstr "Скачать"
 #: ../radio_browser_source.py
 msgid "Downloading feed %(name)s from %(url)s. %(try)d/%(trys)d"
 msgstr "Скачивание ленты %(name)s с %(url)s. %…"
+
+#: ../radio_browser_source.py
+msgid "downloading station information"
+msgstr "скачивание информации о станции"
 
 #: ../radio_browser_source.py
 # audio/mpeg, например.
@@ -128,6 +136,11 @@ msgstr "Адрес иконки"
 #: ../board_handler.py
 msgid "Favicon URL needs to start with http://"
 msgstr "Путь к иконке должен начинаться с http://"
+
+#: ../radio_browser_source.py
+#: ../radio_browser_source.py
+msgid "Favourites"
+msgstr ""
 
 #: ../radio_browser_source.py
 msgid "Feed"
@@ -168,6 +181,22 @@ msgstr "Адрес домашней страницы"
 #: ../board_handler.py
 msgid "Homepage URL needs to start with http://"
 msgstr "Адрес домашней страницы должен начинаться с http://"
+
+#: ../board_handler.py
+msgid "http://listen.to.my/station.pls"
+msgstr "http://listen.to.my/station.pls"
+
+#: ../board_handler.py
+msgid "http://very.cool.site"
+msgstr "http://very.cool.site"
+
+#: ../board_handler.py
+msgid "http://very.cool.site/favicon.ico"
+msgstr "http://very.cool.site/favicon.ico"
+
+#: ../radio_browser_source.py
+msgid "Info box"
+msgstr ""
 
 #: ../radio_browser_source.py
 msgid "Integrating feed %(name)s (%(itemcount)d items) into tree..."
@@ -224,8 +253,12 @@ msgid "No local copy"
 msgstr "Не скачивался"
 
 #: ../radio_browser_source.py
+# You're right, of course it would be better. When I have a bit of time will think and correct the Italian translation too. Ciao.
+# This string »Nothing« appears in the status bar on the bottom of Rhythmbox, doesn't it? Is this the message when Radio Browser is idling? If yes, my suggestion for the german translation would rather be like »Nichts zu tun« (which means »Nothing to do«/»Idling«)  instead of »Nichts« (»Nothing«) – I mention that because I find this string a bit confusing. Thanks in advance for Your insights on that.
+# Make Rodolfo words my words. I corrected it :)
+# Thanks Rodolfo and Eugênio F. I've corrected it in the German translation, too.
 msgid "Nothing"
-msgstr "Ничего"
+msgstr "Нет задач"
 
 #: ../radio_browser_source.py
 msgid "Play"
@@ -240,13 +273,13 @@ msgid "Post new station"
 msgstr "Добавить новую станцию"
 
 #: ../radio-browser.py
-msgid "Radio Browser Configuration"
-msgstr "Настройки Радио Навигатора"
-
-#: ../radio-browser.py
 # Звучит как два не связанных слова. Может "Радиостанции" будет лучше? Не дословно, но хоть не разваливается на куски.
 msgid "Radio browser"
 msgstr "Радиостанции"
+
+#: ../radio-browser.py
+msgid "Radio Browser Configuration"
+msgstr "Настройки Радио Навигатора"
 
 #: ../radio_browser_source.py
 msgid "Radiostation list"
@@ -276,6 +309,19 @@ msgstr "Порт"
 #: ../record_process.py
 msgid "Ripping stream"
 msgstr "Захват потока"
+
+#: ../radio_browser_source.py
+#: ../radio_browser_source.py
+msgid "Search"
+msgstr ""
+
+#: ../radio_browser_source.py
+msgid "Searching for : '%s'"
+msgstr ""
+
+#: ../radio_station.py
+msgid "Select stream URL please"
+msgstr ""
 
 #: ../record_process.py
 msgid "Server"
@@ -337,14 +383,6 @@ msgstr "Попытка"
 msgid "Trys to download file"
 msgstr "Число попыток скачивания файла"
 
-#: ../board_handler.py
-msgid "URL"
-msgstr "Адрес"
-
-#: ../board_handler.py
-msgid "URL needs to start with http:// or mms://"
-msgstr "Адрес должен начинаться с http:// или mms://"
-
 #: ../radio_browser_source.py
 msgid "Unbookmark"
 msgstr "Удалить закладку"
@@ -353,6 +391,18 @@ msgstr "Удалить закладку"
 #. add "update-all" action to the toolbar
 msgid "Update radio station list"
 msgstr "Обновить список радиостанций"
+
+#: ../board_handler.py
+msgid "URL"
+msgstr "Адрес"
+
+#: ../radio_station.py
+msgid "Url"
+msgstr ""
+
+#: ../board_handler.py
+msgid "URL needs to start with http:// or mms://"
+msgstr "Адрес должен начинаться с http:// или mms://"
 
 #: ../board_handler.py
 msgid "Utopia"
@@ -365,20 +415,4 @@ msgstr "Проголосовать за станцию"
 #: ../radio_browser_source.py
 msgid "Votes"
 msgstr "Отзывы"
-
-#: ../radio_browser_source.py
-msgid "downloading station information"
-msgstr "скачивание информации о станции"
-
-#: ../board_handler.py
-msgid "http://listen.to.my/station.pls"
-msgstr "http://listen.to.my/station.pls"
-
-#: ../board_handler.py
-msgid "http://very.cool.site"
-msgstr "http://very.cool.site"
-
-#: ../board_handler.py
-msgid "http://very.cool.site/favicon.ico"
-msgstr "http://very.cool.site/favicon.ico"
 
