@@ -39,7 +39,6 @@ from radio_station import RadioStation
 from record_process import RecordProcess
 
 from feed import Feed
-from local_handler import FeedLocal
 from icecast_handler import FeedIcecast
 from shoutcast_handler import FeedShoutcast
 from shoutcast_handler import ShoutcastRadioStation
@@ -276,7 +275,6 @@ class RadioBrowserSource(rb.StreamingSource):
 		rb.BrowserSource.do_impl_activate (self)
 
 	def searchEngines(self):
-		yield FeedLocal(self.cache_dir,self.update_download_status)
 		yield FeedIcecast(self.cache_dir,self.update_download_status)
 		yield FeedBoard(self.cache_dir,self.update_download_status)
 		yield FeedShoutcast(self.cache_dir,self.update_download_status)
@@ -821,7 +819,7 @@ class RadioBrowserSource(rb.StreamingSource):
 					icon = self.get_icon_pixbuf(self.plugin.find_file("shoutcast-logo.png"))
 				if station.type == "Icecast":
 					icon = self.get_icon_pixbuf(self.plugin.find_file("xiph-logo.png"))
-				if station.type == "Local":
+				if station.type == "Board":
 					icon = self.get_icon_pixbuf(self.plugin.find_file("local-logo.png"))
 
 				# most special icons, if the station has one for itsself
@@ -1126,7 +1124,6 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.shell = False
 
 	def engines(self):
-		yield FeedLocal(self.cache_dir,self.update_download_status)
 		yield FeedIcecast(self.cache_dir,self.update_download_status)
 		yield FeedBoard(self.cache_dir,self.update_download_status)
 		yield FeedShoutcast(self.cache_dir,self.update_download_status)
@@ -1234,7 +1231,7 @@ class RadioBrowserSource(rb.StreamingSource):
 					icon = shoutcast_icon
 				if station.type == "Icecast":
 					icon = xiph_icon
-				if station.type == "Local":
+				if station.type == "Board":
 					icon = local_icon
 
 				# add new station to liststore of search-view too
