@@ -1,7 +1,6 @@
 board_handler.py
 feed.py
 icecast_handler.py
-local_handler.py
 radio-browser.py
 radio_browser_source.py
 radio_station.py
