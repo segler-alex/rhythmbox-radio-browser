@@ -129,7 +129,7 @@ class FeedBoard(Feed):
 		return "Board"
 
 	def getDescription(self):
-		return "Community radio station board. Click the homepage and help!"
+		return _("Community radio station board. Click the homepage and help!")
 
 	def getHomepage(self):
 		return "http://www.radio-browser.info"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-18 21:01+0100\n"
+"POT-Creation-Date: 2011-03-19 11:04+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../board_handler.py:67 ../board_handler.py:113 ../board_handler.py:230
+#: ../board_handler.py:67 ../board_handler.py:113 ../board_handler.py:236
 msgid "Post new station"
 msgstr ""
 
@@ -81,48 +81,52 @@ msgstr ""
 msgid "Classical Jazz Talk"
 msgstr ""
 
-#: ../board_handler.py:142 ../board_handler.py:235
+#: ../board_handler.py:132
+msgid "Community radio station board. Click the homepage and help!"
+msgstr ""
+
+#: ../board_handler.py:148 ../board_handler.py:241
 msgid "Vote for station"
 msgstr ""
 
-#: ../board_handler.py:143
+#: ../board_handler.py:149
 msgid ""
 "Do you really want to vote for this station? It means, that you like it, and "
 "you want more people to know, that this is a good station."
 msgstr ""
 
-#: ../board_handler.py:154
+#: ../board_handler.py:160
 msgid "Mark station as broken"
 msgstr ""
 
-#: ../board_handler.py:155
+#: ../board_handler.py:161
 msgid ""
 "Do you really want to mark this radio station as broken? It will eventually "
 "get deleted if enough people do that! More information on that on the feeds "
 "homepage: http://www.radio-browser.info/"
 msgstr ""
 
-#: ../board_handler.py:201
+#: ../board_handler.py:207
 msgid "Name and URL are necessary"
 msgstr ""
 
-#: ../board_handler.py:205
+#: ../board_handler.py:211
 msgid "URL needs to start with http:// or mms://"
 msgstr ""
 
-#: ../board_handler.py:210
+#: ../board_handler.py:216
 msgid "Homepage URL needs to start with http://"
 msgstr ""
 
-#: ../board_handler.py:215
+#: ../board_handler.py:221
 msgid "Favicon URL needs to start with http://"
 msgstr ""
 
-#: ../board_handler.py:222
+#: ../board_handler.py:228
 msgid "Station successfully posted"
 msgstr ""
 
-#: ../board_handler.py:236
+#: ../board_handler.py:242
 msgid "Station is broken"
 msgstr ""
 
