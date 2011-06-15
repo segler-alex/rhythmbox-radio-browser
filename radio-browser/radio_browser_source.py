@@ -69,6 +69,9 @@ class RadioBrowserSource(rb.StreamingSource):
 			self.plugin = value
 
 	""" return list of actions that should be displayed in toolbar """
+	def do_get_ui_actions(self):
+		return self.do_impl_get_ui_actions()
+
 	def do_impl_get_ui_actions(self):
 		return ["UpdateList","ClearIconCache"]
 
