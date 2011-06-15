@@ -106,6 +106,21 @@ class RadioBrowserPlugin (rb.Plugin):
 
 	""" on plugin activation """
 	def activate(self, shell):
+
+		def action_update_list():
+			try:
+				shell.get_property("selected-source").update_button_clicked()
+			except:
+				# 0.13.3
+				shell.get_property("selected-page").update_button_clicked()
+
+		def action_remove_images():
+			try:
+				shell.get_property("selected-source").clear_iconcache_button_clicked()
+			except:
+				# 0.13.3
+				shell.get_property("selected-page").clear_iconcache_button_clicked()
+
 		# Get the translation file
 		install('radio-browser')
 
@@ -146,11 +161,11 @@ class RadioBrowserPlugin (rb.Plugin):
 
 		# add "update-all" action to the toolbar
 		action = gtk.Action('UpdateList', None, _("Update radio station list"), gtk.STOCK_GO_DOWN)
-		action.connect('activate', lambda a: shell.get_property("selected-source").update_button_clicked())
+		action.connect('activate', lambda a: action_update_list())
 		self.actiongroup.add_action(action)
 
 		action = gtk.Action('ClearIconCache', None, _("Clear icon cache"), gtk.STOCK_CLEAR)
-		action.connect('activate', lambda a: shell.get_property("selected-source").clear_iconcache_button_clicked())
+		action.connect('activate', lambda a: action_remove_images())
 		self.actiongroup.add_action(action)
 
 		uim = shell.get_ui_manager ()
