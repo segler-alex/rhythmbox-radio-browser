@@ -90,6 +90,9 @@ class RadioBrowserSource(rb.StreamingSource):
 		self.notify_status_changed()
 		gtk.gdk.threads_leave()
 
+	def do_selected(self):
+		self.do_impl_activate()
+
 	""" on source actiavation, e.g. double click on source or playing something in this source """
 	def do_impl_activate(self):
 		# first time of activation -> add graphical stuff
@@ -272,7 +275,11 @@ class RadioBrowserSource(rb.StreamingSource):
 			settings = gtk.settings_get_default()
 			settings.set_property("gtk-button-images",True)
 
-		rb.BrowserSource.do_impl_activate (self)
+		# rhythmbox 0.13.3 does not have the following method
+		try:
+			rb.BrowserSource.do_impl_activate (self)
+		except:
+			print "ignored error"
 
 	def searchEngines(self):
 		yield FeedIcecast(self.cache_dir,self.update_download_status)

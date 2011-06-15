@@ -117,18 +117,30 @@ class RadioBrowserPlugin (rb.Plugin):
 		except NotImplementedError:
 			entry_type = db.entry_register_type("RadioBrowserEntryType")
 		entry_type.category = rhythmdb.ENTRY_STREAM
-		group = rb.rb_source_group_get_by_name ("library")
-		self.source = gobject.new (RadioBrowserSource, shell=shell, name=_("Radio browser"), entry_type=entry_type,source_group=group,plugin=self)
-		shell.append_source(self.source, None)
-		shell.register_entry_type_for_source(self.source, entry_type)
-		gobject.type_register(RadioBrowserSource)
 
 		# load plugin icon
 		width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
 		filepath = self.find_file("radio-browser.png")
 		if filepath:
 			icon = gtk.gdk.pixbuf_new_from_file_at_size(filepath, width, height)
-			self.source.set_property( "icon",  icon)
+#			self.source.set_property( "icon",  icon)
+			
+		try:
+			group = rb.rb_source_group_get_by_name ("library")
+			self.source = gobject.new (RadioBrowserSource, shell=shell, name=_("Radio browser"), entry_type=entry_type,source_group=group,plugin=self)
+			shell.append_source(self.source, None)
+			if filepath:
+				self.source.set_property( "icon",  icon)
+
+		except:
+			group = rb.rb_display_page_group_get_by_id ("library")
+			self.source = gobject.new (RadioBrowserSource, shell=shell, name=_("Radio browser"), entry_type=entry_type,plugin=self,pixbuf=icon)
+			shell.append_display_page(self.source, group)
+
+		shell.register_entry_type_for_source(self.source, entry_type)
+		gobject.type_register(RadioBrowserSource)
+
+
 
 		self.actiongroup = gtk.ActionGroup('RadioBrowserActionGroup')
 
