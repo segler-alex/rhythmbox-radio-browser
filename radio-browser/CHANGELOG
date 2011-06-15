@@ -1,6 +1,7 @@
 Changes in 2.4:
 ===============
 * works in 0.13.3
+* removed shoutcast support (now you need developer id)
 
 Changes in 2.3.1:
 =================
